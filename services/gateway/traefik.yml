@@ -1,6 +1,12 @@
 global:
-  checkNewVersion: true
-  sendAnonymousUsage: true
+  checkNewVersion: false
+  sendAnonymousUsage: false
+log:
+  level: DEBUG
+  format: json
+api:
+  dashboard: true
+  insecure: true
 
 entryPoints:
   web:
@@ -8,15 +14,10 @@ entryPoints:
   websecure:
     address: ":443"
 
-log:
-  level: DEBUG
-  format: json
-
 providers:
   file:
     filename: ./dynamic_conf.yml
     watch: true
-
-api:
-  dashboard: true
-  insecure: true
+  docker:
+    exposedByDefault: false # this make services have to enable (allow) Traefik to manage them
+    network: backend

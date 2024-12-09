@@ -142,3 +142,4 @@ fabric.properties
 # service vendors
 /services/*/vendor/
 **/tmp/*
+.DS_Store

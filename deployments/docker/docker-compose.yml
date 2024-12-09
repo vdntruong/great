@@ -4,32 +4,47 @@ services:
 
   auth-ms:
     build:
-      context: ../../services/auth-ms
+      context: .
       dockerfile: ../../services/auth-ms/deployments/Dockerfile
     ports:
-      - "8081:8081"
-    environment:
-      - PORT=8081
+      - "8081:8080"
     networks:
       - backend
-
-  traefik:
-    image: traefik:v3.2.1
-    command:
-      - "--configFile=/etc/traefik/traefik.yml"
-      - "--api.insecure=true"
-      - "--providers.docker"
-    ports:
-      - "80:80"
-      - "8080:8080"
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - ../../services/gateway/traefik.yml:/etc/traefik/traefik.yml
-      - ../../services/gateway/dynamic_conf.yml:/etc/traefik/dynamic_conf.yml
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.dashboard.rule=Host(`traefik.localhost`)"
-      - "traefik.http.routers.dashboard.service=api@internal"
+      - "traefik.http.routers.auth.rule=Host(`api-user.theg.localhost`)"
+      - "traefik.http.routers.auth.entrypoints=web,websecure"
+
+  user-ms:
+    build:
+      context: .
+      dockerfile: ../../services/user-ms/deployments/Dockerfile
+    ports:
+      - "8082:8080"
+    networks:
+      - backend
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.user.rule=Host(`api-auth.theg.localhost`)"
+      - "traefik.http.routers.user.entrypoints=web,websecure"
+
+  reverse-proxy:
+    image: traefik:v3.2.1
+    command:
+      - "--api.insecure=true"
+      - "--providers.docker"
+      - "--configFile=/etc/traefik/traefik.yml"
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8080:8080" # web UI (enabled by --api-insecure=true)
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ../../services/gateway/traefik.yml:/etc/traefik/traefik.yml:ro
+      - ../../services/gateway/dynamic_conf.yml:/etc/traefik/dynamic_conf.yml
+    depends_on:
+      - user-ms
+      - auth-ms
     networks:
       - backend
       - frontend

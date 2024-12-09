@@ -1,7 +1,15 @@
 http:
+  serversTransport:
+    insecureSkipVerify: true
+
   routers:
-    auth-ms:
+    auth:
       service: auth-ms
+      entryPoints:
+        - web
+        - websecure
+    user:
+      service: user-ms
       entryPoints:
         - web
         - websecure
@@ -10,4 +18,20 @@ http:
     auth-ms:
       loadBalancer:
         servers:
-          - url: "http://localhost:8081"
+          - url: "http://auth-ms:8080"
+        healthCheck:
+          path: "/healthz"
+          interval: 5s
+          timeout: 2s
+          healthyThreshold: 3
+          unhealthyThreshold: 2
+    user-ms:
+      loadBalancer:
+        servers:
+          - url: "http://user-ms:8080"
+        healthCheck:
+          path: "/healthz"
+          interval: 5s
+          timeout: 2s
+          healthyThreshold: 3
+          unhealthyThreshold: 2
