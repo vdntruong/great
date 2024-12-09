@@ -1,0 +1,39 @@
+run:
+  timeout: 5m
+  tests: false
+  modules-download-mode: readonly
+  skip-dirs:
+    - generated
+    - vendor
+
+linters:
+  disable-all: true
+  enable:
+    - gofmt
+    - govet
+    - errcheck
+    - staticcheck
+    - gosimple
+    - stylecheck
+    - gci
+
+linters-settings:
+  staticcheck:
+    checks: [ "all"]
+    skip-generated: true
+  gci:
+    custom-order: true
+    sections:
+      - standard
+      - blank
+      - dot
+      - prefix(go-commons)
+      - prefix(auth-ms)
+      - default
+    skip-generated: true
+
+issues:
+  exclude-patterns:
+    - '.*\.pb\.go$'
+    - '.*_test\.go$'
+    - '.*_mock\.go$'

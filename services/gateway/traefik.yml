@@ -1,0 +1,22 @@
+global:
+  checkNewVersion: true
+  sendAnonymousUsage: true
+
+entryPoints:
+  web:
+    address: ":80"
+  websecure:
+    address: ":443"
+
+log:
+  level: DEBUG
+  format: json
+
+providers:
+  file:
+    filename: ./dynamic_conf.yml
+    watch: true
+
+api:
+  dashboard: true
+  insecure: true

@@ -1,0 +1,67 @@
+run:
+  # Timeout for analysis
+  timeout: 5m
+
+  # Include test files
+  tests: true
+
+  # Skip auto-generated files
+  skip-files:
+    - ".*\\.pb\\.go$"
+    - ".*\\.gen\\.go$"
+
+linters:
+  enable:
+    - govet
+    - errcheck
+    - staticcheck
+    - gosimple
+    - unused
+    - gofmt
+    - goimports
+    - golint
+    - gocritic
+    - revive
+    - ineffassign
+    - gosec
+    - bodyclose
+    - prealloc
+    - exportloopref
+    - errorlint
+
+linters-settings:
+  govet:
+    check-shadowing: true
+
+  golint:
+    min-confidence: 0.8
+
+  gofmt:
+    simplify: true
+
+  gocritic:
+    enabled-tags:
+      - performance
+      - style
+      - diagnostic
+
+  staticcheck:
+    checks:
+      - "all"
+      - "-SA1029"  # ignore some specific checks if needed
+
+  gosec:
+    excludes:
+      - G404  # Insecure random number generation
+      - G501  # Potential import of dangerous functions
+
+issues:
+  exclude-rules:
+    - path: _test\.go
+      linters:
+        - gosec
+        - errcheck
+        - gocyclo
+
+  max-issues-per-linter: 50
+  max-same-issues: 3

@@ -1,0 +1,39 @@
+version: '3'
+
+services:
+
+  auth-ms:
+    build:
+      context: ../../services/auth-ms
+      dockerfile: ../../services/auth-ms/deployments/Dockerfile
+    ports:
+      - "8081:8081"
+    environment:
+      - PORT=8081
+    networks:
+      - backend
+
+  traefik:
+    image: traefik:v3.2.1
+    command:
+      - "--configFile=/etc/traefik/traefik.yml"
+      - "--api.insecure=true"
+      - "--providers.docker"
+    ports:
+      - "80:80"
+      - "8080:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ../../services/gateway/traefik.yml:/etc/traefik/traefik.yml
+      - ../../services/gateway/dynamic_conf.yml:/etc/traefik/dynamic_conf.yml
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.dashboard.rule=Host(`traefik.localhost`)"
+      - "traefik.http.routers.dashboard.service=api@internal"
+    networks:
+      - backend
+      - frontend
+
+networks:
+  backend:
+  frontend:

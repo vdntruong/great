@@ -1,0 +1,13 @@
+http:
+  routers:
+    auth-ms:
+      service: auth-ms
+      entryPoints:
+        - web
+        - websecure
+
+  services:
+    auth-ms:
+      loadBalancer:
+        servers:
+          - url: "http://localhost:8081"
