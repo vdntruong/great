@@ -1,0 +1,63 @@
+receivers:
+  otlp:
+    protocols:
+      grpc:
+      http:
+
+  # Optional: collect host metrics
+  hostmetrics:
+    collection_interval: 10s
+    scrapers:
+      cpu:
+      memory:
+      disk:
+      network:
+
+processors:
+  batch:
+    timeout: 5s
+    send_batch_size: 100
+
+  # Optional: add resource attributes
+  resource:
+    attributes:
+      - key: service.name
+        value: ${SERVICE_NAME}
+        action: insert
+
+  # Optional: sampling for traces
+  probabilistic_sampler:
+    sampling_percentage: 10
+
+exporters:
+  prometheus:
+    endpoint: "0.0.0.0:8889"
+    const_labels:
+      label1: value1
+
+  # Export to Jaeger for distributed tracing
+  jaeger:
+    endpoint: jaeger:14250
+    tls:
+      insecure: true
+
+  # Log to standard output for debugging
+  logging:
+    loglevel: debug
+
+service:
+  pipelines:
+    metrics:
+      receivers: [otlp, hostmetrics]
+      processors: [batch, resource]
+      exporters: [prometheus]
+
+    traces:
+      receivers: [otlp]
+      processors: [batch, probabilistic_sampler]
+      exporters: [jaeger]
+
+    logs:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [logging]

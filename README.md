@@ -1,5 +1,71 @@
 ## the great
 
+## Monitoring tools
+
+### Integration Flow
+
+1. Services emit telemetry data
+2. OpenTelemetry Collector receives and processes data
+3. Prometheus stores metrics
+4. Jaeger stores and indexes traces
+5. Loki stores logs
+6. Grafana visualizes collected data
+
+### OpenTelemetry Collector
+
+- Role: Telemetry Data Collection & Processing
+- Responsibilities:
+  - Gather traces, metrics, and logs
+  - Standardize telemetry data formats
+  - Route and export data to multiple backends
+  - Support multiple ingestion protocols
+  - Provide unified observability pipeline
+- [Collector setup](https://opentelemetry.io/docs/collector/quick-start/)
+- [Collector installation](https://opentelemetry.io/docs/collector/installation/)
+
+### Prometheus
+
+- Role: Metrics collection and storage
+- Responsibilities:
+  - Scrape metrics from services and infrastructure
+  - Store time-series data
+  - Support querying and alerting based on collected metrics
+  - Provide pull-based monitoring mechanism
+- [Installation](https://prometheus.io/docs/prometheus/latest/installation/)
+
+### Jaeger
+
+- Role: Stores and indexes traces, provide searchable trace visualization
+- Responsibilities:
+    - Collect and visualize distributed traces
+    - Track request flow across microservices
+    - Performance bottleneck identification
+    - Service dependency mapping
+- [Installation](https://www.jaegertracing.io/docs/1.6/getting-started/)
+
+### Loki
+
+- Role: Log Aggregation & Management
+- Responsibilities:
+  - Collect and store log data from multiple sources
+  - Support distributed log storage
+  - Enable log searching and filtering
+  - Integrate with Grafana for visualization
+- [Installation](https://grafana.com/docs/loki/latest/setup/install/docker/)
+
+### Grafana
+
+- Role: Visualization & Dashboarding
+- Responsibilities:
+  - Create interactive dashboards
+  - Visualize metrics from Prometheus
+  - Display log data from Loki
+  - Support alerting and notification mechanisms
+  - Provide multi-datasource visualization
+- [Installation](https://grafana.com/docs/grafana/latest/setup-grafana/installation/docker/)
+
+
+### DRAFT
 this project was created with intention of researching and practicing about microservices.
 I don't know now far I can go with this :)
 
