@@ -1,5 +1,11 @@
 ## the great
 
+## Services
+- Traefik at http://localhost:8080/dashboard
+- Jaeger at http://localhost:16686/search
+- Prometheus at http://localhost:9090/query
+- Grafana at http://localhost:3000
+
 ## Monitoring tools
 
 ### Integration Flow
@@ -22,6 +28,7 @@
   - Provide unified observability pipeline
 - [Collector setup](https://opentelemetry.io/docs/collector/quick-start/)
 - [Collector installation](https://opentelemetry.io/docs/collector/installation/)
+- [Collector configuration](https://opentelemetry.io/docs/collector/configuration/)
 
 ### Prometheus
 
@@ -32,7 +39,7 @@
   - Support querying and alerting based on collected metrics
   - Provide pull-based monitoring mechanism
 - [Installation](https://prometheus.io/docs/prometheus/latest/installation/)
-
+- [How Prometheus monitoring works?](https://youtu.be/h4Sl21AKiDg?list=LL)
 ### Jaeger
 
 - Role: Stores and indexes traces, provide searchable trace visualization
