@@ -32,10 +32,9 @@ processors:
     sampling_percentage: 10
 
 exporters:
-  prometheus:
-    endpoint: "0.0.0.0:8889"
-    const_labels:
-      label1: value1
+  # Log to standard output for debugging
+  debug:
+    verbosity: detailed
 
   # Export to Jaeger for distributed tracing
   otlp/jaeger:
@@ -43,12 +42,15 @@ exporters:
     tls:
       insecure: true
 
-  # Log to standard output for debugging
-  debug:
-    verbosity: detailed
+  prometheus:
+    endpoint: "0.0.0.0:8889"
+    const_labels:
+      label1: value1
 
 service:
   pipelines:
+    exporters: [otlp/jaeger]
+
     metrics:
       receivers: [otlp, hostmetrics]
       processors: [batch, resource]

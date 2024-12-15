@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"errors"
 	"log"
 	"net"
 	"net/http"
@@ -28,13 +27,11 @@ func run() (err error) {
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt)
 	defer stop()
 
-	otelShutdown, err := otel.SetupOTelSDK(ctx, constants.ServiceName)
+	cleanup, err := otel.SetupOpenTelemetry(constants.ServiceName)
 	if err != nil {
-		return
+		log.Fatalf("Failed to setup OpenTelemetry: %v", err)
 	}
-	defer func() {
-		err = errors.Join(err, otelShutdown(context.Background()))
-	}()
+	defer cleanup()
 
 	srv := &http.Server{
 		Addr:         ":8080",
@@ -73,3 +70,28 @@ func newHTTPHandler() http.Handler {
 	handler := otelhttp.NewHandler(mux, "/")
 	return handler
 }
+
+//func initTracer() (*trace.TracerProvider, error) {
+//	ctx := context.Background()
+//
+//	exporter, err := otlptracehttp.New(ctx,
+//		otlptracehttp.WithEndpoint("otel-collector:4318"),
+//		otlptracehttp.WithInsecure(),
+//	)
+//	if err != nil {
+//		return nil, err
+//	}
+//
+//	tp := trace.NewTracerProvider(
+//		trace.WithBatcher(exporter),
+//		trace.WithSampler(trace.AlwaysSample()),
+//		trace.WithResource(resource.NewWithAttributes(
+//			semconv.SchemaURL,
+//			semconv.ServiceName("service-user"),
+//		)),
+//	)
+//	otel.SetTracerProvider(tp)
+//	otel.SetTextMapPropagator(propagation.TraceContext{})
+//
+//	return tp, nil
+//}

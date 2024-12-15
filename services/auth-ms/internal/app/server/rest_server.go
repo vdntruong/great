@@ -7,6 +7,7 @@ import (
 	"auth-ms/internal/pkg/constants"
 	ghandler "gcommons/handler"
 	"gcommons/middleware"
+	"gcommons/otel"
 	"log"
 	"net/http"
 	"time"
@@ -37,6 +38,8 @@ func registerRoutes(authHandler *handlers.AuthRESTHandler) *http.ServeMux {
 	// /api/v1/
 	{
 		v1.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+			_, span := otel.Tracer.Start(r.Context(), "v1 welcome")
+			defer span.End()
 			_, _ = w.Write([]byte("Hi there! This is the v1 API"))
 		})
 

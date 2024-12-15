@@ -8,6 +8,26 @@
 
 ## Monitoring tools
 
+Observability ~ M.E.L.T ~ Metrics.Event.Logs.Traces
+
+[MELT 101](https://newrelic.com/sites/default/files/2022-03/melt-101-four-essential-telemetry-data-types.pdf)
+
+Distributed tracing, also called distributed request tracing is a method used to debug and monitor applications built using a microservices architecture.
+
+- What is tracing? span?
+- What is context?
+  - Span context?
+    - Trace ID
+    - Span ID
+    - Trace flags
+    - Trace state
+  - Correlation context?
+    - Customer ID
+    - Host name
+    - Region
+- What is propagation? 
+  - Propagation is the mechanism we use to bundle up our context and transfer across services.
+
 ### Integration Flow
 
 1. Services emit telemetry data
@@ -29,6 +49,7 @@
 - [Collector setup](https://opentelemetry.io/docs/collector/quick-start/)
 - [Collector installation](https://opentelemetry.io/docs/collector/installation/)
 - [Collector configuration](https://opentelemetry.io/docs/collector/configuration/)
+- [Docker compose samples](https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/examples)
 
 ### Prometheus
 
@@ -40,6 +61,7 @@
   - Provide pull-based monitoring mechanism
 - [Installation](https://prometheus.io/docs/prometheus/latest/installation/)
 - [How Prometheus monitoring works?](https://youtu.be/h4Sl21AKiDg?list=LL)
+
 ### Jaeger
 
 - Role: Stores and indexes traces, provide searchable trace visualization
@@ -49,6 +71,8 @@
     - Performance bottleneck identification
     - Service dependency mapping
 - [Installation](https://www.jaegertracing.io/docs/1.6/getting-started/)
+- Alternatives: 
+  - [Zipkin](https://zipkin.io/) is a distributed tracing system.
 
 ### Loki
 

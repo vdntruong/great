@@ -6,6 +6,8 @@ services:
       dockerfile: ../../services/auth-ms/deployments/Dockerfile
     ports:
       - "8081:8080"
+    environment:
+      - OTLP_ENDPOINT=otel-collector:4318
     networks:
       - backend
       - monitoring
@@ -20,6 +22,8 @@ services:
       dockerfile: ../../services/user-ms/deployments/Dockerfile
     ports:
       - "8082:8080"
+    environment:
+      - OTLP_ENDPOINT=otel-collector:4318
     networks:
       - backend
       - monitoring
@@ -50,13 +54,30 @@ services:
       - frontend
       - monitoring
 
+  jaeger:
+    image: jaegertracing/all-in-one:1.64.0
+    ports:
+      - "16686:16686"  # Jaeger UI
+      - "14250:14250"  # OTLP gRPC receiver
+      - "14268:14268"  # Accept Thrift spans
+      - "9411:9411"    # Zipkin
+    environment:
+      - COLLECTOR_ZIPKIN_HOST_PORT=:9411
+      - COLLECTOR_OTLP_ENABLED=true
+    networks:
+      - monitoring
+
   otel-collector:
     image: otel/opentelemetry-collector-contrib:0.115.1
     command: --config=/etc/otelcol-contrib/config.yml
     ports:
-      - "4317:4317"  # OTLP gRPC receiver
-      - "4318:4318"  # OTLP HTTP receiver
+      - "1888:1888"   # pprof extension
+      - "8888:8888"   # Prometheus metrics exposed by the collector
+      - "8889:8889"   # Prometheus exporter metrics
+      - "4317:4317"   # OTLP gRPC receiver
+      - "4318:4318"   # OTLP HTTP receiver
       - "55679:55679" # zpages extension
+      - "13133:13133" # health_check extension
     volumes:
       - ./otel-collector:/etc/otelcol-contrib
     environment:
@@ -64,9 +85,7 @@ services:
     networks:
       - monitoring
     depends_on:
-      - auth-ms
-      - user-ms
-      - reverse-proxy
+      - jaeger
 
   prometheus:
     image: prom/prometheus:v3.0.1
@@ -76,22 +95,12 @@ services:
       - '--web.console.libraries=/etc/prometheus/console_libraries'
       - '--web.console.templates=/etc/prometheus/consoles'
       - '--web.enable-lifecycle'
+      - '--enable-feature=otlp-write-receive'
     ports:
       - "9090:9090"
     volumes:
       - ./prometheus:/etc/prometheus
       - prometheus-data:/prometheus
-    networks:
-      - monitoring
-
-  jaeger:
-    image: jaegertracing/all-in-one:1.64.0
-    ports:
-      - "16686:16686"  # Jaeger UI
-      - "14250:14250"  # OTLP gRPC receiver
-      - "14268:14268"  # Accept Thrift spans
-    environment:
-      - COLLECTOR_OTLP_ENABLED=true
     networks:
       - monitoring
 
