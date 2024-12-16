@@ -6,7 +6,6 @@ receivers:
       http:
         endpoint: 0.0.0.0:4318
 
-  # Optional: collect host metrics
   hostmetrics:
     collection_interval: 10s
     scrapers:
@@ -29,28 +28,26 @@ processors:
 
   # Optional: sampling for traces
   probabilistic_sampler:
-    sampling_percentage: 10
+    sampling_percentage: 100
 
+# https://opentelemetry.io/docs/collector/configuration/#exporters
 exporters:
-  # Log to standard output for debugging
   debug:
     verbosity: detailed
 
-  # Export to Jaeger for distributed tracing
   otlp/jaeger:
-    endpoint: jaeger:14250
+    endpoint: jaeger:4317
     tls:
       insecure: true
 
   prometheus:
-    endpoint: "0.0.0.0:8889"
+    endpoint: 0.0.0.0:8889
+    namespace: default
     const_labels:
       label1: value1
 
 service:
   pipelines:
-    exporters: [otlp/jaeger]
-
     metrics:
       receivers: [otlp, hostmetrics]
       processors: [batch, resource]

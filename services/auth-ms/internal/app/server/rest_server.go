@@ -1,16 +1,18 @@
 package server
 
 import (
+	"log"
+	"net/http"
+	"time"
+
 	"auth-ms/internal/app/handlers"
 	"auth-ms/internal/app/repository"
 	"auth-ms/internal/pkg/config"
 	"auth-ms/internal/pkg/constants"
+
 	ghandler "gcommons/handler"
 	"gcommons/middleware"
 	"gcommons/otel"
-	"log"
-	"net/http"
-	"time"
 )
 
 func StartRESTServer(cfg *config.Config, userRepo repository.UserRepository) error {
@@ -19,6 +21,7 @@ func StartRESTServer(cfg *config.Config, userRepo repository.UserRepository) err
 	route := registerRoutes(authHandler)
 	handler := middleware.LoggingMiddleware(route)
 	handler = middleware.RecoveryMiddleware(handler)
+	handler = otel.MetricsMiddleware(handler)
 
 	log.Printf("Authentication service starting on %s\n", cfg.RESTAddress)
 	return http.ListenAndServe(cfg.RESTAddress, handler)
@@ -38,7 +41,7 @@ func registerRoutes(authHandler *handlers.AuthRESTHandler) *http.ServeMux {
 	// /api/v1/
 	{
 		v1.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-			_, span := otel.Tracer.Start(r.Context(), "v1 welcome")
+			_, span := otel.GetTracer().Start(r.Context(), "v1 welcome")
 			defer span.End()
 			_, _ = w.Write([]byte("Hi there! This is the v1 API"))
 		})

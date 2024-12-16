@@ -1,5 +1,6 @@
 package constants
 
 const (
-	ServiceName = "Authentication"
+	ServiceName    = "Authentication"
+	ServiceVersion = "0.1.0"
 )

@@ -13,8 +13,6 @@ import (
 
 	ghandler "gcommons/handler"
 	"gcommons/otel"
-
-	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 )
 
 func main() {
@@ -27,12 +25,13 @@ func run() (err error) {
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt)
 	defer stop()
 
-	cleanup, err := otel.SetupOpenTelemetry(constants.ServiceName)
+	cleanup, err := otel.SetupOpenTelemetry(constants.ServiceName, constants.ServiceVersion)
 	if err != nil {
 		log.Fatalf("Failed to setup OpenTelemetry: %v", err)
 	}
 	defer cleanup()
 
+	log.Println("Authentication service starting on :8080")
 	srv := &http.Server{
 		Addr:         ":8080",
 		BaseContext:  func(_ net.Listener) context.Context { return ctx },
@@ -59,15 +58,10 @@ func run() (err error) {
 func newHTTPHandler() http.Handler {
 	mux := http.NewServeMux()
 
-	handleFunc := func(pattern string, handlerFunc func(http.ResponseWriter, *http.Request)) {
-		handler := otelhttp.WithRouteTag(pattern, http.HandlerFunc(handlerFunc))
-		mux.Handle(pattern, handler)
-	}
+	otel.HandleFunc(mux)("/healthz", ghandler.HealthCheck(time.Now(), "User"))
+	otel.HandleFunc(mux)("/rolldice/", otel.RollDice)
 
-	handleFunc("/healthz", ghandler.HealthCheck(time.Now(), "User"))
-	handleFunc("/rolldice/", ghandler.RollDice)
-
-	handler := otelhttp.NewHandler(mux, "/")
+	handler := otel.Handler(mux)
 	return handler
 }
 

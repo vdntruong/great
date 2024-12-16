@@ -20,6 +20,16 @@ Observability ~ M.E.L.T ~ Metrics.Event.Logs.Traces
 
 [MELT 101](https://newrelic.com/sites/default/files/2022-03/melt-101-four-essential-telemetry-data-types.pdf)
 
+Instrumentation
+- Source instrumentation
+    - FE: Grafana Faro
+    - BE: OpenTelemetry (the industry standard)
+- Binary instrumentation
+    - BE: Otel Collector (the agent sit one the component and then collect the information)
+    - BE: Grafana Alloy (for Grafana stacks)
+- External instrumentation
+    - BE: Beyla for EBPF
+
 Distributed tracing, also called distributed request tracing is a method used to debug and monitor applications built using a microservices architecture.
 
 - What is tracing? span?
@@ -35,6 +45,7 @@ Distributed tracing, also called distributed request tracing is a method used to
     - Region
 - What is propagation? 
   - Propagation is the mechanism we use to bundle up our context and transfer across services.
+
 
 ### Integration Flow
 

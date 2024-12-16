@@ -11,7 +11,7 @@ import (
 )
 
 func main() {
-	cleanup, err := otel.SetupOpenTelemetry(constants.ServiceName)
+	cleanup, err := otel.SetupOpenTelemetry(constants.ServiceName, constants.ServiceVersion)
 	if err != nil {
 		log.Fatalf("Failed to setup OpenTelemetry: %v", err)
 	}
