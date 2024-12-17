@@ -106,7 +106,6 @@ services:
       - jaeger
       - prometheus
 
-
   loki:
     image: grafana/loki:3.2.2
     command: -config.file=/etc/loki/loki-config.yml

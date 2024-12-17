@@ -13,8 +13,9 @@ scrape_configs:
       - targets: ['prometheus:9090']
 
   - job_name: 'otel-collector'
+    scrape_interval: 10s
     static_configs:
-      - targets: ['otel-collector:8889']
+      - targets: ['otel-collector:8888']
 
 #  - job_name: 'auth-ms'
 #    static_configs:

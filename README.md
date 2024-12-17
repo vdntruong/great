@@ -1,24 +1,14 @@
-## the great
+# the great
 
-## Services
-- Traefik at http://localhost:8080/dashboard
-- Jaeger at http://localhost:16686/search
-- Prometheus at http://localhost:9090/query
-- Grafana at http://localhost:3000
+## Development
 
-## Monitoring tools
+Local env:
+- [Traefik](http://localhost:8080/dashboard) as API Gateway.
+- [Jaeger](http://localhost:16686/search) as tracing tool.
+- [Prometheus](http://localhost:9090/query) as monitoring and alerting tool.
+- [Grafana](http://localhost:3000) as visualization tool.
 
-> It's not enough to just build a system and hope it 🤞works🤞.
-> 
-> We have to make sure that it meets the goals of the people who use it, that it works well, and that we have the confidence that it'll withstand expected and some unexpected situations.
-> 
-> The software system that we build must be continuously reliable.
-> 
-> [observability explained](https://youtu.be/WSW1urIXsfA)
-
-Observability ~ M.E.L.T ~ Metrics.Event.Logs.Traces
-
-[MELT 101](https://newrelic.com/sites/default/files/2022-03/melt-101-four-essential-telemetry-data-types.pdf)
+M.E.L.T ~ Metrics.Event.Logs.Traces ~ [MELT 101](https://newrelic.com/sites/default/files/2022-03/melt-101-four-essential-telemetry-data-types.pdf).
 
 Instrumentation
 - Source instrumentation
@@ -69,6 +59,28 @@ Distributed tracing, also called distributed request tracing is a method used to
 - [Collector installation](https://opentelemetry.io/docs/collector/installation/)
 - [Collector configuration](https://opentelemetry.io/docs/collector/configuration/)
 - [Docker compose samples](https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/examples)
+
+The Otel Collector's pipeline has 3 steps:
+
+Receivers -> Processors -> Exporters
+
+It collects telemetry data via the receivers and applies transformations in the processors stage before sending it to various outputs via exporters.
+
+We can have pipelines configured, one for traces, one for metrics, and one for logs... 
+
+Let's take a look at this example:
+
+```yaml
+service:
+  pipelines:
+    metrics:
+      receivers: [otlp, opencensus, prometheus]
+      processors: [batch]
+      exporters: [logging]
+```
+
+Basically, the metrics pipeline can receive metrics via OTLP, OpenCensus, and Prometheus, 
+and the batch processor batches together several metrics before sending them to the logging exporters.
 
 ### Prometheus
 
