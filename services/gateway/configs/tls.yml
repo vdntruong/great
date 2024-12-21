@@ -1,0 +1,7 @@
+# This is the Traefik dynamic configuration. Declaring Routers, Middlewares & Services.
+
+http:
+
+  serversTransports:
+    defaultTransport:
+      insecureSkipVerify: true

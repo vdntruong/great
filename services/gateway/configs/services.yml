@@ -1,20 +1,10 @@
+# This is the Traefik dynamic configuration.
+
 http:
-  serversTransport:
-    insecureSkipVerify: true
 
-  routers:
-    auth:
-      service: auth-ms
-      entryPoints:
-        - web
-        - websecure
-    user:
-      service: user-ms
-      entryPoints:
-        - web
-        - websecure
-
+  # Add the services
   services:
+
     auth-ms:
       loadBalancer:
         servers:
@@ -23,8 +13,8 @@ http:
           path: "/healthz"
           interval: 5s
           timeout: 2s
-          healthyThreshold: 3
-          unhealthyThreshold: 2
+        passHostHeader: false
+
     user-ms:
       loadBalancer:
         servers:
@@ -33,5 +23,4 @@ http:
           path: "/healthz"
           interval: 5s
           timeout: 2s
-          healthyThreshold: 3
-          unhealthyThreshold: 2
+        passHostHeader: false

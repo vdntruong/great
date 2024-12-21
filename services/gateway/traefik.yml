@@ -1,12 +1,18 @@
+#  traefik.yml, this is the Traefik static configuration.
+
 global:
   checkNewVersion: false
   sendAnonymousUsage: false
+
 log:
   level: DEBUG
   format: json
+
 api:
   dashboard: true
   insecure: true
+
+# We must define entryPoints and providers on the static configuration file.
 
 entryPoints:
   web:
@@ -16,8 +22,5 @@ entryPoints:
 
 providers:
   file:
-    filename: ./dynamic_conf.yml
+    directory: /etc/traefik/configs # It is recommended to use directory.
     watch: true
-  docker:
-    exposedByDefault: false # this make services have to enable (allow) Traefik to manage them
-    network: backend
