@@ -1,16 +1,20 @@
 package app
 
 import (
+	"net/http"
+
 	ghandler "gcommons/handler"
 	gmiddleware "gcommons/middleware"
+	otelmiddleware "gcommons/otel/middleware"
+
 	"github.com/justinas/alice"
-	"net/http"
 )
 
 func (a *Application) Routes() http.Handler {
 	standardMiddleware := alice.New(
 		gmiddleware.RecoverPanic,
 		gmiddleware.LogRequest,
+		otelmiddleware.TraceRequest,
 	)
 
 	mux := http.NewServeMux()

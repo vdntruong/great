@@ -1,9 +1,11 @@
-package otel
+package middleware
 
 import (
 	"context"
 	"net/http"
 	"time"
+	
+	"gcommons/otel"
 
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/metric"
@@ -20,11 +22,11 @@ func (crw *customResponseWriter) WriteHeader(code int) {
 	crw.ResponseWriter.WriteHeader(code)
 }
 
-func MetricsMiddleware(next http.Handler) http.Handler {
-	requestCounter, _ := GetMeter().Int64Counter("http_requests_total",
+func Metrics(next http.Handler) http.Handler {
+	requestCounter, _ := otel.GetMeter().Int64Counter("http_requests_total",
 		metric.WithDescription("Total number of HTTP requests"))
 
-	requestDuration, _ := GetMeter().Float64Histogram("http_request_duration_seconds",
+	requestDuration, _ := otel.GetMeter().Float64Histogram("http_request_duration_seconds",
 		metric.WithDescription("HTTP request duration"))
 
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -52,9 +54,9 @@ func MetricsMiddleware(next http.Handler) http.Handler {
 	})
 }
 
-func TracingMiddleware(next http.Handler) http.Handler {
+func TraceRequest(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		ctx, span := GetTracer().Start(
+		ctx, span := otel.GetTracer().Start(
 			r.Context(),
 			r.URL.Path,
 			trace.WithAttributes(

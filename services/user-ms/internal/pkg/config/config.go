@@ -20,6 +20,9 @@ type Config struct {
 	WriteTimeout time.Duration `env:"WRITE_TIMEOUT" envDefault:"5s"`
 
 	ShutdownTimeout time.Duration `env:"SHUTDOWN_TIMEOUT" envDefault:"10s"`
+
+	// OTLPEndpoint for instrument
+	OTLPEndpoint string `env:"OTLP_ENDPOINT" envDefault:"localhost:4317"`
 }
 
 func Load() (*Config, error) {

@@ -22,6 +22,8 @@ func main() {
 		log.Fatalf("load config failed: %s", err.Error())
 	}
 
+	log.Printf("otel endpoint config: %+v", cfg.OTLPEndpoint)
+
 	cleanup, err := otel.SetupOpenTelemetry(cfg.AppName, cfg.AppVersion)
 	if err != nil {
 		log.Fatalf("Failed to setup OpenTelemetry: %v", err)

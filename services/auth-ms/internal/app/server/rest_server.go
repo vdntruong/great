@@ -11,13 +11,14 @@ import (
 	ghandler "gcommons/handler"
 	gmiddleware "gcommons/middleware"
 	gotel "gcommons/otel"
+	otelmiddleware "gcommons/otel/middleware"
 )
 
 func StartRESTServer(cfg *config.Config) error {
 	route := routes()
 	handler := gmiddleware.LogRequest(route)
 	handler = gmiddleware.RecoverPanic(handler)
-	handler = gotel.MetricsMiddleware(handler)
+	handler = otelmiddleware.Metrics(handler)
 
 	log.Printf("Authentication service starting on %s\n", cfg.RESTAddress)
 	return http.ListenAndServe(cfg.RESTAddress, handler)
