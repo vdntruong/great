@@ -31,10 +31,15 @@ func main() {
 	defer cleanup()
 
 	// init the main application
-	application, err := app.NewApplication(cfg)
+	application, cleanups, err := app.NewApplication(cfg)
 	if err != nil {
 		log.Fatalf("Failed to init application: %v", err)
 	}
+	defer func() {
+		for _, c := range cleanups {
+			c()
+		}
+	}()
 
 	// serve the API
 	srv := &http.Server{

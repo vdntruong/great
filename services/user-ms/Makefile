@@ -1,3 +1,5 @@
+ROOT_DIR := $(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
+
 lint:
 	golangci-lint run ./... --verbose --fix
 
@@ -32,3 +34,10 @@ bui: pre-build build post-build
 .PHONY: start
 start:
 	docker run -it --rm -p 8082:8080 --name user-ms theg-user-ms
+
+
+# Docker usage | https://github.com/golang-migrate/migrate?tab=readme-ov-file#docker-usage
+.PHONY: db-local-migrate
+db-local-migrate:
+	docker run --rm -v $(ROOT_DIR)/db/migrations:/migrations --network host migrate/migrate \
+	-path=/migrations -database $(LOCAL_DATABASE_URL) up

@@ -6,11 +6,7 @@ import (
 	"github.com/gocql/gocql"
 )
 
-type Client struct {
-	session *gocql.Session
-}
-
-func NewClient(hosts []string, keyspace string) (*Client, error) {
+func NewClient(hosts []string, keyspace string) (*gocql.Session, error) {
 	cluster := gocql.NewCluster(hosts...)
 	cluster.Keyspace = keyspace
 	cluster.Consistency = gocql.Quorum
@@ -21,5 +17,5 @@ func NewClient(hosts []string, keyspace string) (*Client, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &Client{session}, nil
+	return session, nil
 }

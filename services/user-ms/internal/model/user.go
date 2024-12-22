@@ -2,18 +2,23 @@ package model
 
 import (
 	"context"
+	"database/sql"
 	"errors"
 	"fmt"
+	"strings"
 	"time"
 
-	"github.com/gocql/gocql"
+	"user-ms/internal/pkg/apperror"
+
+	"github.com/google/uuid"
+	"github.com/lib/pq"
 )
 
 type User struct {
-	ID       string `json:"id" db:"id" cql:"id"`
-	Email    string `json:"email" db:"email" cql:"email"`
-	Username string `json:"username" db:"username" cql:"username"`
-	Password string `json:"-" db:"password_hash" cql:"password_hash"`
+	ID           string `json:"id" db:"id" cql:"id"`
+	Email        string `json:"email" db:"email" cql:"email"`
+	Username     string `json:"username" db:"username" cql:"username"`
+	PasswordHash string `json:"-" db:"password_hash" cql:"password_hash"`
 
 	CreatedAt time.Time `json:"created_at" db:"created_at" cql:"created_at"`
 	UpdatedAt time.Time `json:"updated_at" db:"updated_at" cql:"updated_at"`
@@ -21,46 +26,66 @@ type User struct {
 
 // UserModel is like a DAO
 type UserModel struct {
-	Session *gocql.Session
+	db *sql.DB
 }
 
-func (u *UserModel) InsertUser(ctx context.Context, email string, password string) (*User, error) {
+func NewUserModel(db *sql.DB) *UserModel {
+	return &UserModel{db: db}
+}
+func (u *UserModel) Insert(ctx context.Context, email, username string, passwordHash string) (*User, error) {
 	var (
-		id        = gocql.TimeUUID().String()
+		id        = uuid.NewString()
 		createdAt = time.Now()
 
-		query = `INSERT INTO users (id, email, password, created_at, updated_at) VALUES (?, ?, ?, ?, ?)`
-		args  = []interface{}{id, email, password, createdAt, createdAt}
+		query = `
+            INSERT INTO users (id, email, username, password_hash, created_at, updated_at)
+            VALUES ($1, $2, $3, $4, $5, $5)
+        `
 
-		err = u.Session.Query(query, args...).WithContext(ctx).Exec()
+		_, err = u.db.ExecContext(ctx, query, id, email, username, passwordHash, createdAt)
 	)
 
 	if err != nil {
+		var pqErr *pq.Error
+		if errors.As(err, &pqErr) {
+			// Check for unique violation
+			if pqErr.Code == "23505" {
+				if strings.Contains(pqErr.Constraint, "email") {
+					return nil, fmt.Errorf("email already exists: %w, %w", apperror.ErrEmailExisted, err)
+				}
+				if strings.Contains(pqErr.Constraint, "username") {
+					return nil, fmt.Errorf("username already exists: %w, %w", apperror.ErrUsernameExisted, err)
+				}
+			}
+		}
 		return nil, fmt.Errorf("failed to create user: %w", err)
 	}
 
 	return &User{
-		ID:        id,
-		Email:     email,
-		Password:  password,
-		CreatedAt: createdAt,
-		UpdatedAt: createdAt,
+		ID:           id,
+		Email:        email,
+		Username:     username,
+		PasswordHash: passwordHash,
+		CreatedAt:    createdAt,
+		UpdatedAt:    createdAt,
 	}, nil
 }
 
-func (u *UserModel) GetUserByEmail(ctx context.Context, email string) (*User, bool, error) {
+func (u *UserModel) GetByEmail(ctx context.Context, email string) (*User, bool, error) {
 	var (
-		query = `SELECT id, email, name, created_at, updated_at FROM users WHERE email = ?`
-		args  = []interface{}{email}
-
-		user User
-		err  = u.Session.Query(query, args...).WithContext(ctx).
-			Scan(&user.ID, &user.Email, &user.Username, &user.CreatedAt, &user.UpdatedAt)
+		query = `SELECT id, email, username, created_at, updated_at FROM users WHERE email = $1`
+		row   = u.db.QueryRowContext(ctx, query, email)
 	)
 
-	if errors.Is(err, gocql.ErrNotFound) {
+	var user User
+	var err = row.Scan(&user.ID, &user.Email, &user.Username, &user.CreatedAt, &user.UpdatedAt)
+
+	if errors.Is(err, sql.ErrNoRows) {
 		return nil, false, nil
 	}
+	if err != nil {
+		return nil, false, fmt.Errorf("failed to scan user: %w", err)
+	}
 
-	return &user, true, err
+	return &user, true, nil
 }
