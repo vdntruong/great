@@ -5,6 +5,7 @@ run:
   skip-dirs:
     - generated
     - vendor
+    - pkg/protos
 
 linters:
   disable-all: true

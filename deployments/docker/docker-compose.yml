@@ -1,5 +1,36 @@
 services:
 
+#  cassandra:
+#    image: cassandra:5.0.0
+#    ports:
+#      - "9042:9042"   # CQL native transport port
+#      - "7000:7000"   # Inter-node communication
+#      - "7001:7001"   # TLS inter-node communication
+#      - "7199:7199"   # JMX
+#      - "9160:9160"   # Thrift client API
+#    environment:
+#      - CASSANDRA_CLUSTER_NAME=theg
+#      - CASSANDRA_ENDPOINT_SNITCH=SimpleSnitch
+#      - CASSANDRA_DC=datacenter1
+#      - MAX_HEAP_SIZE=2G
+#      - HEAP_NEWSIZE=512M
+#      - CASSANDRA_SEEDS=cassandra
+#    volumes:
+#      - cassandra_data:/var/lib/cassandra
+#    healthcheck:
+#      test: [ "CMD", "cqlsh", "-e", "describe keyspaces" ]
+#      interval: 15s
+#      timeout: 10s
+#      retries: 10
+#    networks:
+#      - backend
+#    deploy:
+#      resources:
+#        limits:
+#          memory: 4G
+#        reservations:
+#          memory: 2G
+
   auth-ms:
     build:
       context: .
@@ -20,6 +51,7 @@ services:
       - "8082:8080"
     environment:
       - OTLP_ENDPOINT=otel-collector:4317
+      - ADDR=:8080
     networks:
       - backend
       - monitoring
@@ -132,6 +164,7 @@ networks:
     driver: bridge
 
 volumes:
+  cassandra_data:
   prometheus-data:
   loki-data:
   grafana-data:

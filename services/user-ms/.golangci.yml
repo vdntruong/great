@@ -2,9 +2,6 @@ run:
   timeout: 5m
   tests: false
   modules-download-mode: readonly
-  skip-dirs:
-    - generated
-    - vendor
 
 linters:
   disable-all: true
@@ -20,7 +17,6 @@ linters:
 linters-settings:
   staticcheck:
     checks: [ "all"]
-    skip-generated: true
   gci:
     custom-order: true
     sections:
@@ -31,9 +27,3 @@ linters-settings:
       - prefix(user-ms)
       - default
     skip-generated: true
-
-issues:
-  exclude-patterns:
-    - '.*\.pb\.go$'
-    - '.*_test\.go$'
-    - '.*_mock\.go$'

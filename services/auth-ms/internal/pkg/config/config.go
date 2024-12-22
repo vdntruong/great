@@ -1,9 +1,11 @@
 package config
 
 import (
+	"fmt"
+	"os"
+
 	"github.com/fsnotify/fsnotify"
 	"github.com/spf13/viper"
-	"os"
 )
 
 type Config struct {
@@ -11,34 +13,38 @@ type Config struct {
 	GRPCAddress string `mapstructure:"grpc_address"`
 }
 
-var Cfg *Config
-
-func Load() error {
+func Load() (*Config, error) {
 	cfgFile := configFilePath()
 	viper.SetConfigFile(cfgFile)
 
 	viper.AutomaticEnv()
 
 	if err := viper.ReadInConfig(); err != nil {
-		return err
+		return nil, err
 	}
 
-	if err := viper.Unmarshal(&Cfg); err != nil {
-		return err
+	var cfg Config
+	if err := viper.Unmarshal(&cfg); err != nil {
+		return nil, fmt.Errorf("unable to decode config, %v", err)
 	}
 
-	viper.OnConfigChange(func(e fsnotify.Event) {
-		_ = viper.ReadInConfig()
-		_ = viper.Unmarshal(&Cfg)
-	})
 	viper.WatchConfig()
-	return nil
+	viper.OnConfigChange(func(e fsnotify.Event) {
+		if err := viper.ReadInConfig(); err != nil {
+			fmt.Printf("[CONFIG ERROR] failed to read config change, err: %v\n", err)
+			return
+		}
+		if err := viper.Unmarshal(&cfg); err != nil {
+			fmt.Printf("[CONFIG ERROR] failed to unmarshal config change, err: %v\n", err)
+		}
+	})
+
+	return &cfg, nil
 }
 
 func configFilePath() string {
 	if f := os.Getenv(EnvConfigFileKey); len(f) > 0 {
 		return f
 	}
-
 	return DevConfigFile
 }

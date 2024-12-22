@@ -7,16 +7,14 @@ COPY . .
 
 RUN go mod download
 
-RUN CGO_ENABLED=0 GOOS=linux go build -o user-service -ldflags="-s -w" ./services/user-ms/main.go
+RUN CGO_ENABLED=0 GOOS=linux go build -o user-app -ldflags="-s -w" ./services/user-ms/cmd/api/main.go
 
 # Final stage
 FROM alpine:latest
 
 WORKDIR /root/
 
-COPY --from=builder /app/user-service .
-COPY --from=builder /app/services/user-ms/configs ./configs
+COPY --from=builder /app/user-app .
+COPY --from=builder /app/services/user-ms/.env.example ./.env
 
-EXPOSE 8080
-
-CMD ["./user-service"]
+CMD ["./user-app"]

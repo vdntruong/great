@@ -1,7 +1,7 @@
 package repository
 
 import (
-	"auth-ms/internal/app/models"
+	"auth-ms/internal/app/entities/models"
 	"context"
 	"database/sql"
 	"time"

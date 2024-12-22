@@ -138,6 +138,8 @@ modules.xml
 
 # service vendors
 /services/*/vendor/
+
 **/tmp/*
 .DS_Store
 .idea
+.env

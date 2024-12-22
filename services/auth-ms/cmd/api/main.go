@@ -11,17 +11,18 @@ import (
 )
 
 func main() {
+	cfg, err := config.Load()
+	if err != nil {
+		log.Fatalf("Error loading config: %v", err)
+	}
+
 	cleanup, err := otel.SetupOpenTelemetry(constants.ServiceName, constants.ServiceVersion)
 	if err != nil {
 		log.Fatalf("Failed to setup OpenTelemetry: %v", err)
 	}
 	defer cleanup()
 
-	if err := config.Load(); err != nil {
-		log.Fatalf("Error loading config: %v", err)
-	}
-
-	if err := server.StartRESTServer(config.Cfg, nil); err != nil {
+	if err := server.StartRESTServer(cfg); err != nil {
 		log.Fatalf("Error starting server: %v", err)
 	}
 }
