@@ -1,0 +1,20 @@
+# This is the Traefik dynamic configuration.
+
+http:
+
+  # Declaring Routers
+  routers:
+
+    AuthRouter:
+      entryPoints:
+        - web
+        - websecure
+      service: auth-ms
+      rule: "Host(`auth.theg.localhost`)"
+
+    UserRouter:
+      entryPoints:
+        - web
+        - websecure
+      service: user-ms
+      rule: "Host(`user.theg.localhost`)"

@@ -5,29 +5,26 @@ import (
 	"net/http"
 	"time"
 
-	"auth-ms/internal/app/handlers"
-	"auth-ms/internal/app/repository"
 	"auth-ms/internal/pkg/config"
 	"auth-ms/internal/pkg/constants"
 
 	ghandler "gcommons/handler"
-	"gcommons/middleware"
-	"gcommons/otel"
+	gmiddleware "gcommons/middleware"
+	gotel "gcommons/otel"
+	otelmiddleware "gcommons/otel/middleware"
 )
 
-func StartRESTServer(cfg *config.Config, userRepo repository.UserRepository) error {
-	authHandler := handlers.NewAuthRESTHandler(userRepo)
-
-	route := registerRoutes(authHandler)
-	handler := middleware.LoggingMiddleware(route)
-	handler = middleware.RecoveryMiddleware(handler)
-	handler = otel.MetricsMiddleware(handler)
+func StartRESTServer(cfg *config.Config) error {
+	route := routes()
+	handler := gmiddleware.LogRequest(route)
+	handler = gmiddleware.RecoverPanic(handler)
+	handler = otelmiddleware.Metrics(handler)
 
 	log.Printf("Authentication service starting on %s\n", cfg.RESTAddress)
 	return http.ListenAndServe(cfg.RESTAddress, handler)
 }
 
-func registerRoutes(authHandler *handlers.AuthRESTHandler) *http.ServeMux {
+func routes() *http.ServeMux {
 	root := http.NewServeMux()
 
 	v1 := http.NewServeMux()
@@ -41,13 +38,10 @@ func registerRoutes(authHandler *handlers.AuthRESTHandler) *http.ServeMux {
 	// /api/v1/
 	{
 		v1.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-			_, span := otel.GetTracer().Start(r.Context(), "v1 welcome")
+			_, span := gotel.GetTracer().Start(r.Context(), "v1 welcome")
 			defer span.End()
 			_, _ = w.Write([]byte("Hi there! This is the v1 API"))
 		})
-
-		v1.HandleFunc("/register", authHandler.RegisterHandler)
-		v1.HandleFunc("/login", authHandler.LoginHandler)
 	}
 
 	return root

@@ -1,5 +1,23 @@
 services:
 
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: user-db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - backend
+
   auth-ms:
     build:
       context: .
@@ -11,10 +29,6 @@ services:
     networks:
       - backend
       - monitoring
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.auth.rule=Host(`api-auth.theg.localhost`)"
-      - "traefik.http.routers.auth.entrypoints=web,websecure"
 
   user-ms:
     build:
@@ -24,19 +38,18 @@ services:
       - "8082:8080"
     environment:
       - OTLP_ENDPOINT=otel-collector:4317
+      - ADDR=:8080
+      - DB_HOST=postgres
     networks:
       - backend
       - monitoring
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.user.rule=Host(`api-user.theg.localhost`)"
-      - "traefik.http.routers.user.entrypoints=web,websecure"
+    depends_on:
+      - postgres
 
   reverse-proxy:
     image: traefik:v3.2.1
     command:
       - "--api.insecure=true"
-      - "--providers.docker"
       - "--configFile=/etc/traefik/traefik.yml"
     ports:
       - "80:80"
@@ -45,7 +58,7 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ../../services/gateway/traefik.yml:/etc/traefik/traefik.yml:ro
-      - ../../services/gateway/dynamic_conf.yml:/etc/traefik/dynamic_conf.yml
+      - ../../services/gateway/configs:/etc/traefik/configs
     depends_on:
       - user-ms
       - auth-ms
@@ -141,6 +154,7 @@ networks:
     driver: bridge
 
 volumes:
+  postgres_data:
   prometheus-data:
   loki-data:
   grafana-data:

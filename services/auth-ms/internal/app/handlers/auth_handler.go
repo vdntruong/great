@@ -1,12 +1,10 @@
 package handlers
 
 import (
-	"auth-ms/internal/app/models"
+	"auth-ms/internal/app/entities/dtos"
 	"context"
 )
 
-type UserRepository interface {
-	Create(ctx context.Context, user *models.User) error
-	FindByUsername(ctx context.Context, username string) (*models.User, error)
-	FindByEmail(ctx context.Context, email string) (*models.User, error)
+type IUserService interface {
+	RegisterUser(ctx context.Context, req dtos.CreateUserDTO) (*dtos.UserDTO, error)
 }

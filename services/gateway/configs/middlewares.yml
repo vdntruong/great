@@ -1,0 +1,12 @@
+# This is the Traefik dynamic configuration.
+
+http:
+
+  # Declaring Middlewares
+  middlewares:
+
+    www-redirect:
+      redirectRegex:
+        regex: "^https://theg/(.*)"
+        replacement: "https://www.theg/${1}"
+        permanent: true
