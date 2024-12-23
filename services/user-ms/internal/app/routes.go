@@ -36,7 +36,7 @@ func (app *Application) Routes() http.Handler {
 	mux := http.NewServeMux()
 
 	{ // root
-		mux.HandleFunc("GET /healthz", app.ping)
+		mux.HandleFunc("GET /healthz", ghandler.HealthCheck(time.Now(), app.cfg.AppName))
 		mux.HandleFunc("GET /roll-dice", ghandler.RollDice)
 	}
 
