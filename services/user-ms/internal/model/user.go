@@ -12,6 +12,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/lib/pq"
+	"go.opentelemetry.io/otel/trace"
 )
 
 type User struct {
@@ -72,6 +73,10 @@ func (u *UserModel) Insert(ctx context.Context, email, username string, password
 }
 
 func (u *UserModel) GetByEmail(ctx context.Context, email string) (*User, bool, error) {
+	span := trace.SpanFromContext(ctx)
+	defer span.End()
+	span.SetName(fmt.Sprintf("GetUserByEmail(%s)", email))
+
 	var (
 		query = `SELECT id, email, username, created_at, updated_at FROM users WHERE email = $1`
 		row   = u.db.QueryRowContext(ctx, query, email)

@@ -11,9 +11,8 @@ http:
           - url: "http://auth-ms:8080"
         healthCheck:
           path: "/healthz"
-          interval: 5s
+          interval: 10s
           timeout: 2s
-        passHostHeader: false
 
     user-ms:
       loadBalancer:
@@ -21,6 +20,5 @@ http:
           - url: "http://user-ms:8080"
         healthCheck:
           path: "/healthz"
-          interval: 5s
+          interval: 10s
           timeout: 2s
-        passHostHeader: false

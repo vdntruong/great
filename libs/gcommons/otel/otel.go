@@ -27,8 +27,8 @@ import (
 var (
 	otlpEndpoint string
 
-	Tracer trace.Tracer
-	Meter  metric.Meter
+	tracer trace.Tracer
+	meter  metric.Meter
 )
 
 func init() {
@@ -39,17 +39,17 @@ func init() {
 }
 
 func GetTracer() trace.Tracer {
-	if Tracer == nil {
-		panic("nil Tracer") // TODO
+	if tracer == nil {
+		panic("nil tracer") // TODO
 	}
-	return Tracer
+	return tracer
 }
 
 func GetMeter() metric.Meter {
-	if Meter == nil {
-		panic("nil Meter") // TODO
+	if meter == nil {
+		panic("nil meter") // TODO
 	}
-	return Meter
+	return meter
 }
 
 // traces
@@ -120,12 +120,9 @@ func newOTLPMetricExporter(ctx context.Context) (sdkmetric.Exporter, error) {
 	return otlpmetricgrpc.New(ctx, insecureOpt, endpointOpt)
 }
 
-func newMeterProvider(exp sdkmetric.Exporter) *sdkmetric.MeterProvider {
-	meterProvider := sdkmetric.NewMeterProvider(
-		sdkmetric.WithReader(
-			sdkmetric.NewPeriodicReader(exp, sdkmetric.WithInterval(3*time.Second)),
-		),
-	)
+func newMeterProvider(exp sdkmetric.Exporter, interval time.Duration) *sdkmetric.MeterProvider {
+	meterReader := sdkmetric.NewPeriodicReader(exp, sdkmetric.WithInterval(interval))
+	meterProvider := sdkmetric.NewMeterProvider(sdkmetric.WithReader(meterReader))
 	return meterProvider
 }
 
@@ -172,7 +169,7 @@ func SetupOpenTelemetry(serviceName, serviceVersion string) (func(), error) {
 		return nil, fmt.Errorf("failed to create metric exporter: %w", err)
 	}
 
-	mp := newMeterProvider(metricExp)
+	mp := newMeterProvider(metricExp, 10*time.Second)
 	otel.SetMeterProvider(mp)
 
 	// logs
@@ -188,8 +185,13 @@ func SetupOpenTelemetry(serviceName, serviceVersion string) (func(), error) {
 	pg := newPropagator()
 	otel.SetTextMapPropagator(pg)
 
-	Tracer = tp.Tracer(serviceName)
-	Meter = mp.Meter(serviceName)
+	tracer = tp.Tracer(serviceName)
+	meter = mp.Meter(serviceName)
+
+	// register system metrics callback
+	if err := initSystemMetrics(); err != nil {
+		return nil, fmt.Errorf("failed to init system metrics: %w", err)
+	}
 
 	return func() {
 		shutdownCtx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
@@ -214,19 +216,3 @@ func SetupOpenTelemetry(serviceName, serviceVersion string) (func(), error) {
 		}
 	}, nil
 }
-
-//	// Custom Metrics
-//	Meter := meterProvider.Meter(serviceName)
-//	requestCounter, err := Meter.Int64Counter("service_requests_total") // TODO
-//	if err != nil {
-//		return nil, err
-//	}
-//
-//	errorCounter, err := Meter.Int64Counter("service_errors_total") // TODO
-//	if err != nil {
-//		return nil, err
-//	}
-//
-//	// Example of incrementing the counter
-//	requestCounter.Add(context.Background(), 5)
-//	errorCounter.Add(context.Background(), 0)
