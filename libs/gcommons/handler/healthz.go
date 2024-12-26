@@ -14,6 +14,8 @@ func HealthCheck(startedAt time.Time, serviceName string) http.HandlerFunc {
 			"started_at":  startedAt.String(),
 			"serviceName": serviceName,
 		}
+		w.WriteHeader(http.StatusOK)
+		w.Header().Set("Content-Type", "application/json")
 		if err := json.NewEncoder(w).Encode(resp); err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 		}

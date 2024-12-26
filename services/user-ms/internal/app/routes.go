@@ -15,6 +15,8 @@ import (
 func (app *Application) Routes() http.Handler {
 	standardMiddleware := alice.New(
 		gmiddleware.RecoverPanic,
+		otelmiddleware.Metrics,
+		otelmiddleware.TraceRequest,
 		// https://github.com/rs/zerolog?tab=readme-ov-file#integration-with-nethttp
 		hlog.NewHandler(app.logger),
 		hlog.AccessHandler(func(r *http.Request, status, size int, duration time.Duration) {
@@ -30,7 +32,6 @@ func (app *Application) Routes() http.Handler {
 		hlog.UserAgentHandler("user_agent"),
 		hlog.RefererHandler("referer"),
 		hlog.RequestIDHandler("request_id", "X-Request-Id"),
-		otelmiddleware.TraceRequest,
 	)
 
 	mux := http.NewServeMux()

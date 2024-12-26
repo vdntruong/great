@@ -16,9 +16,10 @@ import (
 
 func StartRESTServer(cfg *config.Config) error {
 	route := routes()
-	handler := gmiddleware.LogRequest(route)
-	handler = gmiddleware.RecoverPanic(handler)
+	handler := gmiddleware.RecoverPanic(route)
 	handler = otelmiddleware.Metrics(handler)
+	handler = otelmiddleware.TraceRequest(handler)
+	handler = gmiddleware.LogRequest(handler)
 
 	log.Printf("Authentication service starting on %s\n", cfg.RESTAddress)
 	return http.ListenAndServe(cfg.RESTAddress, handler)
