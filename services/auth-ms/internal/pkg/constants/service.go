@@ -1,6 +1,6 @@
 package constants
 
 const (
-	ServiceName    = "Authentication"
-	ServiceVersion = "0.1.0"
+	ServiceName    = "auth-ms-api"
+	ServiceVersion = "1.0.0"
 )

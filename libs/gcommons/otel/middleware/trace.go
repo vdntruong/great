@@ -3,8 +3,9 @@ package middleware
 import (
 	"context"
 	"net/http"
+	"strconv"
 	"time"
-	
+
 	"gcommons/otel"
 
 	"go.opentelemetry.io/otel/attribute"
@@ -30,10 +31,9 @@ func Metrics(next http.Handler) http.Handler {
 		metric.WithDescription("HTTP request duration"))
 
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		crw := &customResponseWriter{ResponseWriter: w}
-
 		startTime := time.Now()
 
+		crw := &customResponseWriter{ResponseWriter: w}
 		next.ServeHTTP(crw, r)
 
 		duration := time.Since(startTime).Seconds()
@@ -56,9 +56,7 @@ func Metrics(next http.Handler) http.Handler {
 
 func TraceRequest(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		ctx, span := otel.GetTracer().Start(
-			r.Context(),
-			r.URL.Path,
+		ctx, span := otel.GetTracer().Start(r.Context(), r.URL.Path,
 			trace.WithAttributes(
 				attribute.String("http.method", r.Method),
 				attribute.String("http.path", r.URL.Path),
@@ -67,14 +65,16 @@ func TraceRequest(next http.Handler) http.Handler {
 		defer span.End()
 
 		header := r.Header
+		extractTraceFieldFromHeader(ctx, header, "x-os-platform", "os-platform")
+		extractTraceFieldFromHeader(ctx, header, "x-app-version", "app-version")
 		extractTraceFieldFromHeader(ctx, header, "x-request-id", "request-id")
 		extractTraceFieldFromHeader(ctx, header, "x-transaction-id", "transaction-id")
 		extractTraceFieldFromHeader(ctx, header, "x-correlation-id", "correlation-id")
 
-		extractTraceFieldFromHeader(ctx, header, "x-app-version", "app-version")
-		extractTraceFieldFromHeader(ctx, header, "x-release-timestamp", "release-timestamp")
+		crw := &customResponseWriter{ResponseWriter: w}
+		next.ServeHTTP(crw, r.WithContext(ctx))
 
-		next.ServeHTTP(w, r.WithContext(ctx))
+		span.SetAttributes(attribute.String("http.status_code", strconv.Itoa(crw.statusCode)))
 	})
 }
 

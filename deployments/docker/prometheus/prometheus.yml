@@ -12,15 +12,8 @@ scrape_configs:
     static_configs:
       - targets: ['prometheus:9090']
 
+  # We only scrape the collector, not the service directly
   - job_name: 'otel-collector'
     scrape_interval: 10s
     static_configs:
-      - targets: ['otel-collector:8888']
-
-#  - job_name: 'auth-ms'
-#    static_configs:
-#      - targets: ['auth-ms:8080'] # TODO: not work
-#
-#  - job_name: 'user-ms'
-#    static_configs:
-#      - targets: ['user-ms:8080'] # TODO: not work
+      - targets: ['otel-collector:8889']
