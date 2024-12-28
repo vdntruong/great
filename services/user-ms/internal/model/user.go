@@ -8,11 +8,12 @@ import (
 	"strings"
 	"time"
 
+	"gcommons/otel/trace"
+
 	"user-ms/internal/pkg/apperror"
 
 	"github.com/google/uuid"
 	"github.com/lib/pq"
-	"go.opentelemetry.io/otel/trace"
 )
 
 type User struct {
@@ -27,11 +28,12 @@ type User struct {
 
 // UserModel is like a DAO
 type UserModel struct {
-	db *sql.DB
+	tracer trace.Tracer
+	db     *sql.DB
 }
 
-func NewUserModel(db *sql.DB) *UserModel {
-	return &UserModel{db: db}
+func NewUserModel(db *sql.DB, tracer trace.Tracer) *UserModel {
+	return &UserModel{db: db, tracer: tracer}
 }
 func (u *UserModel) Insert(ctx context.Context, email, username string, passwordHash string) (*User, error) {
 	var (
@@ -73,9 +75,8 @@ func (u *UserModel) Insert(ctx context.Context, email, username string, password
 }
 
 func (u *UserModel) GetByEmail(ctx context.Context, email string) (*User, bool, error) {
-	span := trace.SpanFromContext(ctx)
+	ctx, span := u.tracer.Start(ctx, "get-by-email")
 	defer span.End()
-	span.SetName(fmt.Sprintf("GetUserByEmail(%s)", email))
 
 	var (
 		query = `SELECT id, email, username, created_at, updated_at FROM users WHERE email = $1`
@@ -89,6 +90,7 @@ func (u *UserModel) GetByEmail(ctx context.Context, email string) (*User, bool, 
 		return nil, false, nil
 	}
 	if err != nil {
+		span.RecordError(err)
 		return nil, false, fmt.Errorf("failed to scan user: %w", err)
 	}
 

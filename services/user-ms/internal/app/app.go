@@ -3,8 +3,12 @@ package app
 import (
 	"context"
 	"fmt"
-	"gcommons/db/postgre"
 	"os"
+
+	"gcommons/db/postgre"
+	"gcommons/otel"
+	"gcommons/otel/db"
+	"gcommons/otel/trace"
 
 	"user-ms/internal/model"
 	"user-ms/internal/pkg/config"
@@ -20,6 +24,7 @@ type Users interface {
 type Application struct {
 	cfg    *config.Config
 	logger zerolog.Logger
+	tracer trace.Tracer
 
 	users Users
 }
@@ -37,11 +42,11 @@ func NewApplication(cfg *config.Config) (*Application, []func(), error) {
 		Port:               cfg.DBPort,
 		Username:           cfg.DBUsername,
 		Password:           cfg.DBPassword,
-		Database:           cfg.DBName,
+		DatabaseName:       cfg.DBName,
 		MaxConnections:     cfg.DBMaxConnections,
 		MaxIdleConnections: cfg.DBMaxIdleConnections,
 	}
-	userDB, cleanup, err := postgre.NewDB(&dbCfg)
+	userDB, cleanup, err := db.NewDB(dbCfg.GetDataSourceName(), dbCfg.DatabaseName, cfg.DBMaxConnections, cfg.DBMaxIdleConnections)
 	if err != nil {
 		return nil, cleanups, fmt.Errorf("failed to connect to database: %w", err)
 	}
@@ -50,6 +55,8 @@ func NewApplication(cfg *config.Config) (*Application, []func(), error) {
 	return &Application{
 		cfg:    cfg,
 		logger: logger,
-		users:  model.NewUserModel(userDB),
+		tracer: otel.GetTracer(),
+
+		users: model.NewUserModel(userDB, otel.GetTracer()),
 	}, cleanups, nil
 }
