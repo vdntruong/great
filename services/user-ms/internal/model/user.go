@@ -35,6 +35,7 @@ type UserModel struct {
 func NewUserModel(db *sql.DB, tracer trace.Tracer) *UserModel {
 	return &UserModel{db: db, tracer: tracer}
 }
+
 func (u *UserModel) Insert(ctx context.Context, email, username string, passwordHash string) (*User, error) {
 	var (
 		id        = uuid.NewString()

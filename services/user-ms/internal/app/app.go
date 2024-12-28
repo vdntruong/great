@@ -1,8 +1,10 @@
 package app
 
 import (
-	"context"
 	"fmt"
+	"log"
+	"net"
+	"net/http"
 	"os"
 
 	"gcommons/db/postgre"
@@ -12,21 +14,20 @@ import (
 
 	"user-ms/internal/model"
 	"user-ms/internal/pkg/config"
+	"user-ms/internal/pkg/protos"
 
 	"github.com/rs/zerolog"
+	"google.golang.org/grpc"
 )
-
-type Users interface {
-	Insert(ctx context.Context, email, username string, password string) (*model.User, error)
-	GetByEmail(ctx context.Context, email string) (*model.User, bool, error)
-}
 
 type Application struct {
 	cfg    *config.Config
 	logger zerolog.Logger
 	tracer trace.Tracer
 
-	users Users
+	dao UserRepository
+
+	protos.UnimplementedUserServiceServer
 }
 
 func NewApplication(cfg *config.Config) (*Application, []func(), error) {
@@ -37,6 +38,7 @@ func NewApplication(cfg *config.Config) (*Application, []func(), error) {
 
 	var cleanups []func()
 
+	// infrastructures
 	dbCfg := postgre.Config{
 		Host:               cfg.DBHost,
 		Port:               cfg.DBPort,
@@ -52,11 +54,36 @@ func NewApplication(cfg *config.Config) (*Application, []func(), error) {
 	}
 	cleanups = append(cleanups, cleanup)
 
+	// db and handlers/services
+	userDao := model.NewUserModel(userDB, otel.GetTracer())
+
 	return &Application{
 		cfg:    cfg,
 		logger: logger,
 		tracer: otel.GetTracer(),
 
-		users: model.NewUserModel(userDB, otel.GetTracer()),
+		dao: userDao,
 	}, cleanups, nil
+}
+
+func (app *Application) InitRestServer() *http.Server {
+	return &http.Server{
+		Addr:         app.cfg.HTTPAddr,
+		Handler:      app.Routes(),
+		IdleTimeout:  app.cfg.IdleTimeout,
+		ReadTimeout:  app.cfg.ReadTimeout,
+		WriteTimeout: app.cfg.WriteTimeout,
+	}
+}
+
+func (app *Application) InitGRPCServer() (net.Listener, *grpc.Server) {
+	grpcSrv := grpc.NewServer()
+	protos.RegisterUserServiceServer(grpcSrv, app)
+
+	lis, err := net.Listen("tcp", app.cfg.GRPCAddr)
+	if err != nil {
+		log.Fatalf("failed to init tcp listener: %v", err)
+	}
+
+	return lis, grpcSrv
 }

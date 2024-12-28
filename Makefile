@@ -6,6 +6,11 @@ proto-auth:
 	--micro_out=./services/auth-ms/pkg \
 	--go_out=./services/auth-ms/pkg auth.proto
 
+proto-user:
+	protoc --proto_path=./protos \
+	--go-grpc_out=./services/user-ms/internal/pkg \
+	--go_out=./services/user-ms/internal/pkg user.proto
+
 # docker compose
 
 COMPOSE_FILE := ./deployments/docker/docker-compose.yml

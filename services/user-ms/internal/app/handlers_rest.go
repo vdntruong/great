@@ -18,7 +18,7 @@ func (app *Application) register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_, founded, err := app.users.GetByEmail(ctx, req.Email)
+	_, founded, err := app.dao.GetByEmail(ctx, req.Email)
 	if err != nil {
 		app.serverError(w, err)
 		return
@@ -34,7 +34,7 @@ func (app *Application) register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user, err := app.users.Insert(ctx, req.Email, req.Username, passwordHash)
+	user, err := app.dao.Insert(ctx, req.Email, req.Username, passwordHash)
 	if err != nil {
 		app.serverError(w, err)
 		return

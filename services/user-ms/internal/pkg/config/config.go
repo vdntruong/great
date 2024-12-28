@@ -10,15 +10,17 @@ import (
 )
 
 type Config struct {
-	AppName    string `env:"APP_NAME" envDefault:"user-ms-api"`
+	AppName    string `env:"APP_NAME" envDefault:"user-service"`
 	AppVersion string `env:"APP_VERSION" envDefault:"1.0.0"`
 
-	Addr            string        `env:"ADDR" envDefault:":8080"`
+	HTTPAddr        string        `env:"HTTP_ADDR" envDefault:":8080"`
 	IdleTimeout     time.Duration `env:"IDLE_TIMEOUT" envDefault:"5s"`
 	ReadTimeout     time.Duration `env:"READ_TIMEOUT" envDefault:"5s"`
 	WriteTimeout    time.Duration `env:"WRITE_TIMEOUT" envDefault:"5s"`
 	ShutdownTimeout time.Duration `env:"SHUTDOWN_TIMEOUT" envDefault:"10s"`
 
+	GRPCAddr string `env:"GRPC_ADDR" envDefault:":9090"
+`
 	// OTLPEndpoint for instrument
 	OTLPEndpoint string `env:"OTLP_ENDPOINT" envDefault:"localhost:4317"`
 
