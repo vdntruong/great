@@ -8,6 +8,7 @@ require (
 	github.com/google/uuid v1.6.0
 	github.com/lib/pq v1.10.9
 	github.com/shirou/gopsutil/v4 v4.24.11
+	github.com/uptrace/opentelemetry-go-extra/otelsql v0.3.2
 	go.mongodb.org/mongo-driver v1.17.1
 	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.58.0
 	go.opentelemetry.io/otel v1.33.0

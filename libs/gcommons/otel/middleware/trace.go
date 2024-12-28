@@ -1,5 +1,7 @@
 package middleware
 
+//https://opentelemetry.io/docs/languages/go/instrumentation/
+
 import (
 	"context"
 	"net/http"
@@ -12,6 +14,15 @@ import (
 	"go.opentelemetry.io/otel/metric"
 	"go.opentelemetry.io/otel/trace"
 )
+
+type tracerKey struct{}
+
+func WithTracer(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		ctx := context.WithValue(r.Context(), tracerKey{}, otel.GetTracer())
+		next.ServeHTTP(w, r.WithContext(ctx))
+	})
+}
 
 type customResponseWriter struct {
 	http.ResponseWriter

@@ -22,5 +22,6 @@ entryPoints:
 
 providers:
   file:
-    directory: /etc/traefik/configs # It is recommended to use directory.
+    # It is recommended to use directory.
+    directory: /etc/traefik/configs
     watch: true
