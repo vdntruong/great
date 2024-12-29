@@ -1,8 +1,39 @@
 package apperror
 
-import "errors"
+import (
+	"net/http"
+	"sync"
 
-var ( // TODO: improve there errors to have more context
-	ErrUsernameExisted = errors.New("username existed")
-	ErrEmailExisted    = errors.New("email existed")
+	"gcommons/errs"
 )
+
+var (
+	ErrUsernameExisted = errs.New(codeEmailExisted)
+	ErrEmailExisted    = errs.New(codeUsernameExisted)
+)
+
+var (
+	codeEmailExisted    errs.Code = 10_001
+	codeUsernameExisted errs.Code = 10_002
+)
+
+var (
+	errStatusCodeMapper = map[errs.Code]int{
+		codeEmailExisted:    http.StatusConflict,
+		codeUsernameExisted: http.StatusConflict,
+	}
+
+	errStatusTextMapper = map[errs.Code]string{
+		codeEmailExisted:    "email already existed",
+		codeUsernameExisted: "username already existed",
+	}
+)
+
+var once sync.Once
+
+func init() {
+	once.Do(func() {
+		errs.OverrideStatusCodesMapper(errStatusCodeMapper)
+		errs.OverrideStatusTextsMapper(errStatusTextMapper)
+	})
+}

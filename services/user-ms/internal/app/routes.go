@@ -44,9 +44,9 @@ func (app *Application) Routes() http.Handler {
 	muxV1 := http.NewServeMux()
 	mux.Handle("/api/v1/", http.StripPrefix("/api/v1", muxV1))
 
-	{ // api/v1
+	{ // api/v1/*
 		{ // users
-			muxV1.HandleFunc("POST /users", app.register)
+			muxV1.HandleFunc("POST /users", app.Register)
 		}
 	}
 

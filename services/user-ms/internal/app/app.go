@@ -25,7 +25,7 @@ type Application struct {
 	logger zerolog.Logger
 	tracer trace.Tracer
 
-	dao UserRepository
+	userRepo UserRepository
 
 	protos.UnimplementedUserServiceServer
 }
@@ -55,14 +55,14 @@ func NewApplication(cfg *config.Config) (*Application, []func(), error) {
 	cleanups = append(cleanups, cleanup)
 
 	// db and handlers/services
-	userDao := model.NewUserModel(userDB, otel.GetTracer())
+	userDao := model.NewDAOUser(userDB, otel.GetTracer())
 
 	return &Application{
 		cfg:    cfg,
 		logger: logger,
 		tracer: otel.GetTracer(),
 
-		dao: userDao,
+		userRepo: userDao,
 	}, cleanups, nil
 }
 
