@@ -1,22 +1,13 @@
 package model
 
 import (
-	"context"
-	"database/sql"
-	"errors"
 	"fmt"
-	"strings"
 	"time"
 
-	"gcommons/otel/trace"
-
-	"user-ms/internal/pkg/apperror"
-
-	"github.com/google/uuid"
-	"github.com/lib/pq"
+	gpassword "gcommons/password"
 )
 
-type User struct {
+type dbUser struct {
 	ID           string `json:"id" db:"id" cql:"id"`
 	Email        string `json:"email" db:"email" cql:"email"`
 	Username     string `json:"username" db:"username" cql:"username"`
@@ -26,73 +17,40 @@ type User struct {
 	UpdatedAt time.Time `json:"updated_at" db:"updated_at" cql:"updated_at"`
 }
 
-// UserModel is like a DAO
-type UserModel struct {
-	tracer trace.Tracer
-	db     *sql.DB
+// User is the Value Object for dbUser, aka BaseUser
+type User struct {
+	dbUser
 }
 
-func NewUserModel(db *sql.DB, tracer trace.Tracer) *UserModel {
-	return &UserModel{db: db, tracer: tracer}
-}
-func (u *UserModel) Insert(ctx context.Context, email, username string, passwordHash string) (*User, error) {
-	var (
-		id        = uuid.NewString()
-		createdAt = time.Now()
+func NewUser(email, username, password string) (*User, error) {
+	if err := validateUserFields(email, username, password); err != nil {
+		return nil, err
+	}
 
-		query = `
-            INSERT INTO users (id, email, username, password_hash, created_at, updated_at)
-            VALUES ($1, $2, $3, $4, $5, $5)
-        `
-
-		_, err = u.db.ExecContext(ctx, query, id, email, username, passwordHash, createdAt)
-	)
-
+	passwordHash, err := gpassword.Hash(password)
 	if err != nil {
-		var pqErr *pq.Error
-		if errors.As(err, &pqErr) {
-			// Check for unique violation
-			if pqErr.Code == "23505" {
-				if strings.Contains(pqErr.Constraint, "email") {
-					return nil, fmt.Errorf("email already exists: %w, %w", apperror.ErrEmailExisted, err)
-				}
-				if strings.Contains(pqErr.Constraint, "username") {
-					return nil, fmt.Errorf("username already exists: %w, %w", apperror.ErrUsernameExisted, err)
-				}
-			}
-		}
-		return nil, fmt.Errorf("failed to create user: %w", err)
+		return nil, fmt.Errorf("%w (%w)", ErrPasswordHash, err)
 	}
 
 	return &User{
-		ID:           id,
-		Email:        email,
-		Username:     username,
-		PasswordHash: passwordHash,
-		CreatedAt:    createdAt,
-		UpdatedAt:    createdAt,
+		dbUser: dbUser{
+			Email:        email,
+			Username:     username,
+			PasswordHash: passwordHash,
+		},
 	}, nil
 }
 
-func (u *UserModel) GetByEmail(ctx context.Context, email string) (*User, bool, error) {
-	ctx, span := u.tracer.Start(ctx, "get-by-email")
-	defer span.End()
-
-	var (
-		query = `SELECT id, email, username, created_at, updated_at FROM users WHERE email = $1`
-		row   = u.db.QueryRowContext(ctx, query, email)
-	)
-
-	var user User
-	var err = row.Scan(&user.ID, &user.Email, &user.Username, &user.CreatedAt, &user.UpdatedAt)
-
-	if errors.Is(err, sql.ErrNoRows) {
-		return nil, false, nil
+func validateUserFields(email, username, password string) error {
+	if email == "" {
+		return ErrEmailRequired
 	}
-	if err != nil {
-		span.RecordError(err)
-		return nil, false, fmt.Errorf("failed to scan user: %w", err)
+	if username == "" {
+		return ErrUsernameRequired
+	}
+	if password == "" {
+		return ErrPasswordRequired
 	}
 
-	return &user, true, nil
+	return nil
 }

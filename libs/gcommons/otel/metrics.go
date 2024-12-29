@@ -8,14 +8,15 @@ import (
 )
 
 var (
-	// HTTP Metrics
+	// HTTP Basic Metrics
 	requestCounter  metric.Int64Counter
 	requestDuration metric.Float64Histogram
 	activeRequests  metric.Int64UpDownCounter
 	responseSize    metric.Int64Histogram
+	requestSize     metric.Float64Histogram
 )
 
-func InitMetricsHTTPRequestCounter() (err error) {
+func initMetricsHTTPRequestCounter() (err error) {
 	requestCounter, err = meter.Int64Counter(
 		"http_requests_total",
 		metric.WithDescription("Total number of HTTP requests"),
@@ -24,7 +25,11 @@ func InitMetricsHTTPRequestCounter() (err error) {
 	return
 }
 
-func InitMetricsHTTPRequestDuration() (err error) {
+func GetRequestCountMeter() metric.Int64Counter {
+	return requestCounter
+}
+
+func initMetricsHTTPRequestDuration() (err error) {
 	requestDuration, err = meter.Float64Histogram(
 		"http_request_duration_seconds",
 		metric.WithDescription("HTTP request duration in seconds"),
@@ -33,7 +38,11 @@ func InitMetricsHTTPRequestDuration() (err error) {
 	return
 }
 
-func InitMetricsHTTPActiveRequest() (err error) {
+func GetRequestDurationMeter() metric.Float64Histogram {
+	return requestDuration
+}
+
+func initMetricsHTTPActiveRequest() (err error) {
 	activeRequests, err = meter.Int64UpDownCounter(
 		"http_active_requests",
 		metric.WithDescription("Number of active HTTP requests"),
@@ -42,7 +51,11 @@ func InitMetricsHTTPActiveRequest() (err error) {
 	return
 }
 
-func InitMetricsHTTPResponseSize() (err error) {
+func GetRequestActiveMeter() metric.Int64UpDownCounter {
+	return activeRequests
+}
+
+func initMetricsHTTPResponseSize() (err error) {
 	responseSize, err = meter.Int64Histogram(
 		"http_response_size_bytes",
 		metric.WithDescription("Size of HTTP responses in bytes"),
@@ -51,60 +64,33 @@ func InitMetricsHTTPResponseSize() (err error) {
 	return
 }
 
-var (
-	// System Metrics
-	memoryUsage    metric.Float64ObservableGauge
-	goroutineCount metric.Int64ObservableGauge
-)
+func GetResponseSizeMeter() metric.Int64Histogram {
+	return responseSize
+}
 
-func InitMetricsMemoryUsage() (err error) {
-	memoryUsage, err = meter.Float64ObservableGauge(
-		"memory_usage_bytes",
-		metric.WithDescription("Current memory usage in bytes"),
+func initMetricsHTTPRequestSize() (err error) {
+	requestSize, err = meter.Float64Histogram(
+		"http_request_size_bytes",
+		metric.WithDescription("Size of HTTP requests in bytes"),
 		metric.WithUnit("bytes"),
 	)
-	if err != nil {
-		return
-	}
-
-	_, err = meter.RegisterCallback(
-		func(_ context.Context, observer metric.Observer) error {
-			observer.ObserveFloat64(memoryUsage, getMemoryUsage())
-			return nil
-		},
-		memoryUsage,
-	)
-
 	return
 }
 
-func InitMetricsGoroutineCount() (err error) {
-	goroutineCount, err = meter.Int64ObservableGauge(
-		"goroutines_count",
-		metric.WithDescription("Number of running goroutines"),
-		metric.WithUnit("1"),
-	)
-	if err != nil {
-		return
-	}
-
-	_, err = meter.RegisterCallback(
-		func(_ context.Context, observer metric.Observer) error {
-			observer.ObserveInt64(goroutineCount, int64(runtime.NumGoroutine()))
-			return nil
-		},
-		goroutineCount,
-	)
-	return
+func GetRequestSizeMeter() metric.Float64Histogram {
+	return requestSize
 }
 
 var (
 	// Business Metrics
 	requestErrors  metric.Int64Counter
 	requestsByPath metric.Int64Counter
+
+	// Performance Metrics
+	requestQueueTime metric.Float64Histogram
 )
 
-func InitMetricsRequestErrors() (err error) {
+func initMetricsRequestErrors() (err error) {
 	requestErrors, err = meter.Int64Counter(
 		"http_request_errors_total",
 		metric.WithDescription("Total number of HTTP request errors"),
@@ -113,7 +99,11 @@ func InitMetricsRequestErrors() (err error) {
 	return
 }
 
-func InitMetricsRequestsByPath() (err error) {
+func GetRequestErrorsMeter() metric.Int64Counter {
+	return requestErrors
+}
+
+func initMetricsRequestsByPath() (err error) {
 	requestsByPath, err = meter.Int64Counter(
 		"http_requests_by_path_total",
 		metric.WithDescription("Total requests broken down by path"),
@@ -122,13 +112,11 @@ func InitMetricsRequestsByPath() (err error) {
 	return
 }
 
-var (
-	// Performance Metrics
-	requestQueueTime metric.Float64Histogram
-	cpuUsage         metric.Float64ObservableGauge
-)
+func GetRequestsByPathMeter() metric.Int64Counter {
+	return requestsByPath
+}
 
-func InitMetricsRequestQueueTime() (err error) {
+func initMetricsRequestQueueTime() (err error) {
 	requestQueueTime, err = meter.Float64Histogram(
 		"http_request_queue_duration_seconds",
 		metric.WithDescription("Time spent in request queue"),
@@ -137,7 +125,73 @@ func InitMetricsRequestQueueTime() (err error) {
 	return
 }
 
-func InitMetricsCPUUsage() (err error) {
+func GetRequestQueueTimeMeter() metric.Float64Histogram {
+	return requestQueueTime
+}
+
+func InitHTTPMetrics() error {
+	if err := initMetricsHTTPRequestCounter(); err != nil {
+		return err
+	}
+	if err := initMetricsHTTPRequestDuration(); err != nil {
+		return err
+	}
+	if err := initMetricsHTTPActiveRequest(); err != nil {
+		return err
+	}
+	if err := initMetricsHTTPResponseSize(); err != nil {
+		return err
+	}
+	if err := initMetricsHTTPRequestSize(); err != nil {
+		return err
+	}
+
+	if err := initMetricsRequestErrors(); err != nil {
+		return err
+	}
+	if err := initMetricsRequestsByPath(); err != nil {
+		return err
+	}
+	if err := initMetricsRequestQueueTime(); err != nil {
+		return err
+	}
+	return nil
+}
+
+var (
+	// System Metrics
+	memoryUsage    metric.Float64ObservableGauge
+	goroutineCount metric.Int64ObservableGauge
+
+	// Performance Metrics
+	cpuUsage metric.Float64ObservableGauge
+)
+
+func initMetricsMemoryUsage() (err error) {
+	memoryUsage, err = meter.Float64ObservableGauge(
+		"memory_usage_bytes",
+		metric.WithDescription("Current memory usage in bytes"),
+		metric.WithUnit("bytes"),
+	)
+	if err != nil {
+		return
+	}
+	return
+}
+
+func initMetricsGoroutineCount() (err error) {
+	goroutineCount, err = meter.Int64ObservableGauge(
+		"goroutines_count",
+		metric.WithDescription("Number of running goroutines"),
+		metric.WithUnit("1"),
+	)
+	if err != nil {
+		return
+	}
+	return
+}
+
+func initMetricsCPUUsage() (err error) {
 	cpuUsage, err = meter.Float64ObservableGauge(
 		"cpu_usage_percentage",
 		metric.WithDescription("CPU usage percentage"),
@@ -146,25 +200,31 @@ func InitMetricsCPUUsage() (err error) {
 	if err != nil {
 		return
 	}
-
-	_, err = meter.RegisterCallback(
-		func(_ context.Context, observer metric.Observer) error {
-			observer.ObserveFloat64(cpuUsage, getCPUUsage())
-			return nil
-		},
-		cpuUsage,
-	)
 	return
 }
 
-func initSystemMetrics() error {
-	if err := InitMetricsCPUUsage(); err != nil {
+func InitSystemMetricsAndCallbacks() error {
+	if err := initMetricsCPUUsage(); err != nil {
 		return err
 	}
-	if err := InitMetricsGoroutineCount(); err != nil {
+	if err := initMetricsGoroutineCount(); err != nil {
 		return err
 	}
-	if err := InitMetricsMemoryUsage(); err != nil {
+	if err := initMetricsMemoryUsage(); err != nil {
+		return err
+	}
+
+	if _, err := meter.RegisterCallback(
+		func(_ context.Context, observer metric.Observer) error {
+			observer.ObserveFloat64(cpuUsage, getCPUUsage())
+			observer.ObserveFloat64(memoryUsage, getMemoryUsage())
+			observer.ObserveInt64(goroutineCount, int64(runtime.NumGoroutine()))
+			return nil
+		},
+		cpuUsage,
+		memoryUsage,
+		goroutineCount,
+	); err != nil {
 		return err
 	}
 	return nil

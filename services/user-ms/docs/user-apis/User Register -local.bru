@@ -1,0 +1,19 @@
+meta {
+  name: User Register -local
+  type: http
+  seq: 4
+}
+
+post {
+  url: http://localhost:8088/api/v1/users
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "email": "vdntruong4@gmail.com",
+    "username": "vdntruong4",
+    "password": ""
+  }
+}

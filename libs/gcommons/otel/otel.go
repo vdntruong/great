@@ -189,7 +189,7 @@ func SetupOpenTelemetry(serviceName, serviceVersion string) (func(), error) {
 	meter = mp.Meter(serviceName)
 
 	// register system metrics callback
-	if err := initSystemMetrics(); err != nil {
+	if err := InitSystemMetricsAndCallbacks(); err != nil {
 		return nil, fmt.Errorf("failed to init system metrics: %w", err)
 	}
 

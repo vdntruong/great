@@ -36,6 +36,11 @@ start:
 	docker run -it --rm -p 8082:8080 --name user-ms theg-user-ms
 
 
+.PHONY: live
+live:
+	air
+
+
 # Docker usage | https://github.com/golang-migrate/migrate?tab=readme-ov-file#docker-usage
 .PHONY: db-local-migrate
 db-local-migrate:

@@ -41,20 +41,21 @@ func main() {
 		}
 	}()
 
-	// serve the API
-	srv := &http.Server{
-		Addr:    cfg.Addr,
-		Handler: application.Routes(),
-
-		IdleTimeout:  cfg.IdleTimeout,
-		ReadTimeout:  cfg.ReadTimeout,
-		WriteTimeout: cfg.WriteTimeout,
-	}
-
+	// serve the REST API
+	restSrv := application.InitRestServer()
 	go func() {
-		log.Println("Starting server:", srv.Addr)
-		if err := srv.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
-			log.Fatal("Server killing:", err)
+		log.Println("Starting REST server:", restSrv.Addr)
+		if err := restSrv.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
+			log.Fatal("REST killing:", err)
+		}
+	}()
+
+	// serve the gRPC API
+	grpcLis, grpcSrv := application.InitGRPCServer()
+	go func() {
+		log.Println("Starting gRPC server:", grpcLis.Addr().String())
+		if err := grpcSrv.Serve(grpcLis); err != nil {
+			log.Fatalf("failed to serve: %v", err)
 		}
 	}()
 
@@ -65,8 +66,10 @@ func main() {
 	ctx, cancel := context.WithTimeout(context.Background(), cfg.ShutdownTimeout)
 	defer cancel()
 
-	if err := srv.Shutdown(ctx); err != nil {
+	grpcSrv.GracefulStop()
+	if err := restSrv.Shutdown(ctx); err != nil {
 		log.Fatal("Server shutdown:", err)
 	}
+
 	log.Println("Server exiting")
 }
