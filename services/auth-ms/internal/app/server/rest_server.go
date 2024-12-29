@@ -5,17 +5,19 @@ import (
 	"net/http"
 	"time"
 
+	"auth-ms/internal/app/handlers"
+	"auth-ms/internal/app/repository"
+	"auth-ms/internal/app/services"
 	"auth-ms/internal/pkg/config"
 	"auth-ms/internal/pkg/constants"
 
 	ghandler "gcommons/handler"
 	gmiddleware "gcommons/middleware"
-	gotel "gcommons/otel"
 	otelmiddleware "gcommons/otel/middleware"
 )
 
 func StartRESTServer(cfg *config.Config) error {
-	route := routes()
+	route := routes(cfg)
 	handler := gmiddleware.RecoverPanic(route)
 	handler = otelmiddleware.Metrics(handler)
 	handler = otelmiddleware.TraceRequest(handler)
@@ -25,24 +27,24 @@ func StartRESTServer(cfg *config.Config) error {
 	return http.ListenAndServe(cfg.RESTAddress, handler)
 }
 
-func routes() *http.ServeMux {
+func routes(cfg *config.Config) *http.ServeMux {
+	userProvider := repository.NewUserProviderImpl(cfg)
+	authService := services.NewAuthServiceImpl(userProvider)
+	authHandler := handlers.NewAuthHandler(authService)
+
 	root := http.NewServeMux()
-
-	v1 := http.NewServeMux()
-	root.Handle("/api/v1/", http.StripPrefix("/api/v1", v1))
-
-	// root
 	{
 		root.HandleFunc("/healthz", ghandler.HealthCheck(time.Now(), constants.ServiceName))
 	}
 
-	// /api/v1/
+	v1 := http.NewServeMux()
+	root.Handle("/api/v1/", http.StripPrefix("/api/v1", v1))
 	{
 		v1.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-			_, span := gotel.GetTracer().Start(r.Context(), "v1 welcome")
-			defer span.End()
+			w.WriteHeader(http.StatusOK)
 			_, _ = w.Write([]byte("Hi there! This is the v1 API"))
 		})
+		v1.HandleFunc("POST /login", authHandler.Login)
 	}
 
 	return root

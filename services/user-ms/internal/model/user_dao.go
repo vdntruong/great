@@ -77,12 +77,12 @@ func (u *DAOUser) GetByEmail(c context.Context, email string) (*User, error) {
 	defer span.End()
 
 	var (
-		query = `SELECT id, email, username, created_at, updated_at FROM users WHERE email = $1`
+		query = `SELECT id, email, username, password_hash, created_at, updated_at FROM users WHERE email = $1`
 		row   = u.db.QueryRowContext(ctx, query, email)
 	)
 
 	var user User
-	var err = row.Scan(&user.ID, &user.Email, &user.Username, &user.CreatedAt, &user.UpdatedAt)
+	var err = row.Scan(&user.ID, &user.Email, &user.Username, &user.PasswordHash, &user.CreatedAt, &user.UpdatedAt)
 
 	if err != nil {
 		span.RecordError(err)

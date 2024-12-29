@@ -11,6 +11,8 @@ import (
 type Config struct {
 	RESTAddress string `mapstructure:"rest_address"`
 	GRPCAddress string `mapstructure:"grpc_address"`
+
+	UserGRPCAddress string `mapstructure:"user_grpc_address"`
 }
 
 func Load() (*Config, error) {

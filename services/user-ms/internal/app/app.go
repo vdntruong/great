@@ -53,11 +53,12 @@ func NewApplication(cfg *config.Config) (*Application, []func(), error) {
 	// db and handlers/services
 	userDao := model.NewDAOUser(userDB, otel.GetTracer())
 
-	return &Application{
+	app := &Application{
 		cfg:    cfg,
 		logger: logger,
 		tracer: otel.GetTracer(),
 
 		userRepo: userDao,
-	}, cleanups, nil
+	}
+	return app, cleanups, nil
 }

@@ -16,7 +16,7 @@ import (
 var _ protos.UserServiceServer = (*Application)(nil)
 
 func (app *Application) BasicAccessAuth(ctx context.Context, req *protos.BasicAuthRequest) (*protos.UserResponse, error) {
-	user, err := app.userRepo.GetByEmail(ctx, req.GetEmail())
+	user, err := app.userRepo.GetByEmail(ctx, req.Email)
 	if err != nil {
 		return nil, err
 	}
@@ -25,7 +25,7 @@ func (app *Application) BasicAccessAuth(ctx context.Context, req *protos.BasicAu
 		return nil, status.Error(codes.NotFound, "user not found")
 	}
 
-	if !gpassword.CheckHash(req.GetPassword(), user.PasswordHash) {
+	if !gpassword.CheckHash(req.Password, user.PasswordHash) {
 		return nil, status.Error(codes.InvalidArgument, "wrong password")
 	}
 

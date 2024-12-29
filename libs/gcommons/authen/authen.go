@@ -9,8 +9,8 @@ import (
 )
 
 type Claims struct {
-	UserID   uuid.UUID `json:"user_id"`
-	Username string    `json:"username"`
+	UserID   string `json:"user_id"`
+	Username string `json:"username"`
 	jwt.RegisteredClaims
 }
 
@@ -25,7 +25,7 @@ const (
 	signingKey           = "your-secret-key"
 )
 
-func GenerateTokenPair(userID uuid.UUID, username string) (TokenPair, error) {
+func GenerateTokenPair(userID string, username string) (TokenPair, error) {
 	// Access Token
 	accessClaims := Claims{
 		UserID:   userID,
