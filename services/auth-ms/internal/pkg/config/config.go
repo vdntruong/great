@@ -12,6 +12,9 @@ type Config struct {
 	RESTAddress string `mapstructure:"rest_address"`
 	GRPCAddress string `mapstructure:"grpc_address"`
 
+	PrivateKeyPath string `mapstructure:"private_key_path"`
+	PublicKeyPath  string `mapstructure:"public_key_path"`
+
 	UserGRPCAddress string `mapstructure:"user_grpc_address"`
 }
 

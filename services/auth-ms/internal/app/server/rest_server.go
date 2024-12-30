@@ -1,19 +1,22 @@
 package server
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"time"
+
+	"gcommons/authen"
+	ghandler "gcommons/handler"
+	gmiddleware "gcommons/middleware"
+	"gcommons/otel"
+	otelmiddleware "gcommons/otel/middleware"
 
 	"auth-ms/internal/app/handlers"
 	"auth-ms/internal/app/repository"
 	"auth-ms/internal/app/services"
 	"auth-ms/internal/pkg/config"
 	"auth-ms/internal/pkg/constants"
-
-	ghandler "gcommons/handler"
-	gmiddleware "gcommons/middleware"
-	otelmiddleware "gcommons/otel/middleware"
 )
 
 func StartRESTServer(cfg *config.Config) error {
@@ -28,9 +31,14 @@ func StartRESTServer(cfg *config.Config) error {
 }
 
 func routes(cfg *config.Config) *http.ServeMux {
+	tokenAdapter, err := authen.NewTokenGenerator(cfg.PrivateKeyPath, cfg.PublicKeyPath)
+	if err != nil {
+		log.Fatal(fmt.Errorf("token generator initialization failed: %w", err))
+	}
+
 	userProvider := repository.NewUserProviderImpl(cfg)
-	authService := services.NewAuthServiceImpl(userProvider)
-	authHandler := handlers.NewAuthHandler(authService)
+	authService := services.NewAuthServiceImpl(cfg, tokenAdapter, userProvider)
+	authHandler := handlers.NewAuthHandler(otel.GetTracer(), authService)
 
 	root := http.NewServeMux()
 	{
@@ -40,11 +48,12 @@ func routes(cfg *config.Config) *http.ServeMux {
 	v1 := http.NewServeMux()
 	root.Handle("/api/v1/", http.StripPrefix("/api/v1", v1))
 	{
-		v1.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		v1.HandleFunc("GET /", func(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusOK)
 			_, _ = w.Write([]byte("Hi there! This is the v1 API"))
 		})
-		v1.HandleFunc("POST /login", authHandler.Login)
+		v1.HandleFunc("POST /token", authHandler.HandleAccessToken)
+		v1.HandleFunc("GET /auth", authHandler.HandleAuthenticate)
 	}
 
 	return root

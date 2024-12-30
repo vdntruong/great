@@ -5,14 +5,14 @@ http:
   # Declaring Routers
   routers:
 
-    AuthRouter:
+    auth-router:
       entryPoints:
         - web
         - websecure
       service: auth-ms
       rule: "Host(`auth.theg.localhost`)"
 
-    UserRouter:
+    user-router:
       entryPoints:
         - web
         - websecure

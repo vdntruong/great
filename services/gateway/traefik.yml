@@ -25,3 +25,11 @@ providers:
     # It is recommended to use directory.
     directory: /etc/traefik/configs
     watch: true
+
+# install plugins
+
+experimental:
+  plugins:
+    jwt:
+      moduleName: github.com/traefik-plugins/traefik-jwt-plugin
+      version: v0.7.1

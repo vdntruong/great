@@ -8,4 +8,5 @@ import (
 
 type IAuthService interface {
 	Login(context.Context, dtos.LoginReq) (dtos.LoginRes, error)
+	VerifyAuthToken(context.Context, string) error
 }

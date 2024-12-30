@@ -16,7 +16,6 @@ WORKDIR /root/
 
 COPY --from=builder /app/auth-service .
 COPY --from=builder /app/services/auth-ms/configs ./configs
-
-EXPOSE 8080
+COPY --from=builder /app/services/auth-ms/certs /certs
 
 CMD ["./auth-service"]

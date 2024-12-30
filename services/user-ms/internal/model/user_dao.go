@@ -140,3 +140,26 @@ func (u *DAOUser) FindByUsername(c context.Context, username string) (bool, erro
 
 	return founded, nil
 }
+
+func (u *DAOUser) GetByID(c context.Context, id string) (*User, error) {
+	ctx, span := u.tracer.Start(c, "get by id")
+	defer span.End()
+
+	var (
+		query = `SELECT id, email, username, password_hash, created_at, updated_at FROM users WHERE id = $1`
+		row   = u.db.QueryRowContext(ctx, query, id)
+	)
+
+	var user User
+	var err = row.Scan(&user.ID, &user.Email, &user.Username, &user.PasswordHash, &user.CreatedAt, &user.UpdatedAt)
+
+	if err != nil {
+		span.RecordError(err)
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, ErrUserNotFound
+		}
+		return nil, fmt.Errorf("failed to scan user: %w", ErrUserNotFound)
+	}
+
+	return &user, nil
+}

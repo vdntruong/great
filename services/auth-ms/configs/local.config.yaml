@@ -1,3 +1,5 @@
 rest_address: ":8080"
 grpc_address: ":8082"
 user_grpc_address: "user-ms:9090"
+private_key_path: "/certs/private.pem"
+public_key_path: "/certs/public.pem"

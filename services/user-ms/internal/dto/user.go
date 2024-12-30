@@ -1,5 +1,7 @@
 package dto
 
+import "user-ms/internal/model"
+
 // CreateUserReq represents for client request to register new user
 type CreateUserReq struct {
 	Email    string `json:"email" validate:"required,email"`
@@ -16,4 +18,11 @@ type UpdateUserReq struct {
 type UserRes struct {
 	Email    string `json:"email"`
 	Username string `json:"username"`
+}
+
+func ConvertToUserRes(user model.User) UserRes {
+	return UserRes{
+		Email:    user.Email,
+		Username: user.Username,
+	}
 }
