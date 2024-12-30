@@ -5,15 +5,25 @@ package user;
 option go_package = "/protos;protos";
 
 service UserService {
+  rpc BasicAccessAuth(BasicAuthRequest) returns (UserResponse);
   rpc GetByEmail(EmailRequest) returns (UserResponse);
 }
+
+// requests
 
 message EmailRequest {
   string email = 1;
 }
 
+message BasicAuthRequest {
+  string email = 1;
+  string password = 2;
+}
+
+// responses
+
 message UserResponse {
   string id = 1;
-  string name = 2;
-  string email = 3;
+  string email = 2;
+  string username = 3;
 }

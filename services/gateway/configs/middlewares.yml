@@ -2,7 +2,7 @@
 
 http:
 
-  # Declaring Middlewares
+  # Declaring Middlewares | https://doc.traefik.io/traefik/middlewares/overview/
   middlewares:
 
     www-redirect:
@@ -10,3 +10,43 @@ http:
         regex: "^https://theg/(.*)"
         replacement: "https://www.theg/${1}"
         permanent: true
+
+    rate-limit:
+      rateLimit:
+        average: 100  # an average of 100 requests per second
+        burst: 200    # a burst of 200 requests
+
+    limit-body-size:
+      buffering:
+        maxRequestBodyBytes: 2_000_000
+
+    latency-check:
+      circuitBreaker:
+        expression: "LatencyAtQuantileMS(50.0) > 100"   # opens the circuit breaker when the median latency (quantile 50) reaches 100ms.
+
+    retry:
+      retry:
+        attempts: 4   # retry 4 times with exponential backoff
+        initialInterval: 100ms
+
+# authentication, authorization
+
+    jwt-verify:
+      plugin:
+        jwt:
+          Required: true
+          Keys:
+            - |
+              -----BEGIN PUBLIC KEY-----
+              MIGeMA0GCSqGSIb3DQEBAQUAA4GMADCBiAKBgHzcIBF/36eSnu6lTXglyCyeLpF1
+              EZ1CRLaIhHXBusjquC46dWskBIpvkcQztj7oBptZ8AwYQvNftWYn4EcmIxoRLrhH
+              tRLcil3dF8MOQ1OnpVlQPniA+62QBzS30DP8T8iQhnBcN/UwHNXFf+hQzhvDx8jl
+              gB8b8WHdBzfq0OxrAgMBAAE=
+              -----END PUBLIC KEY-----
+          JwtSources:
+            - type: bearer
+              key: Authorization
+            - type: cookie
+              key: jwt
+          JwtHeaders:
+            - X-User-ID: user_id

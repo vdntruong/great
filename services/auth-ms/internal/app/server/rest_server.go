@@ -1,21 +1,26 @@
 package server
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"time"
 
-	"auth-ms/internal/pkg/config"
-	"auth-ms/internal/pkg/constants"
-
+	"gcommons/authen"
 	ghandler "gcommons/handler"
 	gmiddleware "gcommons/middleware"
-	gotel "gcommons/otel"
+	"gcommons/otel"
 	otelmiddleware "gcommons/otel/middleware"
+
+	"auth-ms/internal/app/handlers"
+	"auth-ms/internal/app/repository"
+	"auth-ms/internal/app/services"
+	"auth-ms/internal/pkg/config"
+	"auth-ms/internal/pkg/constants"
 )
 
 func StartRESTServer(cfg *config.Config) error {
-	route := routes()
+	route := routes(cfg)
 	handler := gmiddleware.RecoverPanic(route)
 	handler = otelmiddleware.Metrics(handler)
 	handler = otelmiddleware.TraceRequest(handler)
@@ -25,24 +30,30 @@ func StartRESTServer(cfg *config.Config) error {
 	return http.ListenAndServe(cfg.RESTAddress, handler)
 }
 
-func routes() *http.ServeMux {
+func routes(cfg *config.Config) *http.ServeMux {
+	tokenAdapter, err := authen.NewTokenGenerator(cfg.PrivateKeyPath, cfg.PublicKeyPath)
+	if err != nil {
+		log.Fatal(fmt.Errorf("token generator initialization failed: %w", err))
+	}
+
+	userProvider := repository.NewUserProviderImpl(cfg)
+	authService := services.NewAuthServiceImpl(cfg, tokenAdapter, userProvider)
+	authHandler := handlers.NewAuthHandler(otel.GetTracer(), authService)
+
 	root := http.NewServeMux()
-
-	v1 := http.NewServeMux()
-	root.Handle("/api/v1/", http.StripPrefix("/api/v1", v1))
-
-	// root
 	{
 		root.HandleFunc("/healthz", ghandler.HealthCheck(time.Now(), constants.ServiceName))
 	}
 
-	// /api/v1/
+	v1 := http.NewServeMux()
+	root.Handle("/api/v1/", http.StripPrefix("/api/v1", v1))
 	{
-		v1.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-			_, span := gotel.GetTracer().Start(r.Context(), "v1 welcome")
-			defer span.End()
+		v1.HandleFunc("GET /", func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(http.StatusOK)
 			_, _ = w.Write([]byte("Hi there! This is the v1 API"))
 		})
+		v1.HandleFunc("POST /token", authHandler.HandleAccessToken)
+		v1.HandleFunc("GET /auth", authHandler.HandleAuthenticate)
 	}
 
 	return root

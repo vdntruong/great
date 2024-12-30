@@ -46,7 +46,7 @@ func (app *Application) Routes() http.Handler {
 
 	{ // api/v1/*
 		{ // users
-			muxV1.HandleFunc("POST /users", app.Register)
+			muxV1.HandleFunc("POST /users", app.HandleRegister)
 		}
 	}
 

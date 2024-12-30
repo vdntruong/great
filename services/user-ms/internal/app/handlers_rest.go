@@ -2,15 +2,17 @@ package app
 
 import (
 	"context"
-	"golang.org/x/sync/errgroup"
+	"errors"
 	"net/http"
 
 	"user-ms/internal/dto"
 	"user-ms/internal/model"
 	"user-ms/internal/pkg/apperror"
+
+	"golang.org/x/sync/errgroup"
 )
 
-func (app *Application) Register(w http.ResponseWriter, r *http.Request) {
+func (app *Application) HandleRegister(w http.ResponseWriter, r *http.Request) {
 	var req dto.CreateUserReq
 	if err := app.Decode(r, &req); err != nil {
 		app.respondBadRequest(w, err)
@@ -71,4 +73,25 @@ func (app *Application) shouldNotHaveEmail(ctx context.Context, email string) er
 		return apperror.ErrEmailExisted
 	}
 	return nil
+}
+
+func (app *Application) HandleProfile(w http.ResponseWriter, r *http.Request) {
+	var userID = r.Header.Get("X-User-ID")
+	if userID == "" {
+		app.respondBadRequest(w, apperror.ErrUserIDRequired)
+		return
+	}
+
+	user, err := app.userRepo.GetByID(r.Context(), userID)
+	if err != nil {
+		if errors.Is(err, model.ErrNotFound) {
+			app.respondNotFound(w)
+			return
+		}
+		app.respondError(w, r, err)
+		return
+	}
+
+	resp := dto.ConvertToUserRes(*user)
+	app.respondOK(w, resp)
 }

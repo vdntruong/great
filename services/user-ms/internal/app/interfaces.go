@@ -8,6 +8,7 @@ import (
 // UserRepository is an abstract interface to User of persistence mechanism, it's include the DAO and advantaged methods
 type UserRepository interface {
 	Insert(ctx context.Context, email, username string, password string) (*model.User, error)
+	GetByID(ctx context.Context, id string) (*model.User, error)
 	GetByEmail(ctx context.Context, email string) (*model.User, error)
 
 	FindByEmail(ctx context.Context, email string) (bool, error)

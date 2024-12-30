@@ -2,9 +2,6 @@ package app
 
 import (
 	"fmt"
-	"log"
-	"net"
-	"net/http"
 	"os"
 
 	"gcommons/db/postgre"
@@ -17,7 +14,6 @@ import (
 	"user-ms/internal/pkg/protos"
 
 	"github.com/rs/zerolog"
-	"google.golang.org/grpc"
 )
 
 type Application struct {
@@ -57,33 +53,12 @@ func NewApplication(cfg *config.Config) (*Application, []func(), error) {
 	// db and handlers/services
 	userDao := model.NewDAOUser(userDB, otel.GetTracer())
 
-	return &Application{
+	app := &Application{
 		cfg:    cfg,
 		logger: logger,
 		tracer: otel.GetTracer(),
 
 		userRepo: userDao,
-	}, cleanups, nil
-}
-
-func (app *Application) InitRestServer() *http.Server {
-	return &http.Server{
-		Addr:         app.cfg.HTTPAddr,
-		Handler:      app.Routes(),
-		IdleTimeout:  app.cfg.IdleTimeout,
-		ReadTimeout:  app.cfg.ReadTimeout,
-		WriteTimeout: app.cfg.WriteTimeout,
 	}
-}
-
-func (app *Application) InitGRPCServer() (net.Listener, *grpc.Server) {
-	grpcSrv := grpc.NewServer()
-	protos.RegisterUserServiceServer(grpcSrv, app)
-
-	lis, err := net.Listen("tcp", app.cfg.GRPCAddr)
-	if err != nil {
-		log.Fatalf("failed to init tcp listener: %v", err)
-	}
-
-	return lis, grpcSrv
+	return app, cleanups, nil
 }

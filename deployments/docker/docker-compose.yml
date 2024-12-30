@@ -35,6 +35,7 @@ services:
       dockerfile: ../../services/user-ms/deployments/Dockerfile
     ports:
       - "8082:8080"
+      - "9092:9090"
     environment:
       - OTLP_ENDPOINT=otel-collector:4317
       - HTTP_ADDR=:8080
