@@ -1,12 +1,12 @@
 package repository
 
 import (
+	"auth-ms/internal/entities/models"
 	"context"
 	"google.golang.org/grpc/credentials/insecure"
 	"log"
 	"time"
 
-	"auth-ms/internal/app/entities/models"
 	"auth-ms/internal/pkg/config"
 	"auth-ms/internal/pkg/protos"
 

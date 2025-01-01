@@ -51,5 +51,5 @@ func configFilePath() string {
 	if f := os.Getenv(EnvConfigFileKey); len(f) > 0 {
 		return f
 	}
-	return DevConfigFile
+	return DefaultConfigFile
 }

@@ -5,16 +5,46 @@ http:
   # Declaring Routers
   routers:
 
+    # Gateway routers
+    gateway-healthcheck-router:
+      entryPoints:
+        - traefik
+      middlewares:
+        - ping-replacement
+      rule: "Host(`gateway.theg.localhost`) && PathPrefix(`/healthz`)"
+      service: ping@internal
+
+    gateway-api&dashboard-router:
+      entryPoints:
+        - traefik
+      middlewares:
+        - basic-admin-auth
+      rule:  "Host(`gateway.theg.localhost`) && (PathPrefix(`/api`) || PathPrefix(`/dashboard`))"
+      service: api@internal
+
+    # Auth routers
     auth-router:
       entryPoints:
         - web
         - websecure
-      service: auth-ms
       rule: "Host(`auth.theg.localhost`)"
+      service: auth-ms
 
-    user-router:
+    # User routers
+    user-public-router:
       entryPoints:
         - web
         - websecure
+      rule: "Host(`user.theg.localhost`) && (PathPrefix(`/healthz`) || PathPrefix(`/api/v1/users/register`))"
       service: user-ms
+      priority: 200
+
+    user-protected-router:
+      entryPoints:
+        - web
+        - websecure
+      middlewares:
+        - jwt-plugin-verity-token
       rule: "Host(`user.theg.localhost`)"
+      service: user-ms
+      priority: 100

@@ -1,7 +1,7 @@
 package services
 
 import (
-	"auth-ms/internal/app/entities/models"
+	"auth-ms/internal/entities/models"
 	"context"
 )
 

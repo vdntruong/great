@@ -8,10 +8,6 @@ log:
   level: DEBUG
   format: json
 
-api:
-  dashboard: true
-  insecure: true
-
 # We must define entryPoints and providers on the static configuration file.
 
 entryPoints:
@@ -19,11 +15,18 @@ entryPoints:
     address: ":80"
   websecure:
     address: ":443"
+  traefik:
+    address: ":8080"
+
+api:
+  dashboard: true   # https://doc.traefik.io/traefik/operations/api/#dashboard
+  insecure: true    # https://doc.traefik.io/traefik/operations/api/#insecure
+
+ping: {}
 
 providers:
   file:
-    # It is recommended to use directory.
-    directory: /etc/traefik/configs
+    directory: /etc/traefik/configs   # It is recommended to use directory.
     watch: true
 
 # install plugins

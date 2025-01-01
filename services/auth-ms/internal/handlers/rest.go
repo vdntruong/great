@@ -1,13 +1,12 @@
 package handlers
 
 import (
+	"auth-ms/internal/entities/dtos"
 	"encoding/json"
 	"net/http"
 	"strings"
 
 	"gcommons/otel/trace"
-
-	"auth-ms/internal/app/entities/dtos"
 )
 
 type AuthHandler struct {
@@ -36,6 +35,7 @@ func (h *AuthHandler) HandleAccessToken(w http.ResponseWriter, r *http.Request) 
 	}
 
 	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
 	if err := json.NewEncoder(w).Encode(resp); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}

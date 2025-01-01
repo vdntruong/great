@@ -3,7 +3,7 @@ package services
 import (
 	"context"
 
-	"auth-ms/internal/app/entities/dtos"
+	"auth-ms/internal/entities/dtos"
 	"auth-ms/internal/pkg/config"
 )
 
