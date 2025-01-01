@@ -8,7 +8,7 @@ import (
 	"strings"
 	"time"
 
-	"gcommons/otel/trace"
+	"commons/otel/trace"
 
 	"user-ms/internal/pkg/apperror"
 

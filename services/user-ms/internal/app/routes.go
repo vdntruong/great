@@ -4,9 +4,9 @@ import (
 	"net/http"
 	"time"
 
-	ghandler "gcommons/handler"
-	gmiddleware "gcommons/middleware"
-	otelmiddleware "gcommons/otel/middleware"
+	ghandler "commons/handler"
+	gmiddleware "commons/middleware"
+	otelmiddleware "commons/otel/middleware"
 
 	"github.com/justinas/alice"
 	"github.com/rs/zerolog/hlog"

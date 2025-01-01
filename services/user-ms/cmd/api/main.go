@@ -8,7 +8,7 @@ import (
 	"os"
 	"os/signal"
 
-	"gcommons/otel"
+	"commons/otel"
 
 	"user-ms/internal/app"
 	"user-ms/internal/pkg/config"

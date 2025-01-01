@@ -1,4 +1,4 @@
-module gcommons
+module commons
 
 go 1.23
 

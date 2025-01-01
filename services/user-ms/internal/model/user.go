@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	gpassword "gcommons/password"
+	gpassword "commons/password"
 )
 
 type dbUser struct {

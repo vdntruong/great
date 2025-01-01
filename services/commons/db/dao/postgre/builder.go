@@ -5,7 +5,7 @@ import (
 	"reflect"
 	"strings"
 
-	"gcommons/db/dao/core"
+	"commons/db/dao/core"
 )
 
 type PostgresQueryBuilder[T core.Entity] struct {

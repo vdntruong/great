@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"strings"
 
-	"gcommons/otel/trace"
+	"commons/otel/trace"
 )
 
 type AuthHandler struct {

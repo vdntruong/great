@@ -7,7 +7,7 @@ import (
 	"auth-ms/internal/pkg/constants"
 	"auth-ms/internal/server"
 
-	"gcommons/otel"
+	"commons/otel"
 )
 
 func main() {

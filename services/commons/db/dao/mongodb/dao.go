@@ -3,7 +3,7 @@ package mongodb
 import (
 	"context"
 
-	"gcommons/db/dao/core"
+	"commons/db/dao/core"
 
 	"go.mongodb.org/mongo-driver/mongo"
 )

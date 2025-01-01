@@ -6,7 +6,7 @@ import (
 	"github.com/rs/zerolog/hlog"
 	"net/http"
 
-	"gcommons/errs"
+	"commons/errs"
 )
 
 func (app *Application) respondError(w http.ResponseWriter, r *http.Request, err error) {

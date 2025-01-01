@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 
-	gpassword "gcommons/password"
+	gpassword "commons/password"
 
 	"user-ms/internal/model"
 	"user-ms/internal/pkg/protos"
