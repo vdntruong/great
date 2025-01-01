@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"errors"
 	"log"
 	"time"
 
@@ -43,12 +44,16 @@ func (u *UserProviderImpl) VerifyUser(ctx context.Context, email string, passwor
 		if ok {
 			switch statusErr.Code() {
 			case codes.NotFound:
+				return models.Credential{}, errors.New(statusErr.Message())
 				// Handle NotFound error
 			case codes.InvalidArgument:
+				return models.Credential{}, errors.New(statusErr.Message())
 				// Handle InvalidArgument error
 			case codes.Internal:
+				return models.Credential{}, errors.New(statusErr.Message()) // 500
 				// Handle Internal error
 			default:
+				return models.Credential{}, errors.New(statusErr.Message())
 				// Handle other errors
 			}
 		}
