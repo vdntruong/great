@@ -5,7 +5,7 @@ import (
 	"net"
 	"net/http"
 
-	"user-ms/internal/pkg/protos"
+	"commons/protos/userpb"
 
 	"google.golang.org/grpc"
 )
@@ -22,7 +22,7 @@ func (app *Application) InitRestServer() *http.Server {
 
 func (app *Application) InitGRPCServer() (net.Listener, *grpc.Server) {
 	grpcSrv := grpc.NewServer()
-	protos.RegisterUserServiceServer(grpcSrv, app)
+	userpb.RegisterUserServiceServer(grpcSrv, app)
 
 	lis, err := net.Listen("tcp", app.cfg.GRPCAddr)
 	if err != nil {
