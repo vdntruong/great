@@ -26,8 +26,8 @@ func StartRESTServer(cfg *config.Config) error {
 	handler = otelmiddleware.TraceRequest(handler)
 	handler = gmiddleware.LogRequest(handler)
 
-	log.Printf("Authentication service starting on %s\n", cfg.RESTAddress)
-	return http.ListenAndServe(cfg.RESTAddress, handler)
+	log.Printf("Authentication service starting on %s\n", cfg.RESTPort)
+	return http.ListenAndServe(fmt.Sprintf(":%s", cfg.RESTPort), handler)
 }
 
 func routes(cfg *config.Config) *http.ServeMux {

@@ -2,7 +2,7 @@ package server
 
 //
 //func StartGRPCServer(cfg *config.Config, userRepo repository.UserRepository) error {
-//	lis, err := net.Listen("tcp", cfg.GRPCAddress)
+//	lis, err := net.Listen("tcp", cfg.GRPCPort)
 //	if err != nil {
 //		return err
 //	}
