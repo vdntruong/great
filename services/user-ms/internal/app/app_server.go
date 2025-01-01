@@ -5,8 +5,6 @@ import (
 	"net"
 	"net/http"
 
-	"commons/protos/userpb"
-
 	"google.golang.org/grpc"
 )
 
@@ -21,13 +19,13 @@ func (app *Application) InitRestServer() *http.Server {
 }
 
 func (app *Application) InitGRPCServer() (net.Listener, *grpc.Server) {
-	grpcSrv := grpc.NewServer()
-	userpb.RegisterUserServiceServer(grpcSrv, app)
-
 	lis, err := net.Listen("tcp", app.cfg.GRPCAddr)
 	if err != nil {
 		log.Fatalf("failed to init tcp listener: %v", err)
 	}
+
+	grpcSrv := grpc.NewServer()
+	app.RPC(grpcSrv)
 
 	return lis, grpcSrv
 }
