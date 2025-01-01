@@ -3,6 +3,7 @@ package app
 import (
 	"context"
 	"errors"
+	"google.golang.org/grpc/health/grpc_health_v1"
 
 	gpassword "commons/password"
 	"commons/protos/userpb"
@@ -57,4 +58,10 @@ func (app *Application) GetByEmail(ctx context.Context, request *userpb.EmailReq
 		Username: user.Username,
 	}
 	return res, nil
+}
+
+func (app *Application) Check(ctx context.Context, req *grpc_health_v1.HealthCheckRequest) (*grpc_health_v1.HealthCheckResponse, error) {
+	return &grpc_health_v1.HealthCheckResponse{
+		Status: grpc_health_v1.HealthCheckResponse_SERVING,
+	}, nil
 }

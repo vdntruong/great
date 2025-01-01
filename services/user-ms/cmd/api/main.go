@@ -1,6 +1,7 @@
 package main
 
 import (
+	"commons/discovery"
 	"context"
 	"errors"
 	"log"
@@ -15,7 +16,6 @@ import (
 )
 
 func main() {
-
 	// load configuration, and infrastructures
 	cfg, err := config.Load()
 	if err != nil {
@@ -59,6 +59,8 @@ func main() {
 		}
 	}()
 
+	serviceRegister(cfg)
+
 	stop := make(chan os.Signal, 1)
 	signal.Notify(stop, os.Interrupt)
 	<-stop
@@ -72,4 +74,18 @@ func main() {
 	}
 
 	log.Println("Server exiting")
+}
+
+func serviceRegister(cfg *config.Config) {
+	if err := discovery.Register(cfg.AppID, cfg.AppName, "user-ms", cfg.HTTPPort, []string{"rest"}, map[string]string{"protocol": "http"}); err != nil {
+		log.Printf("[ERROR] failed to register rest user-ms: %v\n", err)
+		return
+	}
+	log.Printf("[INFO] register rest user-ms successfully")
+
+	if err := discovery.Register(cfg.AppID, cfg.AppName, "user-ms", cfg.GRPCPort, []string{"grpc"}, map[string]string{"protocol": "tcp"}); err != nil {
+		log.Printf("[ERROR] failed to register grpc user-ms: %v\n", err)
+		return
+	}
+	log.Printf("[INFO] register grpc user-ms successfully")
 }

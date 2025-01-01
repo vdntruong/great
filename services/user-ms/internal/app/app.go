@@ -14,6 +14,7 @@ import (
 	"user-ms/internal/pkg/config"
 
 	"github.com/rs/zerolog"
+	"google.golang.org/grpc/health/grpc_health_v1"
 )
 
 type Application struct {
@@ -24,6 +25,7 @@ type Application struct {
 	userRepo UserRepository
 
 	userpb.UnimplementedUserServiceServer
+	grpc_health_v1.UnimplementedHealthServer
 }
 
 func NewApplication(cfg *config.Config) (*Application, []func(), error) {

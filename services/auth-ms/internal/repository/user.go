@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"commons/discovery"
 	"context"
 	"errors"
 	"log"
@@ -22,11 +23,19 @@ type UserProviderImpl struct {
 }
 
 func NewUserProviderImpl(cfg *config.Config) *UserProviderImpl {
-	time.Sleep(3 * time.Second)
-	conn, err := grpc.NewClient(
-		cfg.UserGRPCAddress,
-		grpc.WithTransportCredentials(insecure.NewCredentials()),
-	)
+	sd, err := discovery.NewServiceDiscovery("user-ms", "grpc")
+	if err != nil {
+		panic(err.Error())
+	}
+
+	time.Sleep(5 * time.Second)
+	userGRPCAddr, err := sd.GetServiceURL()
+	if err != nil {
+		panic(err.Error())
+	}
+	log.Println("user grpc host:", userGRPCAddr)
+
+	conn, err := grpc.NewClient(userGRPCAddr, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		log.Fatalf("user provider: could not connect: %v", err)
 	}

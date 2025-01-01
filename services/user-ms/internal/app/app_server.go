@@ -1,6 +1,7 @@
 package app
 
 import (
+	"fmt"
 	"log"
 	"net"
 	"net/http"
@@ -10,7 +11,7 @@ import (
 
 func (app *Application) InitRestServer() *http.Server {
 	return &http.Server{
-		Addr:         app.cfg.HTTPAddr,
+		Addr:         fmt.Sprintf(":%s", app.cfg.HTTPPort),
 		Handler:      app.Routes(),
 		IdleTimeout:  app.cfg.IdleTimeout,
 		ReadTimeout:  app.cfg.ReadTimeout,
@@ -19,7 +20,7 @@ func (app *Application) InitRestServer() *http.Server {
 }
 
 func (app *Application) InitGRPCServer() (net.Listener, *grpc.Server) {
-	lis, err := net.Listen("tcp", app.cfg.GRPCAddr)
+	lis, err := net.Listen("tcp", fmt.Sprintf(":%s", app.cfg.GRPCPort))
 	if err != nil {
 		log.Fatalf("failed to init tcp listener: %v", err)
 	}

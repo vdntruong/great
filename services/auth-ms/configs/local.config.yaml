@@ -1,5 +1,8 @@
-rest_address: ":8080"
-grpc_address: ":8082"
-user_grpc_address: "user-ms:9090"
-private_key_path: "/certs/private.pem"
-public_key_path: "/certs/public.pem"
+SERVICE_ID: "auth-random-id"
+SERVICE_NAME: "auth-ms"
+
+REST_PORT: "8080"
+GRPC_PORT: "8082"
+
+PRIVATE_KEY_PATH: "/certs/private.pem"
+PUBLIC_KEY_PATH: "/certs/public.pem"
