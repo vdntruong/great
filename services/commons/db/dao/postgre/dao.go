@@ -1,9 +1,9 @@
 package postgre
 
 import (
+	"commons/db/dao/core"
 	"context"
 	"database/sql"
-	"gcommons/db/dao/core"
 )
 
 type PostgresDAO[T core.Entity] struct {

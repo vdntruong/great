@@ -9,7 +9,7 @@ import (
 	"strconv"
 	"time"
 
-	"gcommons/otel"
+	"commons/otel"
 
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/metric"

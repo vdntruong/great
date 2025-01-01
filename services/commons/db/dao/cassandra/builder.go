@@ -1,8 +1,8 @@
 package cassandra
 
 import (
+	"commons/db/dao/core"
 	"fmt"
-	"gcommons/db/dao/core"
 	"reflect"
 	"slices"
 	"strings"

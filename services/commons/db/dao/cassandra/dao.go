@@ -1,8 +1,8 @@
 package cassandra
 
 import (
+	"commons/db/dao/core"
 	"context"
-	"gcommons/db/dao/core"
 	"github.com/gocql/gocql"
 )
 

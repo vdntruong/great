@@ -1,34 +1,25 @@
+ROOT_DIR := $(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
+
 lint:
 	golangci-lint run ./... --verbose --fix
 
-
 .PHONY: pre-build
 pre-build:
-	mkdir deployments || true
-	mkdir deployments/tmp || true
-
-	mkdir deployments/tmp/libs || true
-	cp -r ../../libs deployments/tmp
-
-	mkdir deployments/tmp/services || true
-	rsync -av --progress ../../services deployments/tmp --exclude services/auth-ms/deployments
-
-	cp ../../go.work ../../go.work.sum deployments/tmp
-
-
-.PHONY: build
-build:
-	docker build -t theg-auth-ms -f deployments/Dockerfile deployments/tmp/
-
+	mkdir tmp || true
+	rsync -av --progress ../commons tmp
+	rsync -av --progress ../auth-ms tmp --exclude auth-ms/deployments
+	cp ../go.work.sum tmp/
 
 .PHONY: post-build
 post-build:
-	rm -rf deployments/tmp
+	rm -rf tmp
 
+.PHONY: build
+build:
+	docker build -t theg-auth-ms -f deployments/Dockerfile tmp/
 
 .PHONY: bui
 bui: pre-build build post-build
-
 
 .PHONY: start
 start:

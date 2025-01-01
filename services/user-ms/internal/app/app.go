@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"os"
 
-	"gcommons/db/postgre"
-	"gcommons/otel"
-	"gcommons/otel/db"
-	"gcommons/otel/trace"
+	"commons/db/postgre"
+	"commons/otel"
+	"commons/otel/db"
+	"commons/otel/trace"
 
 	"user-ms/internal/model"
 	"user-ms/internal/pkg/config"

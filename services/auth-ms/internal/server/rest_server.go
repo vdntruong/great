@@ -9,11 +9,11 @@ import (
 	"net/http"
 	"time"
 
-	"gcommons/authen"
-	ghandler "gcommons/handler"
-	gmiddleware "gcommons/middleware"
-	"gcommons/otel"
-	otelmiddleware "gcommons/otel/middleware"
+	"commons/authen"
+	ghandler "commons/handler"
+	gmiddleware "commons/middleware"
+	"commons/otel"
+	otelmiddleware "commons/otel/middleware"
 
 	"auth-ms/internal/pkg/config"
 	"auth-ms/internal/pkg/constants"
