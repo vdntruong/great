@@ -5,17 +5,17 @@ import (
 	"errors"
 
 	gpassword "commons/password"
+	"commons/protos/userpb"
 
 	"user-ms/internal/model"
-	"user-ms/internal/pkg/protos"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
 
-var _ protos.UserServiceServer = (*Application)(nil)
+var _ userpb.UserServiceServer = (*Application)(nil)
 
-func (app *Application) BasicAccessAuth(ctx context.Context, req *protos.BasicAuthRequest) (*protos.UserResponse, error) {
+func (app *Application) BasicAccessAuth(ctx context.Context, req *userpb.BasicAuthRequest) (*userpb.UserResponse, error) {
 	user, err := app.userRepo.GetByEmail(ctx, req.Email)
 	if err != nil {
 		return nil, err
@@ -29,7 +29,7 @@ func (app *Application) BasicAccessAuth(ctx context.Context, req *protos.BasicAu
 		return nil, status.Error(codes.InvalidArgument, "wrong password")
 	}
 
-	res := &protos.UserResponse{
+	res := &userpb.UserResponse{
 		Id:       user.ID,
 		Email:    user.Email,
 		Username: user.Username,
@@ -37,7 +37,7 @@ func (app *Application) BasicAccessAuth(ctx context.Context, req *protos.BasicAu
 	return res, nil
 }
 
-func (app *Application) GetByEmail(ctx context.Context, request *protos.EmailRequest) (*protos.UserResponse, error) {
+func (app *Application) GetByEmail(ctx context.Context, request *userpb.EmailRequest) (*userpb.UserResponse, error) {
 	founded, err := app.userRepo.FindByEmail(ctx, request.GetEmail())
 	if err != nil {
 		return nil, err
@@ -51,7 +51,7 @@ func (app *Application) GetByEmail(ctx context.Context, request *protos.EmailReq
 		return nil, err
 	}
 
-	res := &protos.UserResponse{
+	res := &userpb.UserResponse{
 		Id:       user.ID,
 		Email:    user.Email,
 		Username: user.Username,

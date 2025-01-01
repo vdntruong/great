@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package user;
 
-option go_package = "/protos;protos";
+option go_package = "/userpb;userpb";
 
 service UserService {
   rpc BasicAccessAuth(BasicAuthRequest) returns (UserResponse);

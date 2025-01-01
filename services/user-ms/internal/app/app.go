@@ -8,10 +8,10 @@ import (
 	"commons/otel"
 	"commons/otel/db"
 	"commons/otel/trace"
+	"commons/protos/userpb"
 
 	"user-ms/internal/model"
 	"user-ms/internal/pkg/config"
-	"user-ms/internal/pkg/protos"
 
 	"github.com/rs/zerolog"
 )
@@ -23,7 +23,7 @@ type Application struct {
 
 	userRepo UserRepository
 
-	protos.UnimplementedUserServiceServer
+	userpb.UnimplementedUserServiceServer
 }
 
 func NewApplication(cfg *config.Config) (*Application, []func(), error) {
