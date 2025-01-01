@@ -16,12 +16,14 @@ type UpdateUserReq struct {
 
 // UserRes represents for a user (aka user brief) response to client
 type UserRes struct {
+	ID       string `json:"id"`
 	Email    string `json:"email"`
 	Username string `json:"username"`
 }
 
 func ConvertToUserRes(user model.User) UserRes {
 	return UserRes{
+		ID:       user.ID,
 		Email:    user.Email,
 		Username: user.Username,
 	}

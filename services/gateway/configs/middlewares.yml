@@ -4,6 +4,9 @@ http:
 
   # Declaring Middlewares | https://doc.traefik.io/traefik/middlewares/overview/
   middlewares:
+    ping-replacement:
+      replacePath:
+        path: "/ping"
 
     www-redirect:
       redirectRegex:
@@ -29,24 +32,51 @@ http:
         attempts: 4   # retry 4 times with exponential backoff
         initialInterval: 100ms
 
+    add-prefix-something:    # request /v1 -> /somethings/v1 -> service
+      addPrefix:
+        prefix: "/something"
+#        prefixes:
+#          - "/something-01"
+#          - "/something-02"
+
+    strip-prefix-something:  # request /something/v1 -> /v1 -> service
+      stripPrefix:
+        prefixes:
+          - "/something"
+
 # authentication, authorization
 
-    jwt-verify:
+    basic-admin-auth:
+      basicAuth:
+        users:
+          - "admin:$apr1$bqyY5KYW$J2x4HHBGjY0ARrpSOReIx/"
+
+    forward-auth-service:
+      forwardAuth:
+        tls:
+          insecureSkipVerify: true
+        authRequestHeaders:
+          - "Authentication"
+          - "X-Access-Token"
+        address: "http://127.0.0.1/api/v1/auth"
+
+    jwt-plugin-verity-token:
       plugin:
         jwt:
           Required: true
-          Keys:
-            - |
-              -----BEGIN PUBLIC KEY-----
-              MIGeMA0GCSqGSIb3DQEBAQUAA4GMADCBiAKBgHzcIBF/36eSnu6lTXglyCyeLpF1
-              EZ1CRLaIhHXBusjquC46dWskBIpvkcQztj7oBptZ8AwYQvNftWYn4EcmIxoRLrhH
-              tRLcil3dF8MOQ1OnpVlQPniA+62QBzS30DP8T8iQhnBcN/UwHNXFf+hQzhvDx8jl
-              gB8b8WHdBzfq0OxrAgMBAAE=
-              -----END PUBLIC KEY-----
           JwtSources:
             - type: bearer
               key: Authorization
-            - type: cookie
-              key: jwt
           JwtHeaders:
             - X-User-ID: user_id
+          Keys:
+            - |
+              -----BEGIN PUBLIC KEY-----
+              MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAmOODhZVnIom+TGsCfKGX
+              2CH+k528OLrtmUrZjKAfYz2LoaMqEeZHJrDFHOYIEzOnQliKptnqZergVBa+Qe/o
+              lK3HBfUE/GfGwSwxLI9FDDTFao5mDvGQU6AlD59ILyExPeKol5E8qkhi7jnQS+KS
+              xWTpQa6o8baQEG4cx9pFOMhTHZQfm/Y6XusDttBfeFZR0BnT9/ax6aeopCxrTEmw
+              eFBZt9TCpvdj4jATYvPMFFTsxS4KgcbQQpzX+m/TVITkH98cXujq1C9XjjL23SFU
+              DK/65bY3h6tvIw1hiRtjefSEVBEdI9+v2Cq2+pB72pO3XqWFSB5vn9JB/kJCO3qi
+              PwIDAQAB
+              -----END PUBLIC KEY-----

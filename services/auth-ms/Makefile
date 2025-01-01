@@ -6,6 +6,7 @@ lint:
 pre-build:
 	mkdir deployments || true
 	mkdir deployments/tmp || true
+
 	mkdir deployments/tmp/libs || true
 	cp -r ../../libs deployments/tmp
 

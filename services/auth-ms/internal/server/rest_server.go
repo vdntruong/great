@@ -1,6 +1,9 @@
 package server
 
 import (
+	"auth-ms/internal/handlers"
+	"auth-ms/internal/repository"
+	"auth-ms/internal/services"
 	"fmt"
 	"log"
 	"net/http"
@@ -12,9 +15,6 @@ import (
 	"gcommons/otel"
 	otelmiddleware "gcommons/otel/middleware"
 
-	"auth-ms/internal/app/handlers"
-	"auth-ms/internal/app/repository"
-	"auth-ms/internal/app/services"
 	"auth-ms/internal/pkg/config"
 	"auth-ms/internal/pkg/constants"
 )
