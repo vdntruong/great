@@ -18,8 +18,10 @@ jobs:
         with:
           go-version: '1.23.1'
 
-      - name: golangci-lint
+      - name: Lint
         uses: golangci/golangci-lint-action@v4
         with:
           version: latest
-          args: --config=.golangci.yml ./services/...
+          args: |
+            --config=./services/auth-ms/.golangci.yml ./services/auth-ms/...
+            --config=./services/user-ms/.golangci.yml ./services/user-ms/...
