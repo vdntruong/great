@@ -1,8 +1,9 @@
 package services
 
 import (
-	"auth-ms/internal/entities/models"
 	"context"
+
+	"auth-ms/internal/entities/models"
 )
 
 type IUserProvider interface {

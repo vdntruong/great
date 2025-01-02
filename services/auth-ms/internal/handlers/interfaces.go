@@ -1,8 +1,9 @@
 package handlers
 
 import (
-	"auth-ms/internal/entities/dtos"
 	"context"
+
+	"auth-ms/internal/entities/dtos"
 )
 
 type IAuthService interface {

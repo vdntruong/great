@@ -1,33 +1,47 @@
 package server
 
 import (
-	"auth-ms/internal/handlers"
-	"auth-ms/internal/repository"
-	"auth-ms/internal/services"
+	"errors"
 	"fmt"
 	"log"
 	"net/http"
 	"time"
 
 	"commons/authen"
-	ghandler "commons/handler"
-	gmiddleware "commons/middleware"
+	"commons/handler"
+	"commons/middleware"
 	"commons/otel"
-	otelmiddleware "commons/otel/middleware"
+	omiddleware "commons/otel/middleware"
 
+	"auth-ms/internal/handlers"
 	"auth-ms/internal/pkg/config"
 	"auth-ms/internal/pkg/constants"
+	"auth-ms/internal/repository"
+	"auth-ms/internal/services"
 )
 
 func StartRESTServer(cfg *config.Config) error {
 	route := routes(cfg)
-	handler := gmiddleware.RecoverPanic(route)
-	handler = otelmiddleware.Metrics(handler)
-	handler = otelmiddleware.TraceRequest(handler)
-	handler = gmiddleware.LogRequest(handler)
+	handler := middleware.RecoverPanic(route)
+	handler = omiddleware.Metrics(handler)
+	handler = omiddleware.TraceRequest(handler)
+	handler = middleware.LogRequest(handler)
+
+	server := &http.Server{
+		Addr:              fmt.Sprintf(":%s", cfg.RESTPort),
+		Handler:           handler,
+		ReadTimeout:       10 * time.Second,
+		ReadHeaderTimeout: 3 * time.Second,
+		WriteTimeout:      10 * time.Second,
+		IdleTimeout:       10 * time.Second,
+	}
 
 	log.Printf("Authentication service starting on %s\n", cfg.RESTPort)
-	return http.ListenAndServe(fmt.Sprintf(":%s", cfg.RESTPort), handler)
+	if err := server.ListenAndServe(); err != nil &&
+		!errors.Is(err, http.ErrServerClosed) {
+		return err
+	}
+	return nil
 }
 
 func routes(cfg *config.Config) *http.ServeMux {
@@ -42,7 +56,7 @@ func routes(cfg *config.Config) *http.ServeMux {
 
 	root := http.NewServeMux()
 	{
-		root.HandleFunc("/healthz", ghandler.HealthCheck(time.Now(), constants.ServiceName))
+		root.HandleFunc("/healthz", handler.HealthCheck(time.Now(), constants.ServiceName))
 	}
 
 	v1 := http.NewServeMux()

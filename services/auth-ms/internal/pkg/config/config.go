@@ -9,14 +9,14 @@ import (
 )
 
 type Config struct {
-	ServiceID   string `mapstructure:"SERVICE_ID" envconfig:"SERVICE_ID"`
-	ServiceName string `mapstructure:"SERVICE_NAME" envconfig:"SERVICE_NAME"`
+	ServiceID   string `envconfig:"SERVICE_ID"   mapstructure:"SERVICE_ID"`
+	ServiceName string `envconfig:"SERVICE_NAME" mapstructure:"SERVICE_NAME"`
 
-	RESTPort string `mapstructure:"REST_PORT" envconfig:"REST_PORT"`
-	GRPCPort string `mapstructure:"GRPC_PORT" envconfig:"GRPC_PORT"`
+	RESTPort string `envconfig:"REST_PORT" mapstructure:"REST_PORT"`
+	GRPCPort string `envconfig:"GRPC_PORT" mapstructure:"GRPC_PORT"`
 
-	PrivateKeyPath string `mapstructure:"PRIVATE_KEY_PATH" envconfig:"PRIVATE_KEY_PATH"`
-	PublicKeyPath  string `mapstructure:"PUBLIC_KEY_PATH" envconfig:"PUBLIC_KEY_PATH"`
+	PrivateKeyPath string `envconfig:"PRIVATE_KEY_PATH" mapstructure:"PRIVATE_KEY_PATH"`
+	PublicKeyPath  string `envconfig:"PUBLIC_KEY_PATH"  mapstructure:"PUBLIC_KEY_PATH"`
 }
 
 func Load() (*Config, error) {
