@@ -2,39 +2,49 @@ run:
   timeout: 5m
   tests: false
   modules-download-mode: readonly
-  skip-dirs:
-    - generated
-    - vendor
-    - pkg/protos
 
 linters:
+  fast: true
+  presets:
+    - format
+    - error
+    - unused
+    - comment
+    - metalinter
+    - complexity
+    - performance
+    - test
   disable-all: true
   enable:
-    - gofmt
-    - govet
-    - errcheck
-    - staticcheck
-    - gosimple
-    - stylecheck
     - gci
+    - goimports     # Check import statements are formatted according to the 'goimport' command
+    - gofmt
+    - errcheck
+    - stylecheck
+    - gosec         # Detects security issues.
+#    - gosimple      # Aims to simplify code by suggesting more concise or idiomatic ways of writing it.
+#    - govet         # Performs a wide range of checks, including potential race conditions, unused variables, and interface mismatches.
+#    - staticcheck   # Goes beyond basic `govet` checks. It analyzes code for potential errors and performance issues that are difficult to detect at runtime.
 
 linters-settings:
   staticcheck:
-    checks: [ "all"]
-    skip-generated: true
+    checks: [ "*"]
   gci:
     custom-order: true
     sections:
       - standard
       - blank
       - dot
-      - prefix(go-commons)
+      - prefix(commons)
       - prefix(auth-ms)
       - default
     skip-generated: true
 
 issues:
-  exclude-patterns:
+  fix: true
+  exclude:
     - '.*\.pb\.go$'
     - '.*_test\.go$'
     - '.*_mock\.go$'
+  exclude-dirs:
+    - pkg/protos

@@ -23,7 +23,14 @@ func main() {
 	}
 	defer cleanup()
 
-	if err := discovery.Register(cfg.ServiceID, cfg.ServiceName, "auth-ms", cfg.RESTPort, []string{"rest"}, map[string]string{"protocol": "http"}); err != nil {
+	if err := discovery.Register(
+		cfg.ServiceID,
+		cfg.ServiceName,
+		"auth-ms",
+		cfg.RESTPort,
+		[]string{"rest"},
+		map[string]string{"protocol": "http"},
+	); err != nil {
 		log.Printf("[ERROR] failed to register auth-ms: %v\n", err)
 	}
 

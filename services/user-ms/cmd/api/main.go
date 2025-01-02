@@ -1,7 +1,6 @@
 package main
 
 import (
-	"commons/discovery"
 	"context"
 	"errors"
 	"log"
@@ -9,6 +8,7 @@ import (
 	"os"
 	"os/signal"
 
+	"commons/discovery"
 	"commons/otel"
 
 	"user-ms/internal/app"

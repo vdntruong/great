@@ -1,12 +1,12 @@
 package repository
 
 import (
-	"commons/discovery"
 	"context"
 	"errors"
 	"log"
 	"time"
 
+	"commons/discovery"
 	"commons/protos/userpb"
 
 	"auth-ms/internal/entities/models"

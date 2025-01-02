@@ -3,7 +3,6 @@ package app
 import (
 	"context"
 	"errors"
-	"google.golang.org/grpc/health/grpc_health_v1"
 
 	gpassword "commons/password"
 	"commons/protos/userpb"
@@ -11,6 +10,7 @@ import (
 	"user-ms/internal/model"
 
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/health/grpc_health_v1"
 	"google.golang.org/grpc/status"
 )
 

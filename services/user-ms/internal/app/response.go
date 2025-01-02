@@ -3,10 +3,11 @@ package app
 import (
 	"encoding/json"
 	"errors"
-	"github.com/rs/zerolog/hlog"
 	"net/http"
 
 	"commons/errs"
+
+	"github.com/rs/zerolog/hlog"
 )
 
 func (app *Application) respondError(w http.ResponseWriter, r *http.Request, err error) {

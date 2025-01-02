@@ -2,6 +2,7 @@ package app
 
 import (
 	"context"
+
 	"user-ms/internal/model"
 )
 

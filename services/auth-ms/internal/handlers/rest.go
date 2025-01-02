@@ -1,12 +1,13 @@
 package handlers
 
 import (
-	"auth-ms/internal/entities/dtos"
 	"encoding/json"
 	"net/http"
 	"strings"
 
 	"commons/otel/trace"
+
+	"auth-ms/internal/entities/dtos"
 )
 
 type AuthHandler struct {
