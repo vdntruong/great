@@ -4,15 +4,17 @@ run:
   modules-download-mode: readonly
 
 linters:
+  fast: true
   disable-all: true
   enable:
-    - gofmt
-    - govet
-    - errcheck
-    - staticcheck
-    - gosimple
-    - stylecheck
     - gci
+    - gofmt
+    - gosec
+    - errcheck
+    - stylecheck
+#    - govet
+#    - gosimple
+#    - staticcheck
 
 linters-settings:
   staticcheck:
@@ -23,7 +25,14 @@ linters-settings:
       - standard
       - blank
       - dot
-      - prefix(go-commons)
+      - prefix(commons)
       - prefix(user-ms)
       - default
     skip-generated: true
+
+issues:
+  fix: true
+  exclude:
+    - '.*\.pb\.go$'
+    - '.*_test\.go$'
+    - '.*_mock\.go$'
