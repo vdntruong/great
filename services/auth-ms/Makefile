@@ -1,26 +1,31 @@
 ROOT_DIR := $(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
 
+TEMPORARY_DIR := tmp
+CONTAINER_NAME := auth-ms
+DOCKER_IMAGE_NAME := theg-auth-ms
+
+.PHONY: lint
 lint:
-	golangci-lint run ./... --verbose --fix
+	golangci-lint run ./... --verbose
 
-.PHONY: pre-build
-pre-build:
-	mkdir tmp || true
-	rsync -av --progress ../commons tmp
-	rsync -av --progress ../auth-ms tmp --exclude auth-ms/deployments
-	cp ../go.work.sum tmp/
+.PHONY: setup-tmp
+setup-tmp:
+	mkdir $(TEMPORARY_DIR) || true
+	rsync -av --progress ../commons $(TEMPORARY_DIR)
+	rsync -av --progress ../auth-ms $(TEMPORARY_DIR) --exclude auth-ms/deployments
+	cp ../go.work.sum $(TEMPORARY_DIR)/
 
-.PHONY: post-build
-post-build:
-	rm -rf tmp
+.PHONY: clean-tmp
+clean-tmp:
+	rm -rf $(TEMPORARY_DIR)
+
+.PHONY: docker-image
+docker-image:
+	docker build -t $(DOCKER_IMAGE_NAME) -f deployments/Dockerfile $(TEMPORARY_DIR)/
 
 .PHONY: build
-build:
-	docker build -t theg-auth-ms -f deployments/Dockerfile tmp/
+build: clean-tmp setup-tmp docker-image clean-tmp
 
-.PHONY: bui
-bui: pre-build build post-build
-
-.PHONY: start
-start:
-	docker run -it --rm -p 8081:8080 --name auth-ms theg-auth-ms
+.PHONY: start-container
+start-container:
+	docker run -it --rm -p 8081:8080 --name $(CONTAINER_NAME) $(DOCKER_IMAGE_NAME)
