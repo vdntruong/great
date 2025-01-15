@@ -1,0 +1,184 @@
+{
+  "main": {
+    "id": "4e9dc885db573593",
+    "type": "split",
+    "children": [
+      {
+        "id": "f3ea1944cfa01378",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "1aadde6cf5f999d7",
+            "type": "leaf",
+            "state": {
+              "type": "kanban",
+              "state": {
+                "file": "alltasks.md",
+                "kanbanViewState": {
+                  "kanban-plugin": "board",
+                  "list-collapse": [
+                    false,
+                    false,
+                    false,
+                    false,
+                    false
+                  ]
+                }
+              },
+              "icon": "lucide-trello",
+              "title": "alltasks"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "b32b4bad1e591b4e",
+    "type": "split",
+    "children": [
+      {
+        "id": "a94e0d714977efd7",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "66a638bade1b8f9d",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-folder-closed",
+              "title": "Files"
+            }
+          },
+          {
+            "id": "6f5c5fee7ecd0368",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "Search"
+            }
+          },
+          {
+            "id": "53f756f2ad9448db",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {},
+              "icon": "lucide-bookmark",
+              "title": "Bookmarks"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 212.5,
+    "collapsed": true
+  },
+  "right": {
+    "id": "2392921666068ee9",
+    "type": "split",
+    "children": [
+      {
+        "id": "548ba4e282890f16",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "34b31d94ea379734",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "alltasks.md",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "Backlinks for alltasks"
+            }
+          },
+          {
+            "id": "d0ba0b172944c269",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "alltasks.md",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "Outgoing links from alltasks"
+            }
+          },
+          {
+            "id": "9bf25fbb6843975c",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true
+              },
+              "icon": "lucide-tags",
+              "title": "Tags"
+            }
+          },
+          {
+            "id": "12a7998d647b26ac",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "alltasks.md"
+              },
+              "icon": "lucide-list",
+              "title": "Outline of alltasks"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:Open quick switcher": false,
+      "graph:Open graph view": false,
+      "canvas:Create new canvas": false,
+      "daily-notes:Open today's daily note": false,
+      "templates:Insert template": false,
+      "command-palette:Open command palette": false,
+      "obsidian-kanban:Create new board": false
+    }
+  },
+  "active": "1aadde6cf5f999d7",
+  "lastOpenFiles": [
+    "Integrate Casbin.md",
+    "alltasks.md",
+    "Tasks.md",
+    "Tasks",
+    "create a link.md",
+    "Untitled.md"
+  ]
+}
