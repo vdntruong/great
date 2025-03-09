@@ -4,29 +4,17 @@
     "type": "split",
     "children": [
       {
-        "id": "f3ea1944cfa01378",
+        "id": "cbefa518b7a9ae63",
         "type": "tabs",
         "children": [
           {
-            "id": "1aadde6cf5f999d7",
+            "id": "04681760eaa60171",
             "type": "leaf",
             "state": {
-              "type": "kanban",
-              "state": {
-                "file": "alltasks.md",
-                "kanbanViewState": {
-                  "kanban-plugin": "board",
-                  "list-collapse": [
-                    false,
-                    false,
-                    false,
-                    false,
-                    false
-                  ]
-                }
-              },
-              "icon": "lucide-trello",
-              "title": "alltasks"
+              "type": "empty",
+              "state": {},
+              "icon": "lucide-file",
+              "title": "New tab"
             }
           }
         ]
@@ -85,8 +73,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 212.5,
-    "collapsed": true
+    "width": 212.5
   },
   "right": {
     "id": "2392921666068ee9",
@@ -172,7 +159,7 @@
       "obsidian-kanban:Create new board": false
     }
   },
-  "active": "1aadde6cf5f999d7",
+  "active": "04681760eaa60171",
   "lastOpenFiles": [
     "Integrate Casbin.md",
     "alltasks.md",
