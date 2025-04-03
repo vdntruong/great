@@ -1,0 +1,12 @@
+version: "2"
+sql:
+  - engine: "postgresql"
+    schema: "db/migrations"
+    queries: "db/queries/product_queries.sql"
+    gen:
+      go:
+        package: "dao"
+        out: "internal/dao"
+        emit_json_tags: true
+        emit_db_tags: true
+        emit_interface: true

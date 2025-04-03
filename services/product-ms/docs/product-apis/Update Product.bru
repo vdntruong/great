@@ -1,0 +1,18 @@
+meta {
+  name: Update Product
+  type: http
+  seq: 2
+}
+
+put {
+  url: http://localhost:8081/products/2
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "name": "bao tay",
+    "description": "bao che tay"
+  }
+}

@@ -1,0 +1,18 @@
+meta {
+  name: Create Product
+  type: http
+  seq: 1
+}
+
+post {
+  url: http://localhost:8081/products
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "name": "quần",
+    "description": "quần mặc che chim"
+  }
+}
