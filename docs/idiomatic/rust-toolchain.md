@@ -17,6 +17,11 @@ rustup self uninstall
 
 # Rustfmt - The formatter
 
+Formats all bin and lib files of the current crate:
+```bash
+cargo fmt
+```
+
 # Rustc - The compiler
 
 ### Run from a file
@@ -36,9 +41,14 @@ rustc --version
 cargo --version
 ```
 
-### Creating project/crate
+### Creating project (aka: crate)
 ```bash
-cargo new project_a --vcs=none
+cargo new <project_name> --vcs=none
+```
+
+### Adding crates (aka: packages / libs)
+```bash
+cargo add <crate_name>
 ```
 
 ### Building project
@@ -49,6 +59,11 @@ cargo build
 Or, for release:
 ```bash
 cargo build --release
+```
+
+(optional) another way to build for small projects:
+```bash
+rustc main.rs
 ```
 
 ### Running project
