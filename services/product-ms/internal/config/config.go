@@ -29,6 +29,9 @@ type Config struct {
 	DBName               string `env:"DB_NAME" envDefault:"product-db"`
 	DBMaxConnections     int    `env:"DB_MAX_CONNS" envDefault:"10"`
 	DBMaxIdleConnections int    `env:"DB_MAX_IDLE" envDefault:"10"`
+
+	// OTLPEndpoint for instrument
+	OTLPEndpoint string `env:"OTLP_ENDPOINT" envDefault:"localhost:4317"`
 }
 
 func (c *Config) Addr() string {

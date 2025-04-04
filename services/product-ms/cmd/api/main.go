@@ -1,8 +1,10 @@
 package main
 
 import (
+	"commons/otel"
 	"context"
 	"errors"
+	"fmt"
 	"net/http"
 	"os"
 	"os/signal"
@@ -21,6 +23,14 @@ func main() {
 	if err != nil {
 		panic("Could not load config due to " + err.Error())
 	}
+
+	fmt.Printf("configuration: %+v\n", cfg)
+
+	cleanup, err := otel.SetupOpenTelemetry(cfg.AppName, cfg.AppVersion)
+	if err != nil {
+		panic("Could not setup open telemetry: " + err.Error())
+	}
+	defer cleanup()
 
 	infra, err := infrastructure.Load(cfg)
 	if err != nil {

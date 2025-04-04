@@ -1,12 +1,11 @@
 ROOT_DIR := $(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
+TEMPORARY_DIR := tmp
+CONTAINER_NAME := product-ms
+DOCKER_IMAGE_NAME := theg-product-ms
 
 .PHONY: lint
 lint:
 	golangci-lint run ./... --verbose
-
-.PHONY: build
-build:
-	go build ./cmd/api
 
 # Docker usage | https://github.com/golang-migrate/migrate?tab=readme-ov-file#docker-usage
 .PHONY: db-migrate
@@ -23,3 +22,27 @@ db-migrate-up:
 db-migrate-down:
 	docker run --rm -v $(ROOT_DIR)/db/migrations:/migrations --network host migrate/migrate \
 	-path=/migrations -database $(LOCAL_DATABASE_URL) down 1
+
+## Build docker image
+
+.PHONY: setup-tmp
+setup-tmp:
+	mkdir $(TEMPORARY_DIR) || true
+	rsync -av --progress ../commons $(TEMPORARY_DIR)
+	rsync -av --progress ../product-ms $(TEMPORARY_DIR) --exclude product-ms/deployments
+	cp ../go.work.sum $(TEMPORARY_DIR)/
+
+.PHONY: clean-tmp
+clean-tmp:
+	rm -rf $(TEMPORARY_DIR)
+
+.PHONY: docker-image
+docker-image:
+	docker build -t $(DOCKER_IMAGE_NAME) -f deployments/Dockerfile $(TEMPORARY_DIR)/
+
+.PHONY: build
+build: clean-tmp setup-tmp docker-image clean-tmp
+
+.PHONY: start-container
+start-container:
+	docker run -it --rm -p 8083:8080 --name $(CONTAINER_NAME) $(DOCKER_IMAGE_NAME)

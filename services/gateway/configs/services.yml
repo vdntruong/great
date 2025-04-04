@@ -22,3 +22,12 @@ http:
           path: "/healthz"
           interval: 10s
           timeout: 2s
+
+    product-ms:
+      loadBalancer:
+        servers:
+          - url: "http://product-ms:8080"
+        healthCheck:
+          path: "/healthz"
+          interval: 10s
+          timeout: 2s

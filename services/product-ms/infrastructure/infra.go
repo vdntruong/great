@@ -13,6 +13,7 @@ type Infra struct {
 
 func Load(cfg *config.Config) (*Infra, error) {
 	dbCfg := cfg.DBConfig()
+
 	sqlDB, err := db.NewSqlDB(dbCfg.Driver, dbCfg.GetDataSourceName(), dbCfg.DatabaseName, cfg.DBMaxConnections, cfg.DBMaxIdleConnections)
 	if err != nil {
 		return nil, err

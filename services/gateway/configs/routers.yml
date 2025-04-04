@@ -39,6 +39,14 @@ http:
       service: user-ms
       priority: 200
 
+    # Product routers
+    product-router:
+      entryPoints:
+        - web
+        - websecure
+      rule: "Host(`product.theg.localhost`)"
+      service: product-ms
+
     user-protected-router:
       entryPoints:
         - web
