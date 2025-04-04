@@ -1,6 +1,7 @@
 package config
 
 import (
+	"commons/db/postgre"
 	"fmt"
 	"os"
 	"time"
@@ -20,6 +21,7 @@ type Config struct {
 	WriteTimeout    time.Duration `env:"WRITE_TIMEOUT" envDefault:"5s"`
 	ShutdownTimeout time.Duration `env:"SHUTDOWN_TIMEOUT" envDefault:"10s"`
 
+	DBDriver             string `env:"DB_DRIVER" envDefault:"postgres"`
 	DBHost               string `env:"DB_HOST" envDefault:"localhost"`
 	DBPort               string `env:"DB_PORT" envDefault:"5432"`
 	DBUsername           string `env:"DB_USER" envDefault:"postgres"`
@@ -29,8 +31,21 @@ type Config struct {
 	DBMaxIdleConnections int    `env:"DB_MAX_IDLE" envDefault:"10"`
 }
 
-func (c Config) Addr() string {
+func (c *Config) Addr() string {
 	return fmt.Sprintf(":%s", c.HTTPPort)
+}
+
+func (c *Config) DBConfig() *postgre.Config {
+	return &postgre.Config{
+		Driver:             c.DBDriver,
+		Host:               c.DBHost,
+		Port:               c.DBPort,
+		Username:           c.DBUsername,
+		Password:           c.DBPassword,
+		DatabaseName:       c.DBName,
+		MaxConnections:     c.DBMaxConnections,
+		MaxIdleConnections: c.DBMaxIdleConnections,
+	}
 }
 
 func Load() (*Config, error) {

@@ -7,12 +7,11 @@ import (
 	"os"
 	"os/signal"
 
-	"commons/db/postgre"
-	"commons/otel/db"
-
+	"product-ms/infrastructure"
 	"product-ms/internal/api"
 	"product-ms/internal/config"
-	"product-ms/internal/repository"
+	"product-ms/internal/repository/dao"
+	"product-ms/internal/service"
 
 	chi "github.com/go-chi/chi/v5"
 )
@@ -20,42 +19,32 @@ import (
 func main() {
 	cfg, err := config.Load()
 	if err != nil {
-		panic("Failed to load config due to " + err.Error())
+		panic("Could not load config due to " + err.Error())
 	}
 
-	dbCfg := postgre.Config{
-		Host:               cfg.DBHost,
-		Port:               cfg.DBPort,
-		Username:           cfg.DBUsername,
-		Password:           cfg.DBPassword,
-		DatabaseName:       cfg.DBName,
-		MaxConnections:     cfg.DBMaxConnections,
-		MaxIdleConnections: cfg.DBMaxIdleConnections,
-	}
-	sqlDB, cleanup, err := db.NewDB(dbCfg.GetDataSourceName(), dbCfg.DatabaseName, cfg.DBMaxConnections, cfg.DBMaxIdleConnections)
+	infra, err := infrastructure.Load(cfg)
 	if err != nil {
-		panic("Failed to connect database")
+		panic("Could not load infrastructure due to " + err.Error())
 	}
-	defer cleanup()
 
-	productRepo := repository.NewProductRepository(sqlDB)
-	productSvc := api.NewProductService(productRepo)
-	productHandler := api.NewProductHandler(productSvc)
+	queries := dao.New(infra.DB)
+	svc := service.NewProductService(queries)
+	handler := api.NewProductHandler(svc)
 
-	r := chi.NewRouter()
-	api.Middlewares(cfg, r)
-	productHandler.RegisterRoutes(r)
+	router := chi.NewRouter()
+	api.Middlewares(cfg, router)
+	handler.RegisterRoutes(router)
 
 	server := &http.Server{
 		Addr:         cfg.Addr(),
-		Handler:      r,
+		Handler:      router,
 		IdleTimeout:  cfg.IdleTimeout,
 		ReadTimeout:  cfg.ReadTimeout,
 		WriteTimeout: cfg.WriteTimeout,
 	}
 
 	go func() {
-		println("Server is starting up", cfg.Addr())
+		println("Server is starting up", server.Addr)
 		if err := server.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
 			panic("Failed to start server due to " + err.Error())
 		}

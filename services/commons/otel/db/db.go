@@ -38,5 +38,23 @@ func NewDB(dsn string, dbname string, maxConn, maxIdleConn int) (*sql.DB, func()
 	}
 
 	return db, cleanup, nil
+}
 
+func NewSqlDB(driver string, dsn string, dbname string, maxConn, maxIdleConn int) (*sql.DB, error) {
+	db, err := otelsql.Open(
+		driver, dsn,
+		otelsql.WithAttributes(semconv.DBSystemPostgreSQL),
+		otelsql.WithDBName(dbname),
+	)
+	if err != nil {
+		return nil, err
+	}
+	if err = db.Ping(); err != nil {
+		return nil, err
+	}
+
+	db.SetMaxOpenConns(maxConn)
+	db.SetMaxIdleConns(maxIdleConn)
+
+	return db, nil
 }

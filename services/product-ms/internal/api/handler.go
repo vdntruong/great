@@ -7,17 +7,18 @@ import (
 
 	wjson "commons/http/json"
 
-	"product-ms/internal/dao"
 	"product-ms/internal/dto"
+	"product-ms/internal/repository/dao"
+	"product-ms/internal/service"
 
 	chi "github.com/go-chi/chi/v5"
 )
 
 type ProductHandler struct {
-	ProductSvc *ProductSvc
+	ProductSvc *service.ProductService
 }
 
-func NewProductHandler(svc *ProductSvc) *ProductHandler {
+func NewProductHandler(svc *service.ProductService) *ProductHandler {
 	return &ProductHandler{
 		ProductSvc: svc,
 	}
@@ -38,7 +39,7 @@ func (h *ProductHandler) HandleCreateProduct(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
-	product, err := h.ProductSvc.ProductRepo.DAO.CreateProduct(r.Context(), dao.CreateProductParams{
+	product, err := h.ProductSvc.DAO.CreateProduct(r.Context(), dao.CreateProductParams{
 		Name:        req.Name,
 		Description: req.Description,
 	})
@@ -64,7 +65,7 @@ func (h *ProductHandler) HandleUpdateProduct(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
-	product, err := h.ProductSvc.ProductRepo.DAO.UpdateProduct(r.Context(), dao.UpdateProductParams{
+	product, err := h.ProductSvc.DAO.UpdateProduct(r.Context(), dao.UpdateProductParams{
 		ID:          int32(id),
 		Name:        req.Name,
 		Description: req.Description,
@@ -85,7 +86,7 @@ func (h *ProductHandler) HandleGetProductByID(w http.ResponseWriter, r *http.Req
 		return
 	}
 
-	product, err := h.ProductSvc.ProductRepo.DAO.GetProductByID(r.Context(), int32(id))
+	product, err := h.ProductSvc.DAO.GetProductByID(r.Context(), int32(id))
 	if err != nil {
 		wjson.RespondNotFoundError(w, errors.New("product not found"))
 		return
@@ -95,7 +96,7 @@ func (h *ProductHandler) HandleGetProductByID(w http.ResponseWriter, r *http.Req
 }
 
 func (h *ProductHandler) HandleListProducts(w http.ResponseWriter, r *http.Request) {
-	products, err := h.ProductSvc.ProductRepo.DAO.ListProducts(r.Context())
+	products, err := h.ProductSvc.DAO.ListProducts(r.Context())
 	if err != nil {
 		wjson.RespondInternalServerError(w, err)
 		return
@@ -112,7 +113,7 @@ func (h *ProductHandler) HandleDeleteProduct(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
-	if err := h.ProductSvc.ProductRepo.DAO.DeleteProduct(r.Context(), int32(id)); err != nil {
+	if err := h.ProductSvc.DAO.DeleteProduct(r.Context(), int32(id)); err != nil {
 		wjson.RespondInternalServerError(w, err)
 		return
 	}

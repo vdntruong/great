@@ -1,7 +1,8 @@
 package api
 
 import (
-	"net/http"
+	"commons/handler"
+	"time"
 
 	"product-ms/internal/config"
 
@@ -14,8 +15,8 @@ func Middlewares(cfg *config.Config, r chi.Router) {
 	r.Use(middleware.RealIP)
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
+	//r.Use(otelmiddleware.Metrics)      // otel metrics
+	//r.Use(otelmiddleware.TraceRequest) // otel trace
 	r.Use(middleware.Timeout(cfg.ReadTimeout + cfg.WriteTimeout))
-	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("welcome"))
-	})
+	r.Get("/healthz", handler.HealthCheck(time.Now(), cfg.AppName)) // health check traefik
 }
