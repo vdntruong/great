@@ -1,0 +1,33 @@
+{
+	"nodes":[
+		{"id":"6f2ea2d033e0ed67","type":"text","text":"Product Service","x":-80,"y":-237,"width":220,"height":50},
+		{"id":"415c9a4437a9c6f6","type":"text","text":"Store Service","x":-347,"y":-150,"width":220,"height":50},
+		{"id":"8ed4bc016843b9bf","type":"text","text":"Stats, Online time, Bot Shop","x":-900,"y":-35,"width":293,"height":50},
+		{"id":"7bce7cc04364ab03","type":"text","text":"Store","x":-530,"y":-35,"width":183,"height":50},
+		{"id":"6efe1c7b19e53561","type":"text","text":"Add products","x":-530,"y":52,"width":183,"height":50},
+		{"id":"18aa368a14394f39","type":"text","text":"Price base on type, and unit","x":-900,"y":52,"width":293,"height":50},
+		{"id":"c95d4c6b85f4b317","type":"text","text":"Discounts","x":-530,"y":144,"width":183,"height":50},
+		{"id":"5a1eebe2ea3e20e6","type":"text","text":"Create campaign","x":-831,"y":144,"width":224,"height":50},
+		{"id":"f6979be1c5857e0d","type":"text","text":"Generate vouchers","x":-831,"y":232,"width":224,"height":50},
+		{"id":"e1f0031fb432b3c1","type":"text","text":"Favourite, Like, Save","x":140,"y":-125,"width":218,"height":50},
+		{"id":"ca83a7be7ac171ec","type":"text","text":"Comments, Reviews (Shop, Items)","x":140,"y":-45,"width":320,"height":50},
+		{"id":"18bcd9dc997fe887","type":"text","text":"Rating, Sells, Comparative","x":140,"y":47,"width":260,"height":50},
+		{"id":"8eb116a60421ff0b","type":"text","text":"Cart","x":140,"y":135,"width":183,"height":50},
+		{"id":"28dd1cc0e7ea969c","type":"text","text":"Separate items by category","x":400,"y":160,"width":280,"height":50}
+	],
+	"edges":[
+		{"id":"905ec98631655a7d","fromNode":"6f2ea2d033e0ed67","fromSide":"bottom","toNode":"8eb116a60421ff0b","toSide":"left"},
+		{"id":"f04c2920f42c58e7","fromNode":"6f2ea2d033e0ed67","fromSide":"bottom","toNode":"e1f0031fb432b3c1","toSide":"left"},
+		{"id":"69ee10731b9c48e2","fromNode":"6f2ea2d033e0ed67","fromSide":"bottom","toNode":"ca83a7be7ac171ec","toSide":"left"},
+		{"id":"b41b17984aa9790d","fromNode":"415c9a4437a9c6f6","fromSide":"bottom","toNode":"7bce7cc04364ab03","toSide":"right"},
+		{"id":"d2eb69bb66fa6b19","fromNode":"ca83a7be7ac171ec","fromSide":"right","toNode":"18bcd9dc997fe887","toSide":"right"},
+		{"id":"30f616b282cd3819","fromNode":"8eb116a60421ff0b","fromSide":"right","toNode":"28dd1cc0e7ea969c","toSide":"left"},
+		{"id":"0bfcac2bd629777f","fromNode":"7bce7cc04364ab03","fromSide":"left","toNode":"8ed4bc016843b9bf","toSide":"right"},
+		{"id":"1f6659ffe176a3d9","fromNode":"415c9a4437a9c6f6","fromSide":"bottom","toNode":"6efe1c7b19e53561","toSide":"right"},
+		{"id":"245059f9163786e7","fromNode":"6efe1c7b19e53561","fromSide":"left","toNode":"18aa368a14394f39","toSide":"right"},
+		{"id":"5f34d8255dd70f3a","fromNode":"415c9a4437a9c6f6","fromSide":"bottom","toNode":"c95d4c6b85f4b317","toSide":"right"},
+		{"id":"85383c5de39ac60e","fromNode":"c95d4c6b85f4b317","fromSide":"left","toNode":"f6979be1c5857e0d","toSide":"right"},
+		{"id":"37d82ef0f0fdb3f5","fromNode":"c95d4c6b85f4b317","fromSide":"left","toNode":"5a1eebe2ea3e20e6","toSide":"right"},
+		{"id":"bb9ff8cbacbdad4f","fromNode":"6f2ea2d033e0ed67","fromSide":"left","toNode":"415c9a4437a9c6f6","toSide":"right"}
+	]
+}

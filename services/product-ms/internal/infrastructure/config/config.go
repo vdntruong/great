@@ -1,10 +1,11 @@
 package config
 
 import (
-	"commons/db/postgre"
 	"fmt"
 	"os"
 	"time"
+
+	"commons/db/postgre"
 
 	env "github.com/caarlos0/env/v11"
 	"github.com/joho/godotenv"

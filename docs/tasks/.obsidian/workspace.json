@@ -11,10 +11,17 @@
             "id": "04681760eaa60171",
             "type": "leaf",
             "state": {
-              "type": "empty",
-              "state": {},
-              "icon": "lucide-file",
-              "title": "New tab"
+              "type": "canvas",
+              "state": {
+                "file": "ProductService.canvas",
+                "viewState": {
+                  "x": -57,
+                  "y": -10,
+                  "zoom": -0.6474389790630674
+                }
+              },
+              "icon": "lucide-layout-dashboard",
+              "title": "ProductService"
             }
           }
         ]
@@ -36,7 +43,8 @@
             "state": {
               "type": "file-explorer",
               "state": {
-                "sortOrder": "alphabetical"
+                "sortOrder": "alphabetical",
+                "autoReveal": false
               },
               "icon": "lucide-folder-closed",
               "title": "Files"
@@ -161,11 +169,14 @@
   },
   "active": "04681760eaa60171",
   "lastOpenFiles": [
+    "Overview.canvas",
+    "ProductService.canvas",
+    "ProductService.md",
     "Integrate Casbin.md",
+    "Untitled.md",
     "alltasks.md",
     "Tasks.md",
     "Tasks",
-    "create a link.md",
-    "Untitled.md"
+    "create a link.md"
   ]
 }

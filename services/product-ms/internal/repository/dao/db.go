@@ -7,6 +7,7 @@ package dao
 import (
 	"context"
 	"database/sql"
+	"fmt"
 )
 
 type DBTX interface {
@@ -20,12 +21,548 @@ func New(db DBTX) *Queries {
 	return &Queries{db: db}
 }
 
+func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
+	q := Queries{db: db}
+	var err error
+	if q.addDiscountCategoryStmt, err = db.PrepareContext(ctx, AddDiscountCategory); err != nil {
+		return nil, fmt.Errorf("error preparing query AddDiscountCategory: %w", err)
+	}
+	if q.addDiscountProductStmt, err = db.PrepareContext(ctx, AddDiscountProduct); err != nil {
+		return nil, fmt.Errorf("error preparing query AddDiscountProduct: %w", err)
+	}
+	if q.createDiscountStmt, err = db.PrepareContext(ctx, CreateDiscount); err != nil {
+		return nil, fmt.Errorf("error preparing query CreateDiscount: %w", err)
+	}
+	if q.createProductStmt, err = db.PrepareContext(ctx, CreateProduct); err != nil {
+		return nil, fmt.Errorf("error preparing query CreateProduct: %w", err)
+	}
+	if q.createProductImageStmt, err = db.PrepareContext(ctx, CreateProductImage); err != nil {
+		return nil, fmt.Errorf("error preparing query CreateProductImage: %w", err)
+	}
+	if q.createProductVariantStmt, err = db.PrepareContext(ctx, CreateProductVariant); err != nil {
+		return nil, fmt.Errorf("error preparing query CreateProductVariant: %w", err)
+	}
+	if q.createStoreStmt, err = db.PrepareContext(ctx, CreateStore); err != nil {
+		return nil, fmt.Errorf("error preparing query CreateStore: %w", err)
+	}
+	if q.createStoreCategoryStmt, err = db.PrepareContext(ctx, CreateStoreCategory); err != nil {
+		return nil, fmt.Errorf("error preparing query CreateStoreCategory: %w", err)
+	}
+	if q.createVoucherStmt, err = db.PrepareContext(ctx, CreateVoucher); err != nil {
+		return nil, fmt.Errorf("error preparing query CreateVoucher: %w", err)
+	}
+	if q.deleteDiscountStmt, err = db.PrepareContext(ctx, DeleteDiscount); err != nil {
+		return nil, fmt.Errorf("error preparing query DeleteDiscount: %w", err)
+	}
+	if q.deleteProductStmt, err = db.PrepareContext(ctx, DeleteProduct); err != nil {
+		return nil, fmt.Errorf("error preparing query DeleteProduct: %w", err)
+	}
+	if q.deleteProductImageStmt, err = db.PrepareContext(ctx, DeleteProductImage); err != nil {
+		return nil, fmt.Errorf("error preparing query DeleteProductImage: %w", err)
+	}
+	if q.deleteProductVariantStmt, err = db.PrepareContext(ctx, DeleteProductVariant); err != nil {
+		return nil, fmt.Errorf("error preparing query DeleteProductVariant: %w", err)
+	}
+	if q.deleteStoreStmt, err = db.PrepareContext(ctx, DeleteStore); err != nil {
+		return nil, fmt.Errorf("error preparing query DeleteStore: %w", err)
+	}
+	if q.deleteStoreCategoryStmt, err = db.PrepareContext(ctx, DeleteStoreCategory); err != nil {
+		return nil, fmt.Errorf("error preparing query DeleteStoreCategory: %w", err)
+	}
+	if q.deleteVoucherStmt, err = db.PrepareContext(ctx, DeleteVoucher); err != nil {
+		return nil, fmt.Errorf("error preparing query DeleteVoucher: %w", err)
+	}
+	if q.getDiscountByCodeStmt, err = db.PrepareContext(ctx, GetDiscountByCode); err != nil {
+		return nil, fmt.Errorf("error preparing query GetDiscountByCode: %w", err)
+	}
+	if q.getDiscountByIDStmt, err = db.PrepareContext(ctx, GetDiscountByID); err != nil {
+		return nil, fmt.Errorf("error preparing query GetDiscountByID: %w", err)
+	}
+	if q.getDiscountCategoriesStmt, err = db.PrepareContext(ctx, GetDiscountCategories); err != nil {
+		return nil, fmt.Errorf("error preparing query GetDiscountCategories: %w", err)
+	}
+	if q.getDiscountProductsStmt, err = db.PrepareContext(ctx, GetDiscountProducts); err != nil {
+		return nil, fmt.Errorf("error preparing query GetDiscountProducts: %w", err)
+	}
+	if q.getProductByIDStmt, err = db.PrepareContext(ctx, GetProductByID); err != nil {
+		return nil, fmt.Errorf("error preparing query GetProductByID: %w", err)
+	}
+	if q.getProductBySlugStmt, err = db.PrepareContext(ctx, GetProductBySlug); err != nil {
+		return nil, fmt.Errorf("error preparing query GetProductBySlug: %w", err)
+	}
+	if q.getProductImageByIDStmt, err = db.PrepareContext(ctx, GetProductImageByID); err != nil {
+		return nil, fmt.Errorf("error preparing query GetProductImageByID: %w", err)
+	}
+	if q.getProductImagesStmt, err = db.PrepareContext(ctx, GetProductImages); err != nil {
+		return nil, fmt.Errorf("error preparing query GetProductImages: %w", err)
+	}
+	if q.getProductVariantByIDStmt, err = db.PrepareContext(ctx, GetProductVariantByID); err != nil {
+		return nil, fmt.Errorf("error preparing query GetProductVariantByID: %w", err)
+	}
+	if q.getProductVariantsStmt, err = db.PrepareContext(ctx, GetProductVariants); err != nil {
+		return nil, fmt.Errorf("error preparing query GetProductVariants: %w", err)
+	}
+	if q.getStoreByIDStmt, err = db.PrepareContext(ctx, GetStoreByID); err != nil {
+		return nil, fmt.Errorf("error preparing query GetStoreByID: %w", err)
+	}
+	if q.getStoreBySlugStmt, err = db.PrepareContext(ctx, GetStoreBySlug); err != nil {
+		return nil, fmt.Errorf("error preparing query GetStoreBySlug: %w", err)
+	}
+	if q.getStoreCategoriesStmt, err = db.PrepareContext(ctx, GetStoreCategories); err != nil {
+		return nil, fmt.Errorf("error preparing query GetStoreCategories: %w", err)
+	}
+	if q.getStoreCategoryByIDStmt, err = db.PrepareContext(ctx, GetStoreCategoryByID); err != nil {
+		return nil, fmt.Errorf("error preparing query GetStoreCategoryByID: %w", err)
+	}
+	if q.getStoreCategoryBySlugStmt, err = db.PrepareContext(ctx, GetStoreCategoryBySlug); err != nil {
+		return nil, fmt.Errorf("error preparing query GetStoreCategoryBySlug: %w", err)
+	}
+	if q.getVoucherByCodeStmt, err = db.PrepareContext(ctx, GetVoucherByCode); err != nil {
+		return nil, fmt.Errorf("error preparing query GetVoucherByCode: %w", err)
+	}
+	if q.getVoucherByIDStmt, err = db.PrepareContext(ctx, GetVoucherByID); err != nil {
+		return nil, fmt.Errorf("error preparing query GetVoucherByID: %w", err)
+	}
+	if q.incrementDiscountUsageStmt, err = db.PrepareContext(ctx, IncrementDiscountUsage); err != nil {
+		return nil, fmt.Errorf("error preparing query IncrementDiscountUsage: %w", err)
+	}
+	if q.incrementVoucherUsageStmt, err = db.PrepareContext(ctx, IncrementVoucherUsage); err != nil {
+		return nil, fmt.Errorf("error preparing query IncrementVoucherUsage: %w", err)
+	}
+	if q.listDiscountsStmt, err = db.PrepareContext(ctx, ListDiscounts); err != nil {
+		return nil, fmt.Errorf("error preparing query ListDiscounts: %w", err)
+	}
+	if q.listProductsStmt, err = db.PrepareContext(ctx, ListProducts); err != nil {
+		return nil, fmt.Errorf("error preparing query ListProducts: %w", err)
+	}
+	if q.listProductsByCategoryStmt, err = db.PrepareContext(ctx, ListProductsByCategory); err != nil {
+		return nil, fmt.Errorf("error preparing query ListProductsByCategory: %w", err)
+	}
+	if q.listStoresStmt, err = db.PrepareContext(ctx, ListStores); err != nil {
+		return nil, fmt.Errorf("error preparing query ListStores: %w", err)
+	}
+	if q.listVouchersStmt, err = db.PrepareContext(ctx, ListVouchers); err != nil {
+		return nil, fmt.Errorf("error preparing query ListVouchers: %w", err)
+	}
+	if q.removeDiscountCategoryStmt, err = db.PrepareContext(ctx, RemoveDiscountCategory); err != nil {
+		return nil, fmt.Errorf("error preparing query RemoveDiscountCategory: %w", err)
+	}
+	if q.removeDiscountProductStmt, err = db.PrepareContext(ctx, RemoveDiscountProduct); err != nil {
+		return nil, fmt.Errorf("error preparing query RemoveDiscountProduct: %w", err)
+	}
+	if q.updateDiscountStmt, err = db.PrepareContext(ctx, UpdateDiscount); err != nil {
+		return nil, fmt.Errorf("error preparing query UpdateDiscount: %w", err)
+	}
+	if q.updateProductStmt, err = db.PrepareContext(ctx, UpdateProduct); err != nil {
+		return nil, fmt.Errorf("error preparing query UpdateProduct: %w", err)
+	}
+	if q.updateProductImageStmt, err = db.PrepareContext(ctx, UpdateProductImage); err != nil {
+		return nil, fmt.Errorf("error preparing query UpdateProductImage: %w", err)
+	}
+	if q.updateProductVariantStmt, err = db.PrepareContext(ctx, UpdateProductVariant); err != nil {
+		return nil, fmt.Errorf("error preparing query UpdateProductVariant: %w", err)
+	}
+	if q.updateStoreStmt, err = db.PrepareContext(ctx, UpdateStore); err != nil {
+		return nil, fmt.Errorf("error preparing query UpdateStore: %w", err)
+	}
+	if q.updateStoreCategoryStmt, err = db.PrepareContext(ctx, UpdateStoreCategory); err != nil {
+		return nil, fmt.Errorf("error preparing query UpdateStoreCategory: %w", err)
+	}
+	if q.updateVoucherStmt, err = db.PrepareContext(ctx, UpdateVoucher); err != nil {
+		return nil, fmt.Errorf("error preparing query UpdateVoucher: %w", err)
+	}
+	return &q, nil
+}
+
+func (q *Queries) Close() error {
+	var err error
+	if q.addDiscountCategoryStmt != nil {
+		if cerr := q.addDiscountCategoryStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing addDiscountCategoryStmt: %w", cerr)
+		}
+	}
+	if q.addDiscountProductStmt != nil {
+		if cerr := q.addDiscountProductStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing addDiscountProductStmt: %w", cerr)
+		}
+	}
+	if q.createDiscountStmt != nil {
+		if cerr := q.createDiscountStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing createDiscountStmt: %w", cerr)
+		}
+	}
+	if q.createProductStmt != nil {
+		if cerr := q.createProductStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing createProductStmt: %w", cerr)
+		}
+	}
+	if q.createProductImageStmt != nil {
+		if cerr := q.createProductImageStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing createProductImageStmt: %w", cerr)
+		}
+	}
+	if q.createProductVariantStmt != nil {
+		if cerr := q.createProductVariantStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing createProductVariantStmt: %w", cerr)
+		}
+	}
+	if q.createStoreStmt != nil {
+		if cerr := q.createStoreStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing createStoreStmt: %w", cerr)
+		}
+	}
+	if q.createStoreCategoryStmt != nil {
+		if cerr := q.createStoreCategoryStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing createStoreCategoryStmt: %w", cerr)
+		}
+	}
+	if q.createVoucherStmt != nil {
+		if cerr := q.createVoucherStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing createVoucherStmt: %w", cerr)
+		}
+	}
+	if q.deleteDiscountStmt != nil {
+		if cerr := q.deleteDiscountStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing deleteDiscountStmt: %w", cerr)
+		}
+	}
+	if q.deleteProductStmt != nil {
+		if cerr := q.deleteProductStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing deleteProductStmt: %w", cerr)
+		}
+	}
+	if q.deleteProductImageStmt != nil {
+		if cerr := q.deleteProductImageStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing deleteProductImageStmt: %w", cerr)
+		}
+	}
+	if q.deleteProductVariantStmt != nil {
+		if cerr := q.deleteProductVariantStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing deleteProductVariantStmt: %w", cerr)
+		}
+	}
+	if q.deleteStoreStmt != nil {
+		if cerr := q.deleteStoreStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing deleteStoreStmt: %w", cerr)
+		}
+	}
+	if q.deleteStoreCategoryStmt != nil {
+		if cerr := q.deleteStoreCategoryStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing deleteStoreCategoryStmt: %w", cerr)
+		}
+	}
+	if q.deleteVoucherStmt != nil {
+		if cerr := q.deleteVoucherStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing deleteVoucherStmt: %w", cerr)
+		}
+	}
+	if q.getDiscountByCodeStmt != nil {
+		if cerr := q.getDiscountByCodeStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getDiscountByCodeStmt: %w", cerr)
+		}
+	}
+	if q.getDiscountByIDStmt != nil {
+		if cerr := q.getDiscountByIDStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getDiscountByIDStmt: %w", cerr)
+		}
+	}
+	if q.getDiscountCategoriesStmt != nil {
+		if cerr := q.getDiscountCategoriesStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getDiscountCategoriesStmt: %w", cerr)
+		}
+	}
+	if q.getDiscountProductsStmt != nil {
+		if cerr := q.getDiscountProductsStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getDiscountProductsStmt: %w", cerr)
+		}
+	}
+	if q.getProductByIDStmt != nil {
+		if cerr := q.getProductByIDStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getProductByIDStmt: %w", cerr)
+		}
+	}
+	if q.getProductBySlugStmt != nil {
+		if cerr := q.getProductBySlugStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getProductBySlugStmt: %w", cerr)
+		}
+	}
+	if q.getProductImageByIDStmt != nil {
+		if cerr := q.getProductImageByIDStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getProductImageByIDStmt: %w", cerr)
+		}
+	}
+	if q.getProductImagesStmt != nil {
+		if cerr := q.getProductImagesStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getProductImagesStmt: %w", cerr)
+		}
+	}
+	if q.getProductVariantByIDStmt != nil {
+		if cerr := q.getProductVariantByIDStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getProductVariantByIDStmt: %w", cerr)
+		}
+	}
+	if q.getProductVariantsStmt != nil {
+		if cerr := q.getProductVariantsStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getProductVariantsStmt: %w", cerr)
+		}
+	}
+	if q.getStoreByIDStmt != nil {
+		if cerr := q.getStoreByIDStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getStoreByIDStmt: %w", cerr)
+		}
+	}
+	if q.getStoreBySlugStmt != nil {
+		if cerr := q.getStoreBySlugStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getStoreBySlugStmt: %w", cerr)
+		}
+	}
+	if q.getStoreCategoriesStmt != nil {
+		if cerr := q.getStoreCategoriesStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getStoreCategoriesStmt: %w", cerr)
+		}
+	}
+	if q.getStoreCategoryByIDStmt != nil {
+		if cerr := q.getStoreCategoryByIDStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getStoreCategoryByIDStmt: %w", cerr)
+		}
+	}
+	if q.getStoreCategoryBySlugStmt != nil {
+		if cerr := q.getStoreCategoryBySlugStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getStoreCategoryBySlugStmt: %w", cerr)
+		}
+	}
+	if q.getVoucherByCodeStmt != nil {
+		if cerr := q.getVoucherByCodeStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getVoucherByCodeStmt: %w", cerr)
+		}
+	}
+	if q.getVoucherByIDStmt != nil {
+		if cerr := q.getVoucherByIDStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getVoucherByIDStmt: %w", cerr)
+		}
+	}
+	if q.incrementDiscountUsageStmt != nil {
+		if cerr := q.incrementDiscountUsageStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing incrementDiscountUsageStmt: %w", cerr)
+		}
+	}
+	if q.incrementVoucherUsageStmt != nil {
+		if cerr := q.incrementVoucherUsageStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing incrementVoucherUsageStmt: %w", cerr)
+		}
+	}
+	if q.listDiscountsStmt != nil {
+		if cerr := q.listDiscountsStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing listDiscountsStmt: %w", cerr)
+		}
+	}
+	if q.listProductsStmt != nil {
+		if cerr := q.listProductsStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing listProductsStmt: %w", cerr)
+		}
+	}
+	if q.listProductsByCategoryStmt != nil {
+		if cerr := q.listProductsByCategoryStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing listProductsByCategoryStmt: %w", cerr)
+		}
+	}
+	if q.listStoresStmt != nil {
+		if cerr := q.listStoresStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing listStoresStmt: %w", cerr)
+		}
+	}
+	if q.listVouchersStmt != nil {
+		if cerr := q.listVouchersStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing listVouchersStmt: %w", cerr)
+		}
+	}
+	if q.removeDiscountCategoryStmt != nil {
+		if cerr := q.removeDiscountCategoryStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing removeDiscountCategoryStmt: %w", cerr)
+		}
+	}
+	if q.removeDiscountProductStmt != nil {
+		if cerr := q.removeDiscountProductStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing removeDiscountProductStmt: %w", cerr)
+		}
+	}
+	if q.updateDiscountStmt != nil {
+		if cerr := q.updateDiscountStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing updateDiscountStmt: %w", cerr)
+		}
+	}
+	if q.updateProductStmt != nil {
+		if cerr := q.updateProductStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing updateProductStmt: %w", cerr)
+		}
+	}
+	if q.updateProductImageStmt != nil {
+		if cerr := q.updateProductImageStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing updateProductImageStmt: %w", cerr)
+		}
+	}
+	if q.updateProductVariantStmt != nil {
+		if cerr := q.updateProductVariantStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing updateProductVariantStmt: %w", cerr)
+		}
+	}
+	if q.updateStoreStmt != nil {
+		if cerr := q.updateStoreStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing updateStoreStmt: %w", cerr)
+		}
+	}
+	if q.updateStoreCategoryStmt != nil {
+		if cerr := q.updateStoreCategoryStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing updateStoreCategoryStmt: %w", cerr)
+		}
+	}
+	if q.updateVoucherStmt != nil {
+		if cerr := q.updateVoucherStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing updateVoucherStmt: %w", cerr)
+		}
+	}
+	return err
+}
+
+func (q *Queries) exec(ctx context.Context, stmt *sql.Stmt, query string, args ...interface{}) (sql.Result, error) {
+	switch {
+	case stmt != nil && q.tx != nil:
+		return q.tx.StmtContext(ctx, stmt).ExecContext(ctx, args...)
+	case stmt != nil:
+		return stmt.ExecContext(ctx, args...)
+	default:
+		return q.db.ExecContext(ctx, query, args...)
+	}
+}
+
+func (q *Queries) query(ctx context.Context, stmt *sql.Stmt, query string, args ...interface{}) (*sql.Rows, error) {
+	switch {
+	case stmt != nil && q.tx != nil:
+		return q.tx.StmtContext(ctx, stmt).QueryContext(ctx, args...)
+	case stmt != nil:
+		return stmt.QueryContext(ctx, args...)
+	default:
+		return q.db.QueryContext(ctx, query, args...)
+	}
+}
+
+func (q *Queries) queryRow(ctx context.Context, stmt *sql.Stmt, query string, args ...interface{}) *sql.Row {
+	switch {
+	case stmt != nil && q.tx != nil:
+		return q.tx.StmtContext(ctx, stmt).QueryRowContext(ctx, args...)
+	case stmt != nil:
+		return stmt.QueryRowContext(ctx, args...)
+	default:
+		return q.db.QueryRowContext(ctx, query, args...)
+	}
+}
+
 type Queries struct {
-	db DBTX
+	db                         DBTX
+	tx                         *sql.Tx
+	addDiscountCategoryStmt    *sql.Stmt
+	addDiscountProductStmt     *sql.Stmt
+	createDiscountStmt         *sql.Stmt
+	createProductStmt          *sql.Stmt
+	createProductImageStmt     *sql.Stmt
+	createProductVariantStmt   *sql.Stmt
+	createStoreStmt            *sql.Stmt
+	createStoreCategoryStmt    *sql.Stmt
+	createVoucherStmt          *sql.Stmt
+	deleteDiscountStmt         *sql.Stmt
+	deleteProductStmt          *sql.Stmt
+	deleteProductImageStmt     *sql.Stmt
+	deleteProductVariantStmt   *sql.Stmt
+	deleteStoreStmt            *sql.Stmt
+	deleteStoreCategoryStmt    *sql.Stmt
+	deleteVoucherStmt          *sql.Stmt
+	getDiscountByCodeStmt      *sql.Stmt
+	getDiscountByIDStmt        *sql.Stmt
+	getDiscountCategoriesStmt  *sql.Stmt
+	getDiscountProductsStmt    *sql.Stmt
+	getProductByIDStmt         *sql.Stmt
+	getProductBySlugStmt       *sql.Stmt
+	getProductImageByIDStmt    *sql.Stmt
+	getProductImagesStmt       *sql.Stmt
+	getProductVariantByIDStmt  *sql.Stmt
+	getProductVariantsStmt     *sql.Stmt
+	getStoreByIDStmt           *sql.Stmt
+	getStoreBySlugStmt         *sql.Stmt
+	getStoreCategoriesStmt     *sql.Stmt
+	getStoreCategoryByIDStmt   *sql.Stmt
+	getStoreCategoryBySlugStmt *sql.Stmt
+	getVoucherByCodeStmt       *sql.Stmt
+	getVoucherByIDStmt         *sql.Stmt
+	incrementDiscountUsageStmt *sql.Stmt
+	incrementVoucherUsageStmt  *sql.Stmt
+	listDiscountsStmt          *sql.Stmt
+	listProductsStmt           *sql.Stmt
+	listProductsByCategoryStmt *sql.Stmt
+	listStoresStmt             *sql.Stmt
+	listVouchersStmt           *sql.Stmt
+	removeDiscountCategoryStmt *sql.Stmt
+	removeDiscountProductStmt  *sql.Stmt
+	updateDiscountStmt         *sql.Stmt
+	updateProductStmt          *sql.Stmt
+	updateProductImageStmt     *sql.Stmt
+	updateProductVariantStmt   *sql.Stmt
+	updateStoreStmt            *sql.Stmt
+	updateStoreCategoryStmt    *sql.Stmt
+	updateVoucherStmt          *sql.Stmt
 }
 
 func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 	return &Queries{
-		db: tx,
+		db:                         tx,
+		tx:                         tx,
+		addDiscountCategoryStmt:    q.addDiscountCategoryStmt,
+		addDiscountProductStmt:     q.addDiscountProductStmt,
+		createDiscountStmt:         q.createDiscountStmt,
+		createProductStmt:          q.createProductStmt,
+		createProductImageStmt:     q.createProductImageStmt,
+		createProductVariantStmt:   q.createProductVariantStmt,
+		createStoreStmt:            q.createStoreStmt,
+		createStoreCategoryStmt:    q.createStoreCategoryStmt,
+		createVoucherStmt:          q.createVoucherStmt,
+		deleteDiscountStmt:         q.deleteDiscountStmt,
+		deleteProductStmt:          q.deleteProductStmt,
+		deleteProductImageStmt:     q.deleteProductImageStmt,
+		deleteProductVariantStmt:   q.deleteProductVariantStmt,
+		deleteStoreStmt:            q.deleteStoreStmt,
+		deleteStoreCategoryStmt:    q.deleteStoreCategoryStmt,
+		deleteVoucherStmt:          q.deleteVoucherStmt,
+		getDiscountByCodeStmt:      q.getDiscountByCodeStmt,
+		getDiscountByIDStmt:        q.getDiscountByIDStmt,
+		getDiscountCategoriesStmt:  q.getDiscountCategoriesStmt,
+		getDiscountProductsStmt:    q.getDiscountProductsStmt,
+		getProductByIDStmt:         q.getProductByIDStmt,
+		getProductBySlugStmt:       q.getProductBySlugStmt,
+		getProductImageByIDStmt:    q.getProductImageByIDStmt,
+		getProductImagesStmt:       q.getProductImagesStmt,
+		getProductVariantByIDStmt:  q.getProductVariantByIDStmt,
+		getProductVariantsStmt:     q.getProductVariantsStmt,
+		getStoreByIDStmt:           q.getStoreByIDStmt,
+		getStoreBySlugStmt:         q.getStoreBySlugStmt,
+		getStoreCategoriesStmt:     q.getStoreCategoriesStmt,
+		getStoreCategoryByIDStmt:   q.getStoreCategoryByIDStmt,
+		getStoreCategoryBySlugStmt: q.getStoreCategoryBySlugStmt,
+		getVoucherByCodeStmt:       q.getVoucherByCodeStmt,
+		getVoucherByIDStmt:         q.getVoucherByIDStmt,
+		incrementDiscountUsageStmt: q.incrementDiscountUsageStmt,
+		incrementVoucherUsageStmt:  q.incrementVoucherUsageStmt,
+		listDiscountsStmt:          q.listDiscountsStmt,
+		listProductsStmt:           q.listProductsStmt,
+		listProductsByCategoryStmt: q.listProductsByCategoryStmt,
+		listStoresStmt:             q.listStoresStmt,
+		listVouchersStmt:           q.listVouchersStmt,
+		removeDiscountCategoryStmt: q.removeDiscountCategoryStmt,
+		removeDiscountProductStmt:  q.removeDiscountProductStmt,
+		updateDiscountStmt:         q.updateDiscountStmt,
+		updateProductStmt:          q.updateProductStmt,
+		updateProductImageStmt:     q.updateProductImageStmt,
+		updateProductVariantStmt:   q.updateProductVariantStmt,
+		updateStoreStmt:            q.updateStoreStmt,
+		updateStoreCategoryStmt:    q.updateStoreCategoryStmt,
+		updateVoucherStmt:          q.updateVoucherStmt,
 	}
 }

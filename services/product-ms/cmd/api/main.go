@@ -2,20 +2,24 @@ package main
 
 import (
 	"commons/otel"
+	otelmiddleware "commons/otel/middleware"
 	"context"
 	"errors"
 	"fmt"
 	"net/http"
 	"os"
 	"os/signal"
+	"time"
 
-	"product-ms/infrastructure"
-	"product-ms/internal/api"
-	"product-ms/internal/config"
+	chandler "commons/handler"
+	"product-ms/internal/infrastructure"
+	"product-ms/internal/infrastructure/config"
 	"product-ms/internal/repository/dao"
+	"product-ms/internal/router"
 	"product-ms/internal/service"
 
 	chi "github.com/go-chi/chi/v5"
+	chimiddleware "github.com/go-chi/chi/v5/middleware"
 )
 
 func main() {
@@ -38,16 +42,24 @@ func main() {
 	}
 
 	queries := dao.New(infra.DB)
-	svc := service.NewProductService(queries)
-	handler := api.NewProductHandler(svc)
+	productService := service.NewProductService(queries)
+	productRouter := router.NewProductRouter(productService)
 
-	router := chi.NewRouter()
-	api.Middlewares(cfg, router)
-	handler.RegisterRoutes(router)
+	r := chi.NewRouter()
+	r.Use(chimiddleware.RequestID)
+	r.Use(chimiddleware.RealIP)
+	r.Use(chimiddleware.Logger)
+	r.Use(chimiddleware.Recoverer)
+	r.Use(otelmiddleware.Metrics)      // otel metrics
+	r.Use(otelmiddleware.TraceRequest) // otel trace
+	r.Use(chimiddleware.Timeout(cfg.ReadTimeout + cfg.WriteTimeout))
+	r.Get("/healthz", chandler.HealthCheck(time.Now(), cfg.AppName)) // health check traefik
+
+	productRouter.RegisterRoutes(r)
 
 	server := &http.Server{
 		Addr:         cfg.Addr(),
-		Handler:      router,
+		Handler:      r,
 		IdleTimeout:  cfg.IdleTimeout,
 		ReadTimeout:  cfg.ReadTimeout,
 		WriteTimeout: cfg.WriteTimeout,

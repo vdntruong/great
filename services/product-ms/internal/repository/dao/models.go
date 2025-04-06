@@ -5,12 +5,643 @@
 package dao
 
 import (
+	"database/sql"
+	"database/sql/driver"
+	"encoding/json"
+	"fmt"
 	"time"
+
+	"github.com/google/uuid"
+	"github.com/sqlc-dev/pqtype"
 )
 
+type DiscountScope string
+
+const (
+	DiscountScopeAllProducts        DiscountScope = "all_products"
+	DiscountScopeSpecificProducts   DiscountScope = "specific_products"
+	DiscountScopeSpecificCategories DiscountScope = "specific_categories"
+)
+
+func (e *DiscountScope) Scan(src interface{}) error {
+	switch s := src.(type) {
+	case []byte:
+		*e = DiscountScope(s)
+	case string:
+		*e = DiscountScope(s)
+	default:
+		return fmt.Errorf("unsupported scan type for DiscountScope: %T", src)
+	}
+	return nil
+}
+
+type NullDiscountScope struct {
+	DiscountScope DiscountScope `json:"discount_scope"`
+	Valid         bool          `json:"valid"` // Valid is true if DiscountScope is not NULL
+}
+
+// Scan implements the Scanner interface.
+func (ns *NullDiscountScope) Scan(value interface{}) error {
+	if value == nil {
+		ns.DiscountScope, ns.Valid = "", false
+		return nil
+	}
+	ns.Valid = true
+	return ns.DiscountScope.Scan(value)
+}
+
+// Value implements the driver Valuer interface.
+func (ns NullDiscountScope) Value() (driver.Value, error) {
+	if !ns.Valid {
+		return nil, nil
+	}
+	return string(ns.DiscountScope), nil
+}
+
+func (e DiscountScope) Valid() bool {
+	switch e {
+	case DiscountScopeAllProducts,
+		DiscountScopeSpecificProducts,
+		DiscountScopeSpecificCategories:
+		return true
+	}
+	return false
+}
+
+func AllDiscountScopeValues() []DiscountScope {
+	return []DiscountScope{
+		DiscountScopeAllProducts,
+		DiscountScopeSpecificProducts,
+		DiscountScopeSpecificCategories,
+	}
+}
+
+type DiscountType string
+
+const (
+	DiscountTypePercentage  DiscountType = "percentage"
+	DiscountTypeFixedAmount DiscountType = "fixed_amount"
+)
+
+func (e *DiscountType) Scan(src interface{}) error {
+	switch s := src.(type) {
+	case []byte:
+		*e = DiscountType(s)
+	case string:
+		*e = DiscountType(s)
+	default:
+		return fmt.Errorf("unsupported scan type for DiscountType: %T", src)
+	}
+	return nil
+}
+
+type NullDiscountType struct {
+	DiscountType DiscountType `json:"discount_type"`
+	Valid        bool         `json:"valid"` // Valid is true if DiscountType is not NULL
+}
+
+// Scan implements the Scanner interface.
+func (ns *NullDiscountType) Scan(value interface{}) error {
+	if value == nil {
+		ns.DiscountType, ns.Valid = "", false
+		return nil
+	}
+	ns.Valid = true
+	return ns.DiscountType.Scan(value)
+}
+
+// Value implements the driver Valuer interface.
+func (ns NullDiscountType) Value() (driver.Value, error) {
+	if !ns.Valid {
+		return nil, nil
+	}
+	return string(ns.DiscountType), nil
+}
+
+func (e DiscountType) Valid() bool {
+	switch e {
+	case DiscountTypePercentage,
+		DiscountTypeFixedAmount:
+		return true
+	}
+	return false
+}
+
+func AllDiscountTypeValues() []DiscountType {
+	return []DiscountType{
+		DiscountTypePercentage,
+		DiscountTypeFixedAmount,
+	}
+}
+
+type ImageType string
+
+const (
+	ImageTypeMain      ImageType = "main"
+	ImageTypeThumbnail ImageType = "thumbnail"
+	ImageTypeGallery   ImageType = "gallery"
+)
+
+func (e *ImageType) Scan(src interface{}) error {
+	switch s := src.(type) {
+	case []byte:
+		*e = ImageType(s)
+	case string:
+		*e = ImageType(s)
+	default:
+		return fmt.Errorf("unsupported scan type for ImageType: %T", src)
+	}
+	return nil
+}
+
+type NullImageType struct {
+	ImageType ImageType `json:"image_type"`
+	Valid     bool      `json:"valid"` // Valid is true if ImageType is not NULL
+}
+
+// Scan implements the Scanner interface.
+func (ns *NullImageType) Scan(value interface{}) error {
+	if value == nil {
+		ns.ImageType, ns.Valid = "", false
+		return nil
+	}
+	ns.Valid = true
+	return ns.ImageType.Scan(value)
+}
+
+// Value implements the driver Valuer interface.
+func (ns NullImageType) Value() (driver.Value, error) {
+	if !ns.Valid {
+		return nil, nil
+	}
+	return string(ns.ImageType), nil
+}
+
+func (e ImageType) Valid() bool {
+	switch e {
+	case ImageTypeMain,
+		ImageTypeThumbnail,
+		ImageTypeGallery:
+		return true
+	}
+	return false
+}
+
+func AllImageTypeValues() []ImageType {
+	return []ImageType{
+		ImageTypeMain,
+		ImageTypeThumbnail,
+		ImageTypeGallery,
+	}
+}
+
+type ProductStatus string
+
+const (
+	ProductStatusDraft    ProductStatus = "draft"
+	ProductStatusActive   ProductStatus = "active"
+	ProductStatusInactive ProductStatus = "inactive"
+	ProductStatusArchived ProductStatus = "archived"
+)
+
+func (e *ProductStatus) Scan(src interface{}) error {
+	switch s := src.(type) {
+	case []byte:
+		*e = ProductStatus(s)
+	case string:
+		*e = ProductStatus(s)
+	default:
+		return fmt.Errorf("unsupported scan type for ProductStatus: %T", src)
+	}
+	return nil
+}
+
+type NullProductStatus struct {
+	ProductStatus ProductStatus `json:"product_status"`
+	Valid         bool          `json:"valid"` // Valid is true if ProductStatus is not NULL
+}
+
+// Scan implements the Scanner interface.
+func (ns *NullProductStatus) Scan(value interface{}) error {
+	if value == nil {
+		ns.ProductStatus, ns.Valid = "", false
+		return nil
+	}
+	ns.Valid = true
+	return ns.ProductStatus.Scan(value)
+}
+
+// Value implements the driver Valuer interface.
+func (ns NullProductStatus) Value() (driver.Value, error) {
+	if !ns.Valid {
+		return nil, nil
+	}
+	return string(ns.ProductStatus), nil
+}
+
+func (e ProductStatus) Valid() bool {
+	switch e {
+	case ProductStatusDraft,
+		ProductStatusActive,
+		ProductStatusInactive,
+		ProductStatusArchived:
+		return true
+	}
+	return false
+}
+
+func AllProductStatusValues() []ProductStatus {
+	return []ProductStatus{
+		ProductStatusDraft,
+		ProductStatusActive,
+		ProductStatusInactive,
+		ProductStatusArchived,
+	}
+}
+
+type ProductType string
+
+const (
+	ProductTypeSimple   ProductType = "simple"
+	ProductTypeVariable ProductType = "variable"
+)
+
+func (e *ProductType) Scan(src interface{}) error {
+	switch s := src.(type) {
+	case []byte:
+		*e = ProductType(s)
+	case string:
+		*e = ProductType(s)
+	default:
+		return fmt.Errorf("unsupported scan type for ProductType: %T", src)
+	}
+	return nil
+}
+
+type NullProductType struct {
+	ProductType ProductType `json:"product_type"`
+	Valid       bool        `json:"valid"` // Valid is true if ProductType is not NULL
+}
+
+// Scan implements the Scanner interface.
+func (ns *NullProductType) Scan(value interface{}) error {
+	if value == nil {
+		ns.ProductType, ns.Valid = "", false
+		return nil
+	}
+	ns.Valid = true
+	return ns.ProductType.Scan(value)
+}
+
+// Value implements the driver Valuer interface.
+func (ns NullProductType) Value() (driver.Value, error) {
+	if !ns.Valid {
+		return nil, nil
+	}
+	return string(ns.ProductType), nil
+}
+
+func (e ProductType) Valid() bool {
+	switch e {
+	case ProductTypeSimple,
+		ProductTypeVariable:
+		return true
+	}
+	return false
+}
+
+func AllProductTypeValues() []ProductType {
+	return []ProductType{
+		ProductTypeSimple,
+		ProductTypeVariable,
+	}
+}
+
+type StoreStatus string
+
+const (
+	StoreStatusPending   StoreStatus = "pending"
+	StoreStatusActive    StoreStatus = "active"
+	StoreStatusSuspended StoreStatus = "suspended"
+	StoreStatusClosed    StoreStatus = "closed"
+)
+
+func (e *StoreStatus) Scan(src interface{}) error {
+	switch s := src.(type) {
+	case []byte:
+		*e = StoreStatus(s)
+	case string:
+		*e = StoreStatus(s)
+	default:
+		return fmt.Errorf("unsupported scan type for StoreStatus: %T", src)
+	}
+	return nil
+}
+
+type NullStoreStatus struct {
+	StoreStatus StoreStatus `json:"store_status"`
+	Valid       bool        `json:"valid"` // Valid is true if StoreStatus is not NULL
+}
+
+// Scan implements the Scanner interface.
+func (ns *NullStoreStatus) Scan(value interface{}) error {
+	if value == nil {
+		ns.StoreStatus, ns.Valid = "", false
+		return nil
+	}
+	ns.Valid = true
+	return ns.StoreStatus.Scan(value)
+}
+
+// Value implements the driver Valuer interface.
+func (ns NullStoreStatus) Value() (driver.Value, error) {
+	if !ns.Valid {
+		return nil, nil
+	}
+	return string(ns.StoreStatus), nil
+}
+
+func (e StoreStatus) Valid() bool {
+	switch e {
+	case StoreStatusPending,
+		StoreStatusActive,
+		StoreStatusSuspended,
+		StoreStatusClosed:
+		return true
+	}
+	return false
+}
+
+func AllStoreStatusValues() []StoreStatus {
+	return []StoreStatus{
+		StoreStatusPending,
+		StoreStatusActive,
+		StoreStatusSuspended,
+		StoreStatusClosed,
+	}
+}
+
+type VoucherStatus string
+
+const (
+	VoucherStatusActive   VoucherStatus = "active"
+	VoucherStatusInactive VoucherStatus = "inactive"
+	VoucherStatusExpired  VoucherStatus = "expired"
+)
+
+func (e *VoucherStatus) Scan(src interface{}) error {
+	switch s := src.(type) {
+	case []byte:
+		*e = VoucherStatus(s)
+	case string:
+		*e = VoucherStatus(s)
+	default:
+		return fmt.Errorf("unsupported scan type for VoucherStatus: %T", src)
+	}
+	return nil
+}
+
+type NullVoucherStatus struct {
+	VoucherStatus VoucherStatus `json:"voucher_status"`
+	Valid         bool          `json:"valid"` // Valid is true if VoucherStatus is not NULL
+}
+
+// Scan implements the Scanner interface.
+func (ns *NullVoucherStatus) Scan(value interface{}) error {
+	if value == nil {
+		ns.VoucherStatus, ns.Valid = "", false
+		return nil
+	}
+	ns.Valid = true
+	return ns.VoucherStatus.Scan(value)
+}
+
+// Value implements the driver Valuer interface.
+func (ns NullVoucherStatus) Value() (driver.Value, error) {
+	if !ns.Valid {
+		return nil, nil
+	}
+	return string(ns.VoucherStatus), nil
+}
+
+func (e VoucherStatus) Valid() bool {
+	switch e {
+	case VoucherStatusActive,
+		VoucherStatusInactive,
+		VoucherStatusExpired:
+		return true
+	}
+	return false
+}
+
+func AllVoucherStatusValues() []VoucherStatus {
+	return []VoucherStatus{
+		VoucherStatusActive,
+		VoucherStatusInactive,
+		VoucherStatusExpired,
+	}
+}
+
+type VoucherType string
+
+const (
+	VoucherTypePercentage   VoucherType = "percentage"
+	VoucherTypeFixedAmount  VoucherType = "fixed_amount"
+	VoucherTypeFreeShipping VoucherType = "free_shipping"
+)
+
+func (e *VoucherType) Scan(src interface{}) error {
+	switch s := src.(type) {
+	case []byte:
+		*e = VoucherType(s)
+	case string:
+		*e = VoucherType(s)
+	default:
+		return fmt.Errorf("unsupported scan type for VoucherType: %T", src)
+	}
+	return nil
+}
+
+type NullVoucherType struct {
+	VoucherType VoucherType `json:"voucher_type"`
+	Valid       bool        `json:"valid"` // Valid is true if VoucherType is not NULL
+}
+
+// Scan implements the Scanner interface.
+func (ns *NullVoucherType) Scan(value interface{}) error {
+	if value == nil {
+		ns.VoucherType, ns.Valid = "", false
+		return nil
+	}
+	ns.Valid = true
+	return ns.VoucherType.Scan(value)
+}
+
+// Value implements the driver Valuer interface.
+func (ns NullVoucherType) Value() (driver.Value, error) {
+	if !ns.Valid {
+		return nil, nil
+	}
+	return string(ns.VoucherType), nil
+}
+
+func (e VoucherType) Valid() bool {
+	switch e {
+	case VoucherTypePercentage,
+		VoucherTypeFixedAmount,
+		VoucherTypeFreeShipping:
+		return true
+	}
+	return false
+}
+
+func AllVoucherTypeValues() []VoucherType {
+	return []VoucherType{
+		VoucherTypePercentage,
+		VoucherTypeFixedAmount,
+		VoucherTypeFreeShipping,
+	}
+}
+
+type Discount struct {
+	ID                uuid.UUID      `db:"id" json:"id"`
+	StoreID           uuid.UUID      `db:"store_id" json:"store_id"`
+	Name              string         `db:"name" json:"name"`
+	Code              string         `db:"code" json:"code"`
+	Type              DiscountType   `db:"type" json:"type"`
+	Value             string         `db:"value" json:"value"`
+	Scope             DiscountScope  `db:"scope" json:"scope"`
+	StartDate         time.Time      `db:"start_date" json:"start_date"`
+	EndDate           sql.NullTime   `db:"end_date" json:"end_date"`
+	MinPurchaseAmount sql.NullString `db:"min_purchase_amount" json:"min_purchase_amount"`
+	MaxDiscountAmount sql.NullString `db:"max_discount_amount" json:"max_discount_amount"`
+	UsageLimit        sql.NullInt32  `db:"usage_limit" json:"usage_limit"`
+	UsageCount        sql.NullInt32  `db:"usage_count" json:"usage_count"`
+	IsActive          sql.NullBool   `db:"is_active" json:"is_active"`
+	CreatedAt         sql.NullTime   `db:"created_at" json:"created_at"`
+	UpdatedAt         sql.NullTime   `db:"updated_at" json:"updated_at"`
+}
+
+type DiscountCategory struct {
+	DiscountID uuid.UUID `db:"discount_id" json:"discount_id"`
+	CategoryID uuid.UUID `db:"category_id" json:"category_id"`
+}
+
+type DiscountProduct struct {
+	DiscountID uuid.UUID `db:"discount_id" json:"discount_id"`
+	ProductID  uuid.UUID `db:"product_id" json:"product_id"`
+}
+
 type Product struct {
-	ID          int32     `db:"id" json:"id"`
-	Name        string    `db:"name" json:"name"`
-	Description string    `db:"description" json:"description"`
-	CreatedAt   time.Time `db:"created_at" json:"created_at"`
+	ID                uuid.UUID             `db:"id" json:"id"`
+	StoreID           uuid.UUID             `db:"store_id" json:"store_id"`
+	Name              string                `db:"name" json:"name"`
+	Slug              string                `db:"slug" json:"slug"`
+	Description       sql.NullString        `db:"description" json:"description"`
+	Type              ProductType           `db:"type" json:"type"`
+	Status            ProductStatus         `db:"status" json:"status"`
+	Price             string                `db:"price" json:"price"`
+	CompareAtPrice    sql.NullString        `db:"compare_at_price" json:"compare_at_price"`
+	CostPrice         sql.NullString        `db:"cost_price" json:"cost_price"`
+	Sku               sql.NullString        `db:"sku" json:"sku"`
+	Barcode           sql.NullString        `db:"barcode" json:"barcode"`
+	Weight            sql.NullString        `db:"weight" json:"weight"`
+	WeightUnit        sql.NullString        `db:"weight_unit" json:"weight_unit"`
+	IsTaxable         sql.NullBool          `db:"is_taxable" json:"is_taxable"`
+	IsFeatured        sql.NullBool          `db:"is_featured" json:"is_featured"`
+	IsGiftCard        sql.NullBool          `db:"is_gift_card" json:"is_gift_card"`
+	RequiresShipping  sql.NullBool          `db:"requires_shipping" json:"requires_shipping"`
+	InventoryQuantity sql.NullInt32         `db:"inventory_quantity" json:"inventory_quantity"`
+	InventoryPolicy   sql.NullString        `db:"inventory_policy" json:"inventory_policy"`
+	InventoryTracking sql.NullBool          `db:"inventory_tracking" json:"inventory_tracking"`
+	SeoTitle          sql.NullString        `db:"seo_title" json:"seo_title"`
+	SeoDescription    sql.NullString        `db:"seo_description" json:"seo_description"`
+	Metadata          pqtype.NullRawMessage `db:"metadata" json:"metadata"`
+	CreatedAt         sql.NullTime          `db:"created_at" json:"created_at"`
+	UpdatedAt         sql.NullTime          `db:"updated_at" json:"updated_at"`
+	DeletedAt         sql.NullTime          `db:"deleted_at" json:"deleted_at"`
+}
+
+type ProductCategory struct {
+	ProductID  uuid.UUID `db:"product_id" json:"product_id"`
+	CategoryID uuid.UUID `db:"category_id" json:"category_id"`
+}
+
+type ProductImage struct {
+	ID        uuid.UUID      `db:"id" json:"id"`
+	ProductID uuid.UUID      `db:"product_id" json:"product_id"`
+	VariantID uuid.NullUUID  `db:"variant_id" json:"variant_id"`
+	Url       string         `db:"url" json:"url"`
+	AltText   sql.NullString `db:"alt_text" json:"alt_text"`
+	Type      ImageType      `db:"type" json:"type"`
+	SortOrder sql.NullInt32  `db:"sort_order" json:"sort_order"`
+	CreatedAt sql.NullTime   `db:"created_at" json:"created_at"`
+	UpdatedAt sql.NullTime   `db:"updated_at" json:"updated_at"`
+}
+
+type ProductVariant struct {
+	ID                uuid.UUID       `db:"id" json:"id"`
+	ProductID         uuid.UUID       `db:"product_id" json:"product_id"`
+	Name              string          `db:"name" json:"name"`
+	Sku               sql.NullString  `db:"sku" json:"sku"`
+	Barcode           sql.NullString  `db:"barcode" json:"barcode"`
+	Price             string          `db:"price" json:"price"`
+	CompareAtPrice    sql.NullString  `db:"compare_at_price" json:"compare_at_price"`
+	CostPrice         sql.NullString  `db:"cost_price" json:"cost_price"`
+	Weight            sql.NullString  `db:"weight" json:"weight"`
+	WeightUnit        sql.NullString  `db:"weight_unit" json:"weight_unit"`
+	InventoryQuantity sql.NullInt32   `db:"inventory_quantity" json:"inventory_quantity"`
+	InventoryPolicy   sql.NullString  `db:"inventory_policy" json:"inventory_policy"`
+	InventoryTracking sql.NullBool    `db:"inventory_tracking" json:"inventory_tracking"`
+	OptionValues      json.RawMessage `db:"option_values" json:"option_values"`
+	CreatedAt         sql.NullTime    `db:"created_at" json:"created_at"`
+	UpdatedAt         sql.NullTime    `db:"updated_at" json:"updated_at"`
+}
+
+type Store struct {
+	ID           uuid.UUID             `db:"id" json:"id"`
+	Name         string                `db:"name" json:"name"`
+	Slug         string                `db:"slug" json:"slug"`
+	Description  sql.NullString        `db:"description" json:"description"`
+	LogoUrl      sql.NullString        `db:"logo_url" json:"logo_url"`
+	CoverUrl     sql.NullString        `db:"cover_url" json:"cover_url"`
+	Status       StoreStatus           `db:"status" json:"status"`
+	IsVerified   bool                  `db:"is_verified" json:"is_verified"`
+	OwnerID      uuid.UUID             `db:"owner_id" json:"owner_id"`
+	ContactEmail sql.NullString        `db:"contact_email" json:"contact_email"`
+	ContactPhone sql.NullString        `db:"contact_phone" json:"contact_phone"`
+	Address      sql.NullString        `db:"address" json:"address"`
+	Settings     pqtype.NullRawMessage `db:"settings" json:"settings"`
+	CreatedAt    sql.NullTime          `db:"created_at" json:"created_at"`
+	UpdatedAt    sql.NullTime          `db:"updated_at" json:"updated_at"`
+	DeletedAt    sql.NullTime          `db:"deleted_at" json:"deleted_at"`
+}
+
+type StoreCategory struct {
+	ID          uuid.UUID      `db:"id" json:"id"`
+	StoreID     uuid.UUID      `db:"store_id" json:"store_id"`
+	Name        string         `db:"name" json:"name"`
+	Slug        string         `db:"slug" json:"slug"`
+	Description sql.NullString `db:"description" json:"description"`
+	ParentID    uuid.NullUUID  `db:"parent_id" json:"parent_id"`
+	SortOrder   sql.NullInt32  `db:"sort_order" json:"sort_order"`
+	CreatedAt   sql.NullTime   `db:"created_at" json:"created_at"`
+	UpdatedAt   sql.NullTime   `db:"updated_at" json:"updated_at"`
+}
+
+type Voucher struct {
+	ID                uuid.UUID      `db:"id" json:"id"`
+	StoreID           uuid.UUID      `db:"store_id" json:"store_id"`
+	Code              string         `db:"code" json:"code"`
+	Type              VoucherType    `db:"type" json:"type"`
+	Value             sql.NullString `db:"value" json:"value"`
+	MinPurchaseAmount sql.NullString `db:"min_purchase_amount" json:"min_purchase_amount"`
+	MaxDiscountAmount sql.NullString `db:"max_discount_amount" json:"max_discount_amount"`
+	StartDate         time.Time      `db:"start_date" json:"start_date"`
+	EndDate           sql.NullTime   `db:"end_date" json:"end_date"`
+	UsageLimit        sql.NullInt32  `db:"usage_limit" json:"usage_limit"`
+	UsageCount        sql.NullInt32  `db:"usage_count" json:"usage_count"`
+	Status            VoucherStatus  `db:"status" json:"status"`
+	CreatedAt         sql.NullTime   `db:"created_at" json:"created_at"`
+	UpdatedAt         sql.NullTime   `db:"updated_at" json:"updated_at"`
 }

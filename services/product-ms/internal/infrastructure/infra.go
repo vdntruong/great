@@ -3,7 +3,7 @@ package infrastructure
 import (
 	"commons/otel/db"
 	"database/sql"
-	"product-ms/internal/config"
+	"product-ms/internal/infrastructure/config"
 )
 
 type Infra struct {
