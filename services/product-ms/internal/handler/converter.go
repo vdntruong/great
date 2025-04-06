@@ -37,67 +37,67 @@ func ConvertUpdateProductRequestToModel(req *dto.UpdateProductRequest) models.Up
 	params := models.UpdateProductParams{}
 
 	if req.Name != nil {
-		params.Name = *req.Name
+		params.Name = req.Name
 	}
 	if req.Slug != nil {
-		params.Slug = *req.Slug
+		params.Slug = req.Slug
 	}
 	if req.Description != nil {
-		params.Description = *req.Description
+		params.Description = req.Description
 	}
 	if req.Type != nil {
-		params.Type = *req.Type
+		params.Type = req.Type
 	}
 	if req.Status != nil {
-		params.Status = *req.Status
+		params.Status = req.Status
 	}
 	if req.Price != nil {
-		params.Price = *req.Price
+		params.Price = req.Price
 	}
 	if req.CompareAtPrice != nil {
-		params.CompareAtPrice = *req.CompareAtPrice
+		params.CompareAtPrice = req.CompareAtPrice
 	}
 	if req.CostPrice != nil {
-		params.CostPrice = *req.CostPrice
+		params.CostPrice = req.CostPrice
 	}
 	if req.SKU != nil {
-		params.SKU = *req.SKU
+		params.SKU = req.SKU
 	}
 	if req.Barcode != nil {
-		params.Barcode = *req.Barcode
+		params.Barcode = req.Barcode
 	}
 	if req.Weight != nil {
-		params.Weight = *req.Weight
+		params.Weight = req.Weight
 	}
 	if req.WeightUnit != nil {
-		params.WeightUnit = *req.WeightUnit
+		params.WeightUnit = req.WeightUnit
 	}
 	if req.IsTaxable != nil {
-		params.IsTaxable = *req.IsTaxable
+		params.IsTaxable = req.IsTaxable
 	}
 	if req.IsFeatured != nil {
-		params.IsFeatured = *req.IsFeatured
+		params.IsFeatured = req.IsFeatured
 	}
 	if req.IsGiftCard != nil {
-		params.IsGiftCard = *req.IsGiftCard
+		params.IsGiftCard = req.IsGiftCard
 	}
 	if req.RequiresShipping != nil {
-		params.RequiresShipping = *req.RequiresShipping
+		params.RequiresShipping = req.RequiresShipping
 	}
 	if req.InventoryPolicy != nil {
-		params.InventoryPolicy = *req.InventoryPolicy
+		params.InventoryPolicy = req.InventoryPolicy
 	}
 	if req.InventoryTracking != nil {
-		params.InventoryTracking = *req.InventoryTracking
+		params.InventoryTracking = req.InventoryTracking
 	}
 	if req.SEOTitle != nil {
-		params.SEOTitle = *req.SEOTitle
+		params.SEOTitle = req.SEOTitle
 	}
 	if req.SEODescription != nil {
-		params.SEODescription = *req.SEODescription
+		params.SEODescription = req.SEODescription
 	}
 	if req.Metadata != nil {
-		params.Metadata = *req.Metadata
+		params.Metadata = req.Metadata
 	}
 
 	return params
@@ -157,40 +157,37 @@ func ConvertUpdateStoreRequestToModel(req *dto.UpdateStoreRequest) models.Update
 	params := models.UpdateStoreParams{}
 
 	if req.Name != nil {
-		params.Name = *req.Name
+		params.Name = req.Name
 	}
 	if req.Slug != nil {
-		params.Slug = *req.Slug
+		params.Slug = req.Slug
 	}
 	if req.Description != nil {
-		params.Description = *req.Description
+		params.Description = req.Description
 	}
 	if req.LogoURL != nil {
-		params.LogoURL = *req.LogoURL
+		params.LogoURL = req.LogoURL
 	}
 	if req.CoverURL != nil {
-		params.CoverURL = *req.CoverURL
+		params.CoverURL = req.CoverURL
 	}
 	if req.Status != nil {
-		params.Status = *req.Status
+		params.Status = req.Status
 	}
 	if req.IsVerified != nil {
-		params.IsVerified = *req.IsVerified
-	}
-	if req.OwnerID != nil {
-		params.OwnerID = *req.OwnerID
+		params.IsVerified = req.IsVerified
 	}
 	if req.ContactEmail != nil {
-		params.ContactEmail = *req.ContactEmail
+		params.ContactEmail = req.ContactEmail
 	}
 	if req.ContactPhone != nil {
-		params.ContactPhone = *req.ContactPhone
+		params.ContactPhone = req.ContactPhone
 	}
 	if req.Address != nil {
-		params.Address = *req.Address
+		params.Address = req.Address
 	}
 	if req.Settings != nil {
-		params.Settings = *req.Settings
+		params.Settings = req.Settings
 	}
 
 	return params

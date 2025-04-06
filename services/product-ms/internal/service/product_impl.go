@@ -3,32 +3,36 @@ package service
 import (
 	"context"
 	"fmt"
+
 	"product-ms/internal/models"
 	"product-ms/internal/repository/dao"
+	"product-ms/internal/service/validator"
 
 	"github.com/google/uuid"
 )
 
-type productService struct {
-	queries *dao.Queries
+type ProductServiceImpl struct {
+	queries   *dao.Queries
+	validator validator.ProductValidator
 }
 
-var _ ProductService = (*productService)(nil)
+var _ ProductService = (*ProductServiceImpl)(nil)
 
 func NewProductService(queries *dao.Queries) ProductService {
-	return &productService{
-		queries: queries,
+	return &ProductServiceImpl{
+		queries:   queries,
+		validator: validator.NewProductValidator(),
 	}
 }
 
-func (s *productService) CreateProduct(ctx context.Context, params models.CreateProductParams) (*models.Product, error) {
+func (s *ProductServiceImpl) CreateProduct(ctx context.Context, params models.CreateProductParams) (*models.Product, error) {
 	// Validate input parameters
-	if err := ValidateCreateProductParams(params); err != nil {
-		return nil, err
+	if err := s.validator.ValidateCreate(params); err != nil {
+		return nil, fmt.Errorf("validation error: %w", err)
 	}
 
 	// Convert params to DAO params
-	daoParams, err := convertCreateParams(params)
+	daoParams, err := ConvertCreateProductParamsToDAO(params)
 	if err != nil {
 		return nil, err
 	}
@@ -42,10 +46,10 @@ func (s *productService) CreateProduct(ctx context.Context, params models.Create
 		return nil, err
 	}
 
-	return ConvertDAOProductToModel(product), nil
+	return ConvertProductToModel(product), nil
 }
 
-func (s *productService) GetProduct(ctx context.Context, id string) (*models.Product, error) {
+func (s *ProductServiceImpl) GetProductByID(ctx context.Context, id string) (*models.Product, error) {
 	productID, err := uuid.Parse(id)
 	if err != nil {
 		return nil, fmt.Errorf("invalid product ID: %w", err)
@@ -56,35 +60,36 @@ func (s *productService) GetProduct(ctx context.Context, id string) (*models.Pro
 		return nil, err
 	}
 
-	return ConvertDAOProductToModel(product), nil
+	return ConvertProductToModel(product), nil
 }
 
-func (s *productService) ListProducts(ctx context.Context, params models.ListProductsParams) ([]*models.Product, error) {
-	products, err := s.queries.ListProducts(ctx, &dao.ListProductsParams{
-		StoreID: params.StoreID,
-		Limit:   params.Limit,
-		Offset:  params.Offset,
-	})
+func (s *ProductServiceImpl) ListProducts(ctx context.Context, params models.ListProductsParams) ([]*models.Product, error) {
+	// Validate input parameters
+	if err := s.validator.ValidateList(params); err != nil {
+		return nil, fmt.Errorf("validation error: %w", err)
+	}
+
+	products, err := s.queries.ListProducts(ctx, ConvertListProductsParamsToDAO(params))
 	if err != nil {
 		return nil, err
 	}
 
 	result := make([]*models.Product, len(products))
 	for i, product := range products {
-		result[i] = ConvertDAOProductToModel(product)
+		result[i] = ConvertProductToModel(product)
 	}
 
 	return result, nil
 }
 
-func (s *productService) UpdateProduct(ctx context.Context, params models.UpdateProductParams) (*models.Product, error) {
+func (s *ProductServiceImpl) UpdateProduct(ctx context.Context, params models.UpdateProductParams) (*models.Product, error) {
 	// Validate input parameters
-	if err := ValidateUpdateProductParams(params); err != nil {
-		return nil, err
+	if err := s.validator.ValidateUpdate(params); err != nil {
+		return nil, fmt.Errorf("validation error: %w", err)
 	}
 
 	// Convert params to DAO params
-	daoParams, err := convertUpdateParams(params)
+	daoParams, err := ConvertUpdateProductParamsToDAO(params)
 	if err != nil {
 		return nil, err
 	}
@@ -95,10 +100,10 @@ func (s *productService) UpdateProduct(ctx context.Context, params models.Update
 		return nil, err
 	}
 
-	return ConvertDAOProductToModel(product), nil
+	return ConvertProductToModel(product), nil
 }
 
-func (s *productService) DeleteProduct(ctx context.Context, id string) error {
+func (s *ProductServiceImpl) DeleteProduct(ctx context.Context, id string) error {
 	productID, err := uuid.Parse(id)
 	if err != nil {
 		return fmt.Errorf("invalid product ID: %w", err)

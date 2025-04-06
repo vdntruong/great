@@ -35,6 +35,10 @@ func RespondInternalServerError(w http.ResponseWriter, err error) {
 	http.Error(w, err.Error(), http.StatusInternalServerError)
 }
 
+func RespondNoContent(w http.ResponseWriter) {
+	w.WriteHeader(http.StatusNoContent)
+}
+
 func responseJSON(w http.ResponseWriter, statusCode int, data interface{}) {
 	w.Header().Set(HeaderContentType, ContentTypeApplicationJSONUTF8)
 	w.WriteHeader(statusCode)

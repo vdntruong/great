@@ -30,6 +30,9 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.addDiscountProductStmt, err = db.PrepareContext(ctx, AddDiscountProduct); err != nil {
 		return nil, fmt.Errorf("error preparing query AddDiscountProduct: %w", err)
 	}
+	if q.countStoresStmt, err = db.PrepareContext(ctx, CountStores); err != nil {
+		return nil, fmt.Errorf("error preparing query CountStores: %w", err)
+	}
 	if q.createDiscountStmt, err = db.PrepareContext(ctx, CreateDiscount); err != nil {
 		return nil, fmt.Errorf("error preparing query CreateDiscount: %w", err)
 	}
@@ -184,6 +187,11 @@ func (q *Queries) Close() error {
 	if q.addDiscountProductStmt != nil {
 		if cerr := q.addDiscountProductStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing addDiscountProductStmt: %w", cerr)
+		}
+	}
+	if q.countStoresStmt != nil {
+		if cerr := q.countStoresStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing countStoresStmt: %w", cerr)
 		}
 	}
 	if q.createDiscountStmt != nil {
@@ -462,6 +470,7 @@ type Queries struct {
 	tx                         *sql.Tx
 	addDiscountCategoryStmt    *sql.Stmt
 	addDiscountProductStmt     *sql.Stmt
+	countStoresStmt            *sql.Stmt
 	createDiscountStmt         *sql.Stmt
 	createProductStmt          *sql.Stmt
 	createProductImageStmt     *sql.Stmt
@@ -517,6 +526,7 @@ func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 		tx:                         tx,
 		addDiscountCategoryStmt:    q.addDiscountCategoryStmt,
 		addDiscountProductStmt:     q.addDiscountProductStmt,
+		countStoresStmt:            q.countStoresStmt,
 		createDiscountStmt:         q.createDiscountStmt,
 		createProductStmt:          q.createProductStmt,
 		createProductImageStmt:     q.createProductImageStmt,

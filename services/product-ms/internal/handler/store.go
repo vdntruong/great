@@ -82,30 +82,13 @@ func (h *StoreHandler) HandleList(w http.ResponseWriter, r *http.Request) {
 	if limit == 0 {
 		limit = 10
 	}
-	sortBy := r.URL.Query().Get("sort_by")
-	if sortBy == "" {
-		sortBy = "created_at"
-	}
-	sortOrder := r.URL.Query().Get("sort_order")
-	if sortOrder == "" {
-		sortOrder = "desc"
-	}
-	status := r.URL.Query().Get("status")
-	isVerifiedStr := r.URL.Query().Get("is_verified")
-	var isVerified *bool
-	if isVerifiedStr != "" {
-		verified := isVerifiedStr == "true"
-		isVerified = &verified
+
+	params := models.ListStoresParams{
+		Limit:  int32(limit),
+		Offset: int32((page - 1) * limit),
 	}
 
-	stores, err := h.storeService.ListStores(r.Context(), models.ListStoresParams{
-		Page:       page,
-		Limit:      limit,
-		SortBy:     sortBy,
-		SortOrder:  sortOrder,
-		Status:     status,
-		IsVerified: isVerified,
-	})
+	stores, err := h.storeService.ListStores(r.Context(), params)
 	if err != nil {
 		commonjson.RespondInternalServerError(w, err)
 		return
@@ -162,5 +145,5 @@ func (h *StoreHandler) HandleDelete(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.WriteHeader(http.StatusNoContent)
+	commonjson.RespondNoContent(w)
 }

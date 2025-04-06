@@ -13,6 +13,17 @@ import (
 	"github.com/sqlc-dev/pqtype"
 )
 
+const CountStores = `-- name: CountStores :one
+SELECT COUNT(*) FROM stores WHERE deleted_at IS NULL
+`
+
+func (q *Queries) CountStores(ctx context.Context) (int64, error) {
+	row := q.queryRow(ctx, q.countStoresStmt, CountStores)
+	var count int64
+	err := row.Scan(&count)
+	return count, err
+}
+
 const CreateStore = `-- name: CreateStore :one
 INSERT INTO stores (
     id, name, slug, description, logo_url, cover_url,

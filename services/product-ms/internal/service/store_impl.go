@@ -2,115 +2,107 @@ package service
 
 import (
 	"context"
-	"database/sql"
 	"errors"
-	"fmt"
 
 	"product-ms/internal/models"
 	"product-ms/internal/repository/dao"
+	"product-ms/internal/service/validator"
 
 	"github.com/google/uuid"
 )
 
-// storeService implements the StoreService interface
-type storeService struct {
-	storeDAO *dao.Queries
+// StoreServiceImpl implements the StoreService interface
+type StoreServiceImpl struct {
+	queries   *dao.Queries
+	validator validator.StoreValidator
 }
 
-var _ StoreService = (*storeService)(nil)
+var _ StoreService = (*StoreServiceImpl)(nil)
 
-// NewStoreService creates a new instance of StoreService
-func NewStoreService(storeDAO *dao.Queries) StoreService {
-	return &storeService{
-		storeDAO: storeDAO,
+// NewStoreService creates a new store service
+func NewStoreService(queries *dao.Queries) *StoreServiceImpl {
+	return &StoreServiceImpl{
+		queries:   queries,
+		validator: validator.NewStoreValidator(),
 	}
 }
 
-func (s *storeService) CreateStore(ctx context.Context, params models.CreateStoreParams) (*models.Store, error) {
-	// Validate input parameters
-	if err := ValidateCreateStoreParams(params); err != nil {
-		return nil, fmt.Errorf("invalid parameters: %w", err)
+// CreateStore creates a new store
+func (s *StoreServiceImpl) CreateStore(ctx context.Context, params models.CreateStoreParams) (*models.Store, error) {
+	if err := s.validator.ValidateCreate(params); err != nil {
+		return nil, err
 	}
 
-	// Convert and create store in database
 	daoParams := ConvertCreateStoreParamsToDAO(params)
-	store, err := s.storeDAO.CreateStore(ctx, daoParams)
+	store, err := s.queries.CreateStore(ctx, daoParams)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create store: %w", err)
+		return nil, err
 	}
 
 	return ConvertStoreToModel(store), nil
 }
 
-func (s *storeService) GetStoreByID(ctx context.Context, id string) (*models.Store, error) {
+// GetStoreByID retrieves a store by ID
+func (s *StoreServiceImpl) GetStoreByID(ctx context.Context, id string) (*models.Store, error) {
 	storeID, err := uuid.Parse(id)
 	if err != nil {
-		return nil, fmt.Errorf("invalid store ID: %w", err)
+		return nil, errors.New("invalid store ID")
 	}
 
-	store, err := s.storeDAO.GetStoreByID(ctx, storeID)
+	store, err := s.queries.GetStoreByID(ctx, storeID)
 	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			return nil, fmt.Errorf("store not found")
-		}
-		return nil, fmt.Errorf("failed to get store: %w", err)
+		return nil, err
 	}
 
 	return ConvertStoreToModel(store), nil
 }
 
-func (s *storeService) ListStores(ctx context.Context, params models.ListStoresParams) (*models.StoreList, error) {
-	// Convert and get stores
+// ListStores retrieves a list of stores
+func (s *StoreServiceImpl) ListStores(ctx context.Context, params models.ListStoresParams) (*models.StoreList, error) {
+	if err := s.validator.ValidateList(params); err != nil {
+		return nil, err
+	}
+
 	daoParams := ConvertListStoresParamsToDAO(params)
-	stores, err := s.storeDAO.ListStores(ctx, daoParams)
+	stores, err := s.queries.ListStores(ctx, daoParams)
 	if err != nil {
-		return nil, fmt.Errorf("failed to list stores: %w", err)
+		return nil, err
 	}
 
-	// For now, use the length of stores as total count
-	// TODO: Implement proper counting with a separate query
-	totalCount := int64(len(stores))
+	totalCount, err := s.queries.CountStores(ctx)
+	if err != nil {
+		return nil, err
+	}
 
-	return ConvertStoreListToModel(stores, totalCount, params.Page, params.Limit), nil
+	return ConvertStoreListToModel(stores, totalCount, 1, int(params.Limit)), nil
 }
 
-func (s *storeService) UpdateStore(ctx context.Context, id string, params models.UpdateStoreParams) (*models.Store, error) {
-	// Validate input parameters
-	if err := ValidateUpdateStoreParams(params); err != nil {
-		return nil, fmt.Errorf("invalid parameters: %w", err)
-	}
-
+// UpdateStore updates a store
+func (s *StoreServiceImpl) UpdateStore(ctx context.Context, id string, params models.UpdateStoreParams) (*models.Store, error) {
 	storeID, err := uuid.Parse(id)
 	if err != nil {
-		return nil, fmt.Errorf("invalid store ID: %w", err)
+		return nil, errors.New("invalid store ID")
 	}
 
-	// Convert and update store in database
+	if err := s.validator.ValidateUpdate(params); err != nil {
+		return nil, err
+	}
+
 	daoParams := ConvertUpdateStoreParamsToDAO(storeID, params)
-	store, err := s.storeDAO.UpdateStore(ctx, daoParams)
+	store, err := s.queries.UpdateStore(ctx, daoParams)
 	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			return nil, fmt.Errorf("store not found")
-		}
-		return nil, fmt.Errorf("failed to update store: %w", err)
+		return nil, err
 	}
 
 	return ConvertStoreToModel(store), nil
 }
 
-func (s *storeService) DeleteStore(ctx context.Context, id string) error {
+// DeleteStore deletes a store
+func (s *StoreServiceImpl) DeleteStore(ctx context.Context, id string) error {
 	storeID, err := uuid.Parse(id)
 	if err != nil {
-		return fmt.Errorf("invalid store ID: %w", err)
+		return errors.New("invalid store ID")
 	}
 
-	err = s.storeDAO.DeleteStore(ctx, storeID)
-	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			return fmt.Errorf("store not found")
-		}
-		return fmt.Errorf("failed to delete store: %w", err)
-	}
-
-	return nil
+	return s.queries.DeleteStore(ctx, storeID)
 }

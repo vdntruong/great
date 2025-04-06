@@ -30,41 +30,37 @@ type CreateStoreParams struct {
 	Name         string                 `json:"name" validate:"required,min=3,max=100"`
 	Slug         string                 `json:"slug" validate:"required,min=3,max=100,slug"`
 	Description  string                 `json:"description" validate:"max=500"`
-	LogoURL      string                 `json:"logo_url"`
-	CoverURL     string                 `json:"cover_url"`
+	LogoURL      string                 `json:"logo_url" validate:"omitempty,url"`
+	CoverURL     string                 `json:"cover_url" validate:"omitempty,url"`
 	Status       string                 `json:"status" validate:"required,oneof=active inactive"`
 	IsVerified   bool                   `json:"is_verified"`
-	OwnerID      uuid.UUID              `json:"owner_id"`
-	ContactEmail string                 `json:"contact_email"`
-	ContactPhone string                 `json:"contact_phone"`
-	Address      string                 `json:"address"`
+	OwnerID      uuid.UUID              `json:"owner_id" validate:"required"`
+	ContactEmail string                 `json:"contact_email" validate:"omitempty,email"`
+	ContactPhone string                 `json:"contact_phone" validate:"omitempty,e164"`
+	Address      string                 `json:"address" validate:"max=200"`
 	Settings     map[string]interface{} `json:"settings"`
 }
 
 // UpdateStoreParams represents the parameters for updating a store
 type UpdateStoreParams struct {
-	Name         string                 `json:"name" validate:"omitempty,min=3,max=100"`
-	Slug         string                 `json:"slug" validate:"omitempty,min=3,max=100,slug"`
-	Description  string                 `json:"description" validate:"omitempty,max=500"`
-	LogoURL      string                 `json:"logo_url"`
-	CoverURL     string                 `json:"cover_url"`
-	Status       string                 `json:"status" validate:"omitempty,oneof=active inactive"`
-	IsVerified   bool                   `json:"is_verified"`
-	OwnerID      uuid.UUID              `json:"owner_id"`
-	ContactEmail string                 `json:"contact_email"`
-	ContactPhone string                 `json:"contact_phone"`
-	Address      string                 `json:"address"`
-	Settings     map[string]interface{} `json:"settings"`
+	ID           uuid.UUID              `json:"id" validate:"required"`
+	Name         *string                `json:"name,omitempty" validate:"omitempty,min=3,max=100"`
+	Slug         *string                `json:"slug,omitempty" validate:"omitempty,min=3,max=100,slug"`
+	Description  *string                `json:"description,omitempty" validate:"omitempty,max=500"`
+	LogoURL      *string                `json:"logo_url,omitempty" validate:"omitempty,url"`
+	CoverURL     *string                `json:"cover_url,omitempty" validate:"omitempty,url"`
+	Status       *string                `json:"status,omitempty" validate:"omitempty,oneof=active inactive"`
+	IsVerified   *bool                  `json:"is_verified,omitempty"`
+	ContactEmail *string                `json:"contact_email,omitempty" validate:"omitempty,email"`
+	ContactPhone *string                `json:"contact_phone,omitempty" validate:"omitempty,e164"`
+	Address      *string                `json:"address,omitempty" validate:"omitempty,max=200"`
+	Settings     *map[string]interface{} `json:"settings,omitempty"`
 }
 
 // ListStoresParams represents the parameters for listing stores
 type ListStoresParams struct {
-	Page       int    `query:"page" validate:"min=1"`
-	Limit      int    `query:"limit" validate:"min=1,max=100"`
-	SortBy     string `query:"sort_by" validate:"oneof=name slug status created_at updated_at"`
-	SortOrder  string `query:"sort_order" validate:"oneof=asc desc"`
-	Status     string `query:"status" validate:"omitempty,oneof=active inactive"`
-	IsVerified *bool  `query:"is_verified"`
+	Limit  int32 `json:"limit" validate:"min=1,max=100"`
+	Offset int32 `json:"offset" validate:"min=0"`
 }
 
 // StoreList represents a list of stores with pagination info

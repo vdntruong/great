@@ -3,6 +3,7 @@ package service
 import (
 	"database/sql"
 	"encoding/json"
+
 	"product-ms/internal/models"
 	"product-ms/internal/repository/dao"
 
@@ -57,14 +58,8 @@ func ConvertStoreListToModel(stores []*dao.Store, totalCount int64, page, limit 
 
 // ConvertCreateStoreParamsToDAO converts a model CreateStoreParams to DAO CreateStoreParams
 func ConvertCreateStoreParamsToDAO(params models.CreateStoreParams) *dao.CreateStoreParams {
-	settings := pqtype.NullRawMessage{}
-	if params.Settings != nil {
-		raw, _ := json.Marshal(params.Settings)
-		settings.RawMessage = raw
-		settings.Valid = true
-	}
-
 	return &dao.CreateStoreParams{
+		ID:           uuid.New(),
 		Name:         params.Name,
 		Slug:         params.Slug,
 		Description:  sql.NullString{String: params.Description, Valid: params.Description != ""},
@@ -76,7 +71,7 @@ func ConvertCreateStoreParamsToDAO(params models.CreateStoreParams) *dao.CreateS
 		ContactEmail: sql.NullString{String: params.ContactEmail, Valid: params.ContactEmail != ""},
 		ContactPhone: sql.NullString{String: params.ContactPhone, Valid: params.ContactPhone != ""},
 		Address:      sql.NullString{String: params.Address, Valid: params.Address != ""},
-		Settings:     settings,
+		Settings:     pqtype.NullRawMessage{RawMessage: nil, Valid: false},
 	}
 }
 
@@ -86,36 +81,38 @@ func ConvertUpdateStoreParamsToDAO(id uuid.UUID, params models.UpdateStoreParams
 		ID: id,
 	}
 
-	if params.Name != "" {
-		daoParams.Name = params.Name
+	if params.Name != nil {
+		daoParams.Name = *params.Name
 	}
-	if params.Slug != "" {
-		daoParams.Slug = params.Slug
+	if params.Slug != nil {
+		daoParams.Slug = *params.Slug
 	}
-	if params.Description != "" {
-		daoParams.Description = sql.NullString{String: params.Description, Valid: true}
+	if params.Description != nil {
+		daoParams.Description = sql.NullString{String: *params.Description, Valid: true}
 	}
-	if params.LogoURL != "" {
-		daoParams.LogoUrl = sql.NullString{String: params.LogoURL, Valid: true}
+	if params.LogoURL != nil {
+		daoParams.LogoUrl = sql.NullString{String: *params.LogoURL, Valid: true}
 	}
-	if params.CoverURL != "" {
-		daoParams.CoverUrl = sql.NullString{String: params.CoverURL, Valid: true}
+	if params.CoverURL != nil {
+		daoParams.CoverUrl = sql.NullString{String: *params.CoverURL, Valid: true}
 	}
-	if params.Status != "" {
-		daoParams.Status = dao.StoreStatus(params.Status)
+	if params.Status != nil {
+		daoParams.Status = dao.StoreStatus(*params.Status)
 	}
-	daoParams.IsVerified = params.IsVerified
-	if params.ContactEmail != "" {
-		daoParams.ContactEmail = sql.NullString{String: params.ContactEmail, Valid: true}
+	if params.IsVerified != nil {
+		daoParams.IsVerified = *params.IsVerified
 	}
-	if params.ContactPhone != "" {
-		daoParams.ContactPhone = sql.NullString{String: params.ContactPhone, Valid: true}
+	if params.ContactEmail != nil {
+		daoParams.ContactEmail = sql.NullString{String: *params.ContactEmail, Valid: true}
 	}
-	if params.Address != "" {
-		daoParams.Address = sql.NullString{String: params.Address, Valid: true}
+	if params.ContactPhone != nil {
+		daoParams.ContactPhone = sql.NullString{String: *params.ContactPhone, Valid: true}
+	}
+	if params.Address != nil {
+		daoParams.Address = sql.NullString{String: *params.Address, Valid: true}
 	}
 	if params.Settings != nil {
-		raw, _ := json.Marshal(params.Settings)
+		raw, _ := json.Marshal(*params.Settings)
 		daoParams.Settings = pqtype.NullRawMessage{RawMessage: raw, Valid: true}
 	}
 
@@ -125,7 +122,7 @@ func ConvertUpdateStoreParamsToDAO(id uuid.UUID, params models.UpdateStoreParams
 // ConvertListStoresParamsToDAO converts a model ListStoresParams to DAO ListStoresParams
 func ConvertListStoresParamsToDAO(params models.ListStoresParams) *dao.ListStoresParams {
 	return &dao.ListStoresParams{
-		Limit:  int32(params.Limit),
-		Offset: int32((params.Page - 1) * params.Limit),
+		Limit:  params.Limit,
+		Offset: params.Offset,
 	}
 }

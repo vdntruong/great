@@ -71,7 +71,7 @@ func (h *ProductHandler) HandleGet(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	product, err := h.productService.GetProduct(r.Context(), productID.String())
+	product, err := h.productService.GetProductByID(r.Context(), productID.String())
 	if err != nil {
 		commonjson.RespondInternalServerError(w, err)
 		return

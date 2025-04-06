@@ -13,6 +13,7 @@ import (
 type Querier interface {
 	AddDiscountCategory(ctx context.Context, arg *AddDiscountCategoryParams) error
 	AddDiscountProduct(ctx context.Context, arg *AddDiscountProductParams) error
+	CountStores(ctx context.Context) (int64, error)
 	CreateDiscount(ctx context.Context, arg *CreateDiscountParams) (*Discount, error)
 	CreateProduct(ctx context.Context, arg *CreateProductParams) (*Product, error)
 	CreateProductImage(ctx context.Context, arg *CreateProductImageParams) (*ProductImage, error)

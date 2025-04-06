@@ -4,9 +4,10 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	"strconv"
+
 	"product-ms/internal/models"
 	"product-ms/internal/repository/dao"
-	"strconv"
 
 	"github.com/sqlc-dev/pqtype"
 )
@@ -28,8 +29,8 @@ func convertMetadata(metadata map[string]interface{}) (pqtype.NullRawMessage, er
 	}, nil
 }
 
-// convertCreateParams converts CreateProductParams to DAO params
-func convertCreateParams(params models.CreateProductParams) (*dao.CreateProductParams, error) {
+// ConvertCreateProductParamsToDAO converts a model CreateProductParams to DAO CreateProductParams
+func ConvertCreateProductParamsToDAO(params models.CreateProductParams) (*dao.CreateProductParams, error) {
 	metadata, err := convertMetadata(params.Metadata)
 	if err != nil {
 		return nil, err
@@ -62,42 +63,96 @@ func convertCreateParams(params models.CreateProductParams) (*dao.CreateProductP
 	}, nil
 }
 
-// convertUpdateParams converts UpdateProductParams to DAO params
-func convertUpdateParams(params models.UpdateProductParams) (*dao.UpdateProductParams, error) {
-	metadata, err := convertMetadata(params.Metadata)
-	if err != nil {
-		return nil, err
+// ConvertUpdateProductParamsToDAO converts a model UpdateProductParams to DAO UpdateProductParams
+func ConvertUpdateProductParamsToDAO(params models.UpdateProductParams) (*dao.UpdateProductParams, error) {
+	var metadata pqtype.NullRawMessage
+	if params.Metadata != nil {
+		metadataBytes, err := json.Marshal(*params.Metadata)
+		if err != nil {
+			return nil, fmt.Errorf("failed to marshal metadata: %w", err)
+		}
+		metadata = pqtype.NullRawMessage{
+			RawMessage: metadataBytes,
+			Valid:      true,
+		}
 	}
 
-	return &dao.UpdateProductParams{
+	daoParams := &dao.UpdateProductParams{
 		ID:                params.ID,
-		Name:              params.Name,
-		Slug:              params.Slug,
-		Description:       sql.NullString{String: params.Description, Valid: params.Description != ""},
-		Type:              dao.ProductType(params.Type),
-		Status:            dao.ProductStatus(params.Status),
-		Price:             fmt.Sprintf("%.2f", params.Price),
-		CompareAtPrice:    sql.NullString{String: fmt.Sprintf("%.2f", params.CompareAtPrice), Valid: params.CompareAtPrice != 0},
-		CostPrice:         sql.NullString{String: fmt.Sprintf("%.2f", params.CostPrice), Valid: params.CostPrice != 0},
-		Sku:               sql.NullString{String: params.SKU, Valid: params.SKU != ""},
-		Barcode:           sql.NullString{String: params.Barcode, Valid: params.Barcode != ""},
-		Weight:            sql.NullString{String: fmt.Sprintf("%.2f", params.Weight), Valid: params.Weight != 0},
-		WeightUnit:        sql.NullString{String: params.WeightUnit, Valid: params.WeightUnit != ""},
-		IsTaxable:         sql.NullBool{Bool: params.IsTaxable, Valid: true},
-		IsFeatured:        sql.NullBool{Bool: params.IsFeatured, Valid: true},
-		IsGiftCard:        sql.NullBool{Bool: params.IsGiftCard, Valid: true},
-		RequiresShipping:  sql.NullBool{Bool: params.RequiresShipping, Valid: true},
 		InventoryQuantity: sql.NullInt32{Int32: 0, Valid: false},
-		InventoryPolicy:   sql.NullString{String: params.InventoryPolicy, Valid: params.InventoryPolicy != ""},
-		InventoryTracking: sql.NullBool{Bool: params.InventoryTracking == "enabled", Valid: true},
-		SeoTitle:          sql.NullString{String: params.SEOTitle, Valid: params.SEOTitle != ""},
-		SeoDescription:    sql.NullString{String: params.SEODescription, Valid: params.SEODescription != ""},
-		Metadata:          metadata,
-	}, nil
+	}
+
+	if params.Name != nil {
+		daoParams.Name = *params.Name
+	}
+	if params.Slug != nil {
+		daoParams.Slug = *params.Slug
+	}
+	if params.Description != nil {
+		daoParams.Description = sql.NullString{String: *params.Description, Valid: true}
+	}
+	if params.Type != nil {
+		daoParams.Type = dao.ProductType(*params.Type)
+	}
+	if params.Status != nil {
+		daoParams.Status = dao.ProductStatus(*params.Status)
+	}
+	if params.Price != nil {
+		daoParams.Price = fmt.Sprintf("%.2f", *params.Price)
+	}
+	if params.CompareAtPrice != nil {
+		daoParams.CompareAtPrice = sql.NullString{String: fmt.Sprintf("%.2f", *params.CompareAtPrice), Valid: true}
+	}
+	if params.CostPrice != nil {
+		daoParams.CostPrice = sql.NullString{String: fmt.Sprintf("%.2f", *params.CostPrice), Valid: true}
+	}
+	if params.SKU != nil {
+		daoParams.Sku = sql.NullString{String: *params.SKU, Valid: true}
+	}
+	if params.Barcode != nil {
+		daoParams.Barcode = sql.NullString{String: *params.Barcode, Valid: true}
+	}
+	if params.Weight != nil {
+		daoParams.Weight = sql.NullString{String: fmt.Sprintf("%.2f", *params.Weight), Valid: true}
+	}
+	if params.WeightUnit != nil {
+		daoParams.WeightUnit = sql.NullString{String: *params.WeightUnit, Valid: true}
+	}
+	if params.IsTaxable != nil {
+		daoParams.IsTaxable = sql.NullBool{Bool: *params.IsTaxable, Valid: true}
+	}
+	if params.IsFeatured != nil {
+		daoParams.IsFeatured = sql.NullBool{Bool: *params.IsFeatured, Valid: true}
+	}
+	if params.IsGiftCard != nil {
+		daoParams.IsGiftCard = sql.NullBool{Bool: *params.IsGiftCard, Valid: true}
+	}
+	if params.RequiresShipping != nil {
+		daoParams.RequiresShipping = sql.NullBool{Bool: *params.RequiresShipping, Valid: true}
+	}
+	if params.InventoryPolicy != nil {
+		daoParams.InventoryPolicy = sql.NullString{String: *params.InventoryPolicy, Valid: true}
+	}
+	if params.InventoryTracking != nil {
+		daoParams.InventoryTracking = sql.NullBool{Bool: *params.InventoryTracking == "enabled", Valid: true}
+	}
+	if params.SEOTitle != nil {
+		daoParams.SeoTitle = sql.NullString{String: *params.SEOTitle, Valid: true}
+	}
+	if params.SEODescription != nil {
+		daoParams.SeoDescription = sql.NullString{String: *params.SEODescription, Valid: true}
+	}
+	daoParams.Metadata = metadata
+
+	return daoParams, nil
 }
 
-// ConvertDAOProductToModel converts DAO product to model product
-func ConvertDAOProductToModel(product *dao.Product) *models.Product {
+// ConvertProductToModel converts a DAO product to a model product
+func ConvertProductToModel(product *dao.Product) *models.Product {
+	if product == nil {
+		return nil
+	}
+
 	// Convert metadata to map
 	var metadata map[string]interface{}
 	if product.Metadata.Valid {
@@ -130,30 +185,39 @@ func ConvertDAOProductToModel(product *dao.Product) *models.Product {
 	}
 
 	return &models.Product{
-		ID:               product.ID,
-		StoreID:          product.StoreID,
-		Name:             product.Name,
-		Slug:             product.Slug,
-		Description:      product.Description.String,
-		Type:             string(product.Type),
-		Status:           string(product.Status),
-		Price:            price,
-		CompareAtPrice:   compareAtPrice,
-		CostPrice:        costPrice,
-		SKU:              product.Sku.String,
-		Barcode:          product.Barcode.String,
-		Weight:           weight,
-		WeightUnit:       product.WeightUnit.String,
-		IsTaxable:        product.IsTaxable.Bool,
-		IsFeatured:       product.IsFeatured.Bool,
-		IsGiftCard:       product.IsGiftCard.Bool,
-		RequiresShipping: product.RequiresShipping.Bool,
-		InventoryPolicy:  product.InventoryPolicy.String,
+		ID:                product.ID,
+		StoreID:           product.StoreID,
+		Name:              product.Name,
+		Slug:              product.Slug,
+		Description:       product.Description.String,
+		Type:              string(product.Type),
+		Status:            string(product.Status),
+		Price:             price,
+		CompareAtPrice:    compareAtPrice,
+		CostPrice:         costPrice,
+		SKU:               product.Sku.String,
+		Barcode:           product.Barcode.String,
+		Weight:            weight,
+		WeightUnit:        product.WeightUnit.String,
+		IsTaxable:         product.IsTaxable.Bool,
+		IsFeatured:        product.IsFeatured.Bool,
+		IsGiftCard:        product.IsGiftCard.Bool,
+		RequiresShipping:  product.RequiresShipping.Bool,
+		InventoryPolicy:   product.InventoryPolicy.String,
 		InventoryTracking: inventoryTracking,
-		SEOTitle:         product.SeoTitle.String,
-		SEODescription:   product.SeoDescription.String,
-		Metadata:         metadata,
-		CreatedAt:        product.CreatedAt.Time,
-		UpdatedAt:        product.UpdatedAt.Time,
+		SEOTitle:          product.SeoTitle.String,
+		SEODescription:    product.SeoDescription.String,
+		Metadata:          metadata,
+		CreatedAt:         product.CreatedAt.Time,
+		UpdatedAt:         product.UpdatedAt.Time,
+	}
+}
+
+// ConvertListProductsParamsToDAO converts a model ListProductsParams to DAO ListProductsParams
+func ConvertListProductsParamsToDAO(params models.ListProductsParams) *dao.ListProductsParams {
+	return &dao.ListProductsParams{
+		StoreID: params.StoreID,
+		Limit:   params.Limit,
+		Offset:  params.Offset,
 	}
 }

@@ -7,6 +7,9 @@ SELECT * FROM stores WHERE slug = $1 AND deleted_at IS NULL;
 -- name: ListStores :many
 SELECT * FROM stores WHERE deleted_at IS NULL ORDER BY created_at DESC LIMIT $1 OFFSET $2;
 
+-- name: CountStores :one
+SELECT COUNT(*) FROM stores WHERE deleted_at IS NULL;
+
 -- name: CreateStore :one
 INSERT INTO stores (
     id, name, slug, description, logo_url, cover_url,
