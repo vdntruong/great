@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"fmt"
 	"product-ms/internal/models"
 	"product-ms/internal/repository/dao"
 
@@ -11,6 +12,8 @@ import (
 type productService struct {
 	queries *dao.Queries
 }
+
+var _ ProductService = (*productService)(nil)
 
 func NewProductService(queries *dao.Queries) ProductService {
 	return &productService{
@@ -42,8 +45,13 @@ func (s *productService) CreateProduct(ctx context.Context, params models.Create
 	return ConvertDAOProductToModel(product), nil
 }
 
-func (s *productService) GetProduct(ctx context.Context, id uuid.UUID) (*models.Product, error) {
-	product, err := s.queries.GetProductByID(ctx, id)
+func (s *productService) GetProduct(ctx context.Context, id string) (*models.Product, error) {
+	productID, err := uuid.Parse(id)
+	if err != nil {
+		return nil, fmt.Errorf("invalid product ID: %w", err)
+	}
+
+	product, err := s.queries.GetProductByID(ctx, productID)
 	if err != nil {
 		return nil, err
 	}
@@ -90,6 +98,11 @@ func (s *productService) UpdateProduct(ctx context.Context, params models.Update
 	return ConvertDAOProductToModel(product), nil
 }
 
-func (s *productService) DeleteProduct(ctx context.Context, id uuid.UUID) error {
-	return s.queries.DeleteProduct(ctx, id)
+func (s *productService) DeleteProduct(ctx context.Context, id string) error {
+	productID, err := uuid.Parse(id)
+	if err != nil {
+		return fmt.Errorf("invalid product ID: %w", err)
+	}
+
+	return s.queries.DeleteProduct(ctx, productID)
 }

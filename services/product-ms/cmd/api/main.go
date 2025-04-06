@@ -43,7 +43,9 @@ func main() {
 
 	queries := dao.New(infra.DB)
 	productService := service.NewProductService(queries)
+	storeService := service.NewStoreService(queries)
 	productRouter := router.NewProductRouter(productService)
+	storeRouter := router.NewStoreRouter(storeService)
 
 	r := chi.NewRouter()
 	r.Use(chimiddleware.RequestID)
@@ -56,6 +58,7 @@ func main() {
 	r.Get("/healthz", chandler.HealthCheck(time.Now(), cfg.AppName)) // health check traefik
 
 	productRouter.RegisterRoutes(r)
+	storeRouter.RegisterRoutes(r)
 
 	server := &http.Server{
 		Addr:         cfg.Addr(),

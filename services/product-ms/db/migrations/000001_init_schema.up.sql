@@ -42,6 +42,9 @@ CREATE TABLE store_categories (
     UNIQUE(store_id, slug)
 );
 
+-- name: CountStores :one
+SELECT COUNT(*) FROM stores WHERE deleted_at IS NULL;
+
 -- Create products table
 CREATE TABLE products (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
