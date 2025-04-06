@@ -1,0 +1,27 @@
+meta {
+  name: Update Store
+  type: http
+  seq: 3
+}
+
+put {
+  url: {{baseUrl}}/stores/{{storeId}}
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "name": "Tech Haven Updated",
+    "description": "Updated description for Tech Haven",
+    "status": "active",
+    "settings": {
+      "theme": "light",
+      "currency": "USD",
+      "tax_settings": {
+        "enabled": true,
+        "rate": 0.09
+      }
+    }
+  }
+}

@@ -1,18 +1,34 @@
 meta {
   name: Update Product
   type: http
-  seq: 2
+  seq: 7
 }
 
 put {
-  url: http://localhost:8083/products/2
+  url: {{baseUrl}}/stores/{{storeId}}/products/{{productId}}
   body: json
   auth: none
 }
 
 body:json {
   {
-    "name": "bao tay",
-    "description": "bao che tay"
+    "name": "Gaming Laptop Pro Updated",
+    "description": "Updated description for Gaming Laptop Pro",
+    "price": 1899.99,
+    "status": "active",
+    "metadata": {
+      "specs": {
+        "cpu": "Intel i9-13900H",
+        "gpu": "RTX 4080",
+        "ram": "32GB",
+        "storage": "2TB SSD"
+      },
+      "features": [
+        "RGB Keyboard",
+        "240Hz Display",
+        "Advanced Cooling",
+        "New Feature"
+      ]
+    }
   }
 }

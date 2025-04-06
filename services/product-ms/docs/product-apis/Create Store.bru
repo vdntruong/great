@@ -1,0 +1,27 @@
+meta {
+  name: Create Store
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{baseUrl}}/stores
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "name": "New Tech Store",
+    "description": "A new tech store for testing",
+    "status": "pending",
+    "settings": {
+      "theme": "dark",
+      "currency": "USD",
+      "tax_settings": {
+        "enabled": true,
+        "rate": 0.08
+      }
+    }
+  }
+}

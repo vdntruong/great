@@ -1,18 +1,49 @@
 meta {
   name: Create Product
   type: http
-  seq: 1
+  seq: 10
 }
 
 post {
-  url: http://localhost:8083/products
+  url: {{baseUrl}}/stores/{{storeId}}/products
   body: json
   auth: none
 }
 
 body:json {
   {
-    "name": "áo",
-    "description": "áo mặc ấm"
+    "name": "Gaming Laptop Pro",
+    "slug": "gaming-laptop-pro",
+    "description": "High-performance gaming laptop with RTX 4080",
+    "type": "simple",
+    "status": "active",
+    "price": 1999.99,
+    "compare_at_price": 2299.99,
+    "cost_price": 1500.00,
+    "sku": "TH-GLP-001",
+    "barcode": "123456789012",
+    "weight": 2.5,
+    "weight_unit": "kg",
+    "is_taxable": true,
+    "is_featured": true,
+    "is_gift_card": false,
+    "requires_shipping": true,
+    "inventory_policy": "deny",
+    "inventory_tracking": true,
+    "seo_title": "Gaming Laptop Pro - Ultimate Gaming Experience",
+    "seo_description": "Experience gaming like never before with our Pro gaming laptop",
+    "metadata": {
+      "specs": {
+        "cpu": "Intel i9-13900H",
+        "gpu": "RTX 4080",
+        "ram": "32GB",
+        "storage": "2TB SSD"
+      },
+      "features": [
+        "RGB Keyboard",
+        "240Hz Display",
+        "Advanced Cooling"
+      ]
+    }
   }
 }

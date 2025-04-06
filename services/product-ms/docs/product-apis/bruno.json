@@ -1,9 +1,23 @@
 {
   "version": "1",
-  "name": "product-apis",
+  "name": "Product API",
   "type": "collection",
-  "ignore": [
-    "node_modules",
-    ".git"
-  ]
+  "environments": {
+    "local": {
+      "baseUrl": "http://localhost:8083",
+      "storeId": "550e8400-e29b-41d4-a716-446655440000",
+      "productId": "550e8400-e29b-41d4-a716-446655440017"
+    },
+    "staging": {
+      "baseUrl": "https://staging-product-ms.example.com",
+      "storeId": "550e8400-e29b-41d4-a716-446655440000",
+      "productId": "550e8400-e29b-41d4-a716-446655440017"
+    },
+    "production": {
+      "baseUrl": "https://product-ms.example.com",
+      "storeId": "550e8400-e29b-41d4-a716-446655440000",
+      "productId": "550e8400-e29b-41d4-a716-446655440017"
+    }
+  },
+  "ignore": ["node_modules", ".git"]
 }
