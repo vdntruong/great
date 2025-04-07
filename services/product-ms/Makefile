@@ -46,3 +46,7 @@ build: clean-tmp setup-tmp docker-image clean-tmp
 .PHONY: start-container
 start-container:
 	docker run -it --rm -p 8083:8080 --name $(CONTAINER_NAME) $(DOCKER_IMAGE_NAME)
+
+.PHONY: create-migration
+create-migration:
+	migrate create -ext sql -dir db/migrations -seq $(NEW_FILE)

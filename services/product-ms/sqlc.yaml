@@ -2,15 +2,11 @@ version: "2"
 sql:
   - engine: "postgresql"
     schema: "db/migrations"
-    queries:
-      - "db/queries/store/*.sql"
-      - "db/queries/product/*.sql"
-      - "db/queries/discount/*.sql"
-      - "db/queries/voucher/*.sql"
+    queries: "db/queries"
     gen:
       go:
         package: "dao"
-        out: "internal/repository/dao"
+        out: "db/dao"
         emit_json_tags: true
         emit_db_tags: true
         emit_interface: true

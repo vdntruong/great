@@ -16,10 +16,10 @@ import (
 )
 
 type Discount struct {
-	service *service.DiscountServiceImpl
+	service service.DiscountService
 }
 
-func NewDiscount(service *service.DiscountServiceImpl) *Discount {
+func NewDiscount(service service.DiscountService) *Discount {
 	return &Discount{
 		service: service,
 	}

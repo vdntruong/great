@@ -16,10 +16,10 @@ import (
 )
 
 type Voucher struct {
-	service *service.VoucherServiceImpl
+	service service.VoucherService
 }
 
-func NewVoucher(service *service.VoucherServiceImpl) *Voucher {
+func NewVoucher(service service.VoucherService) *Voucher {
 	return &Voucher{
 		service: service,
 	}
@@ -245,30 +245,6 @@ func (h *Voucher) DeleteVoucher(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err := h.service.DeleteVoucher(r.Context(), id.String()); err != nil {
-		commonjson.RespondInternalServerError(w, err)
-		return
-	}
-
-	commonjson.RespondNoContent(w)
-}
-
-// UpdateVoucherStatus handles updating a voucher's status
-func (h *Voucher) UpdateVoucherStatus(w http.ResponseWriter, r *http.Request) {
-	id, err := uuid.Parse(chi.URLParam(r, "id"))
-	if err != nil {
-		commonjson.RespondBadRequestError(w, errors.New("invalid voucher ID"))
-		return
-	}
-
-	var req struct {
-		Status string `json:"status"`
-	}
-	if err := commonjson.DecodeRequest(r, &req); err != nil {
-		commonjson.RespondBadRequestError(w, err)
-		return
-	}
-
-	if err := h.service.UpdateVoucherStatus(r.Context(), id, models.VoucherStatus(req.Status)); err != nil {
 		commonjson.RespondInternalServerError(w, err)
 		return
 	}

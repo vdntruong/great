@@ -2,8 +2,13 @@ package router
 
 import (
 	"net/http"
+	"time"
+
+	chandler "commons/handler"
+	otelmiddleware "commons/otel/middleware"
 
 	"product-ms/internal/handler"
+	"product-ms/internal/infrastructure/config"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -17,6 +22,7 @@ type Router struct {
 }
 
 func NewRouter(
+	cfg *config.Config,
 	storeHandler *handler.Store,
 	productHandler *handler.Product,
 	discountHandler *handler.Discount,
@@ -25,9 +31,16 @@ func NewRouter(
 	r := chi.NewRouter()
 
 	// Middleware
+	r.Use(middleware.RequestID)
+	r.Use(middleware.RealIP)
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
-	r.Use(middleware.RequestID)
+
+	r.Use(otelmiddleware.Metrics)      // otel metrics
+	r.Use(otelmiddleware.TraceRequest) // otel trace
+
+	r.Use(middleware.Timeout(cfg.ReadTimeout + cfg.WriteTimeout))
+	r.Get("/healthz", chandler.HealthCheck(time.Now(), cfg.AppName)) // health check traefik
 
 	// Store routes
 	r.Route("/stores", func(r chi.Router) {
@@ -74,7 +87,6 @@ func NewRouter(
 			r.Get("/", voucherHandler.GetVoucher)
 			r.Put("/", voucherHandler.UpdateVoucher)
 			r.Delete("/", voucherHandler.DeleteVoucher)
-			r.Put("/status", voucherHandler.UpdateVoucherStatus)
 		})
 	})
 

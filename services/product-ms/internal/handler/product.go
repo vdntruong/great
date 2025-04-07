@@ -15,12 +15,12 @@ import (
 )
 
 type Product struct {
-	productService service.ProductService
+	service service.ProductService
 }
 
-func NewProduct(productService service.ProductService) *Product {
+func NewProduct(service service.ProductService) *Product {
 	return &Product{
-		productService: productService,
+		service: service,
 	}
 }
 
@@ -54,7 +54,7 @@ func (h *Product) HandleCreate(w http.ResponseWriter, r *http.Request) {
 	params := ConvertCreateProductRequestToModel(&req)
 	params.StoreID = storeID
 
-	product, err := h.productService.CreateProduct(r.Context(), params)
+	product, err := h.service.CreateProduct(r.Context(), params)
 	if err != nil {
 		commonjson.RespondInternalServerError(w, err)
 		return
@@ -71,7 +71,7 @@ func (h *Product) HandleGet(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	product, err := h.productService.GetProductByID(r.Context(), productID.String())
+	product, err := h.service.GetProductByID(r.Context(), productID.String())
 	if err != nil {
 		commonjson.RespondInternalServerError(w, err)
 		return
@@ -94,7 +94,7 @@ func (h *Product) HandleList(w http.ResponseWriter, r *http.Request) {
 	}
 	offset, _ := strconv.Atoi(r.URL.Query().Get("offset"))
 
-	products, err := h.productService.ListProducts(r.Context(), models.ListProductsParams{
+	products, err := h.service.ListProducts(r.Context(), models.ListProductsParams{
 		StoreID: storeID,
 		Limit:   int32(limit),
 		Offset:  int32(offset),
@@ -133,7 +133,7 @@ func (h *Product) HandleUpdate(w http.ResponseWriter, r *http.Request) {
 	params := ConvertUpdateProductRequestToModel(&req)
 	params.ID = productID
 
-	product, err := h.productService.UpdateProduct(r.Context(), params)
+	product, err := h.service.UpdateProduct(r.Context(), params)
 	if err != nil {
 		commonjson.RespondInternalServerError(w, err)
 		return
@@ -150,7 +150,7 @@ func (h *Product) HandleDelete(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := h.productService.DeleteProduct(r.Context(), productID.String()); err != nil {
+	if err := h.service.DeleteProduct(r.Context(), productID.String()); err != nil {
 		commonjson.RespondInternalServerError(w, err)
 		return
 	}

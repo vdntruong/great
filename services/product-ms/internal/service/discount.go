@@ -2,11 +2,10 @@ package service
 
 import (
 	"context"
-	"database/sql"
 	"fmt"
+	dao2 "product-ms/db/dao"
 
 	"product-ms/internal/models"
-	"product-ms/internal/repository/dao"
 	"product-ms/internal/service/validator"
 
 	"github.com/google/uuid"
@@ -14,14 +13,14 @@ import (
 
 // DiscountServiceImpl implements DiscountService
 type DiscountServiceImpl struct {
-	dao       *dao.Queries
+	dao       *dao2.Queries
 	validator validator.DiscountValidator
 }
 
 var _ DiscountService = (*DiscountServiceImpl)(nil)
 
 // NewDiscountService creates a new DiscountService
-func NewDiscountService(dao *dao.Queries) *DiscountServiceImpl {
+func NewDiscountService(dao *dao2.Queries) *DiscountServiceImpl {
 	return &DiscountServiceImpl{
 		dao:       dao,
 		validator: validator.NewDiscountValidator(),
@@ -29,7 +28,7 @@ func NewDiscountService(dao *dao.Queries) *DiscountServiceImpl {
 }
 
 // ToDiscountModel converts a DAO discount to a model discount
-func ToDiscountModel(d *dao.Discount) *models.Discount {
+func ToDiscountModel(d *dao2.Discount) *models.Discount {
 	if d == nil {
 		return nil
 	}
@@ -55,16 +54,16 @@ func ToDiscountModel(d *dao.Discount) *models.Discount {
 }
 
 // ToDiscountListModel converts a DAO discount list to a model discount list
-func ToDiscountListModel(discounts []*dao.Discount, total int64) *models.DiscountList {
+func ToDiscountListModel(discounts []*dao2.Discount, total int64) *models.DiscountList {
 	items := make([]models.Discount, len(discounts))
 	for i, d := range discounts {
 		items[i] = *ToDiscountModel(d)
 	}
 
 	return &models.DiscountList{
-		Discounts:   items,
+		Discounts:  items,
 		TotalCount: total,
-		Page:       1, // TODO: Calculate page based on offset and limit
+		Page:       1,  // TODO: Calculate page based on offset and limit
 		Limit:      10, // TODO: Use actual limit
 	}
 }
@@ -75,44 +74,29 @@ func (s *DiscountServiceImpl) CreateDiscount(ctx context.Context, params models.
 		return nil, err
 	}
 
-	id := uuid.New()
-	daoParams := dao.CreateDiscountParams{
-		ID:                id,
-		StoreID:           params.StoreID,
-		Name:              params.Name,
-		Code:              params.Code,
-		Type:              dao.DiscountType(params.Type),
-		Value:             float64ToString(params.Value),
-		Scope:             dao.DiscountScope(params.Scope),
-		StartDate:         params.StartDate,
-		EndDate:           timePtrToNullTime(params.EndDate),
-		MinPurchaseAmount: float64PtrToString(params.MinPurchaseAmount),
-		MaxDiscountAmount: float64PtrToString(params.MaxDiscountAmount),
-		UsageLimit:        int32PtrToNullInt32(params.UsageLimit),
-		IsActive:          sql.NullBool{Bool: params.IsActive, Valid: true},
-	}
+	daoParams := ConvertCreateDiscountParamsToDAO(params)
 
 	discount, err := s.dao.CreateDiscount(ctx, &daoParams)
 	if err != nil {
 		return nil, err
 	}
 
-	return ToDiscountModel(discount), nil
+	return ConvertDiscountToModel(discount), nil
 }
 
 // GetDiscountByID gets a discount by ID
 func (s *DiscountServiceImpl) GetDiscountByID(ctx context.Context, id string) (*models.Discount, error) {
-	uuid, err := uuid.Parse(id)
+	discountID, err := uuid.Parse(id)
 	if err != nil {
 		return nil, err
 	}
 
-	discount, err := s.dao.GetDiscountByID(ctx, uuid)
+	discount, err := s.dao.GetDiscount(ctx, discountID)
 	if err != nil {
 		return nil, err
 	}
 
-	return ToDiscountModel(discount), nil
+	return ConvertDiscountToModel(discount), nil
 }
 
 // ListDiscounts lists discounts
@@ -121,18 +105,18 @@ func (s *DiscountServiceImpl) ListDiscounts(ctx context.Context, params models.L
 		return nil, err
 	}
 
-	daoParams := dao.ListDiscountsParams{
-		StoreID: params.StoreID,
-		Limit:   params.Limit,
-		Offset:  params.Offset,
-	}
-
+	daoParams := ConvertListDiscountsParamsToDAO(params)
 	discounts, err := s.dao.ListDiscounts(ctx, &daoParams)
 	if err != nil {
 		return nil, err
 	}
 
-	return ToDiscountListModel(discounts, int64(len(discounts))), nil
+	total, err := s.dao.CountDiscounts(ctx, params.StoreID)
+	if err != nil {
+		return nil, err
+	}
+
+	return ConvertDiscountListToModel(discounts, total, int(params.Offset/params.Limit+1), int(params.Limit)), nil
 }
 
 // UpdateDiscount updates a discount
@@ -141,41 +125,27 @@ func (s *DiscountServiceImpl) UpdateDiscount(ctx context.Context, params models.
 		return nil, err
 	}
 
-	daoParams := dao.UpdateDiscountParams{
-		ID:         params.ID,
-		Column2:    params.Name,
-		Column3:    params.Code,
-		Column4:    (*string)(params.Type),
-		Column5:    float64PtrToString(params.Value),
-		Column6:    (*string)(params.Scope),
-		StartDate:  *params.StartDate,
-		EndDate:    timePtrToNullTime(params.EndDate),
-		Column9:    float64PtrToString(params.MinPurchaseAmount),
-		Column10:   float64PtrToString(params.MaxDiscountAmount),
-		UsageLimit: int32PtrToNullInt32(params.UsageLimit),
-		IsActive:   boolPtrToNullBool(params.IsActive),
-	}
-
+	daoParams := ConvertUpdateDiscountParamsToDAO(params)
 	discount, err := s.dao.UpdateDiscount(ctx, &daoParams)
 	if err != nil {
 		return nil, err
 	}
 
-	return ToDiscountModel(discount), nil
+	return ConvertDiscountToModel(discount), nil
 }
 
 // DeleteDiscount deletes a discount
 func (s *DiscountServiceImpl) DeleteDiscount(ctx context.Context, id string) error {
-	uuid, err := uuid.Parse(id)
+	discountID, err := uuid.Parse(id)
 	if err != nil {
 		return err
 	}
-	return s.dao.DeleteDiscount(ctx, uuid)
+	return s.dao.DeleteDiscount(ctx, discountID)
 }
 
 // AddDiscountProduct adds a product to a discount
 func (s *DiscountServiceImpl) AddDiscountProduct(ctx context.Context, discountID, productID uuid.UUID) error {
-	params := &dao.AddDiscountProductParams{
+	params := &dao2.AddDiscountProductParams{
 		DiscountID: discountID,
 		ProductID:  productID,
 	}
@@ -189,7 +159,7 @@ func (s *DiscountServiceImpl) AddDiscountProduct(ctx context.Context, discountID
 
 // RemoveDiscountProduct removes a product from a discount
 func (s *DiscountServiceImpl) RemoveDiscountProduct(ctx context.Context, discountID, productID uuid.UUID) error {
-	params := &dao.RemoveDiscountProductParams{
+	params := &dao2.RemoveDiscountProductParams{
 		DiscountID: discountID,
 		ProductID:  productID,
 	}
@@ -203,7 +173,7 @@ func (s *DiscountServiceImpl) RemoveDiscountProduct(ctx context.Context, discoun
 
 // AddDiscountCategory adds a category to a discount
 func (s *DiscountServiceImpl) AddDiscountCategory(ctx context.Context, discountID, categoryID uuid.UUID) error {
-	params := &dao.AddDiscountCategoryParams{
+	params := &dao2.AddDiscountCategoryParams{
 		DiscountID: discountID,
 		CategoryID: categoryID,
 	}
@@ -217,7 +187,7 @@ func (s *DiscountServiceImpl) AddDiscountCategory(ctx context.Context, discountI
 
 // RemoveDiscountCategory removes a category from a discount
 func (s *DiscountServiceImpl) RemoveDiscountCategory(ctx context.Context, discountID, categoryID uuid.UUID) error {
-	params := &dao.RemoveDiscountCategoryParams{
+	params := &dao2.RemoveDiscountCategoryParams{
 		DiscountID: discountID,
 		CategoryID: categoryID,
 	}

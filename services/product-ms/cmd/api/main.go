@@ -2,24 +2,18 @@ package main
 
 import (
 	"commons/otel"
-	otelmiddleware "commons/otel/middleware"
 	"context"
 	"errors"
 	"fmt"
 	"net/http"
 	"os"
 	"os/signal"
-	"time"
-
-	chandler "commons/handler"
+	"product-ms/db/dao"
+	"product-ms/internal/handler"
 	"product-ms/internal/infrastructure"
 	"product-ms/internal/infrastructure/config"
-	"product-ms/internal/repository/dao"
 	"product-ms/internal/router"
 	"product-ms/internal/service"
-
-	chi "github.com/go-chi/chi/v5"
-	chimiddleware "github.com/go-chi/chi/v5/middleware"
 )
 
 func main() {
@@ -42,27 +36,22 @@ func main() {
 	}
 
 	queries := dao.New(infra.DB)
+
 	productService := service.NewProductService(queries)
 	storeService := service.NewStoreService(queries)
-	productRouter := router.NewProductRouter(productService)
-	storeRouter := router.NewStoreRouter(storeService)
+	discountService := service.NewDiscountService(queries)
+	voucherService := service.NewVoucherService(queries)
 
-	r := chi.NewRouter()
-	r.Use(chimiddleware.RequestID)
-	r.Use(chimiddleware.RealIP)
-	r.Use(chimiddleware.Logger)
-	r.Use(chimiddleware.Recoverer)
-	r.Use(otelmiddleware.Metrics)      // otel metrics
-	r.Use(otelmiddleware.TraceRequest) // otel trace
-	r.Use(chimiddleware.Timeout(cfg.ReadTimeout + cfg.WriteTimeout))
-	r.Get("/healthz", chandler.HealthCheck(time.Now(), cfg.AppName)) // health check traefik
+	storeHandler := handler.NewStore(storeService)
+	productHandler := handler.NewProduct(productService)
+	discountHandler := handler.NewDiscount(discountService)
+	voucherHandler := handler.NewVoucher(voucherService)
 
-	productRouter.RegisterRoutes(r)
-	storeRouter.RegisterRoutes(r)
+	route := router.NewRouter(cfg, storeHandler, productHandler, discountHandler, voucherHandler)
 
 	server := &http.Server{
 		Addr:         cfg.Addr(),
-		Handler:      r,
+		Handler:      route,
 		IdleTimeout:  cfg.IdleTimeout,
 		ReadTimeout:  cfg.ReadTimeout,
 		WriteTimeout: cfg.WriteTimeout,

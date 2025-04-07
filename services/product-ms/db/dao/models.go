@@ -507,11 +507,11 @@ type Discount struct {
 	ID                uuid.UUID      `db:"id" json:"id"`
 	StoreID           uuid.UUID      `db:"store_id" json:"store_id"`
 	Name              string         `db:"name" json:"name"`
-	Code              string         `db:"code" json:"code"`
-	Type              DiscountType   `db:"type" json:"type"`
-	Value             string         `db:"value" json:"value"`
-	Scope             DiscountScope  `db:"scope" json:"scope"`
-	StartDate         time.Time      `db:"start_date" json:"start_date"`
+	Code      string        `db:"code" json:"code"`
+	Type      DiscountType  `db:"type" json:"type"`
+	Value     string        `db:"value" json:"value"`
+	Scope     DiscountScope `db:"scope" json:"scope"`
+	StartDate time.Time     `db:"start_date" json:"start_date"`
 	EndDate           sql.NullTime   `db:"end_date" json:"end_date"`
 	MinPurchaseAmount sql.NullString `db:"min_purchase_amount" json:"min_purchase_amount"`
 	MaxDiscountAmount sql.NullString `db:"max_discount_amount" json:"max_discount_amount"`
@@ -537,10 +537,10 @@ type Product struct {
 	StoreID           uuid.UUID             `db:"store_id" json:"store_id"`
 	Name              string                `db:"name" json:"name"`
 	Slug              string                `db:"slug" json:"slug"`
-	Description       sql.NullString        `db:"description" json:"description"`
-	Type              ProductType           `db:"type" json:"type"`
-	Status            ProductStatus         `db:"status" json:"status"`
-	Price             string                `db:"price" json:"price"`
+	Description sql.NullString `db:"description" json:"description"`
+	Type        ProductType    `db:"type" json:"type"`
+	Status      ProductStatus  `db:"status" json:"status"`
+	Price       string         `db:"price" json:"price"`
 	CompareAtPrice    sql.NullString        `db:"compare_at_price" json:"compare_at_price"`
 	CostPrice         sql.NullString        `db:"cost_price" json:"cost_price"`
 	Sku               sql.NullString        `db:"sku" json:"sku"`
@@ -604,9 +604,9 @@ type Store struct {
 	Slug         string                `db:"slug" json:"slug"`
 	Description  sql.NullString        `db:"description" json:"description"`
 	LogoUrl      sql.NullString        `db:"logo_url" json:"logo_url"`
-	CoverUrl     sql.NullString        `db:"cover_url" json:"cover_url"`
-	Status       StoreStatus           `db:"status" json:"status"`
-	IsVerified   bool                  `db:"is_verified" json:"is_verified"`
+	CoverUrl   sql.NullString `db:"cover_url" json:"cover_url"`
+	Status     StoreStatus    `db:"status" json:"status"`
+	IsVerified bool           `db:"is_verified" json:"is_verified"`
 	OwnerID      uuid.UUID             `db:"owner_id" json:"owner_id"`
 	ContactEmail sql.NullString        `db:"contact_email" json:"contact_email"`
 	ContactPhone sql.NullString        `db:"contact_phone" json:"contact_phone"`
@@ -632,17 +632,17 @@ type StoreCategory struct {
 type Voucher struct {
 	ID                uuid.UUID      `db:"id" json:"id"`
 	StoreID           uuid.UUID      `db:"store_id" json:"store_id"`
-	Code              string         `db:"code" json:"code"`
-	Type              VoucherType    `db:"type" json:"type"`
-	Value             sql.NullString `db:"value" json:"value"`
+	Code       string         `db:"code" json:"code"`
+	Type       VoucherType    `db:"type" json:"type"`
+	Value      sql.NullString `db:"value" json:"value"`
 	MinPurchaseAmount sql.NullString `db:"min_purchase_amount" json:"min_purchase_amount"`
 	MaxDiscountAmount sql.NullString `db:"max_discount_amount" json:"max_discount_amount"`
 	StartDate         time.Time      `db:"start_date" json:"start_date"`
 	EndDate           sql.NullTime   `db:"end_date" json:"end_date"`
 	UsageLimit        sql.NullInt32  `db:"usage_limit" json:"usage_limit"`
-	UsageCount        sql.NullInt32  `db:"usage_count" json:"usage_count"`
-	Status            VoucherStatus  `db:"status" json:"status"`
-	CreatedAt         sql.NullTime   `db:"created_at" json:"created_at"`
+	UsageCount sql.NullInt32  `db:"usage_count" json:"usage_count"`
+	Status     VoucherStatus  `db:"status" json:"status"`
+	CreatedAt  sql.NullTime   `db:"created_at" json:"created_at"`
 	UpdatedAt         sql.NullTime   `db:"updated_at" json:"updated_at"`
 }
 

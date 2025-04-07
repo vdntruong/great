@@ -2,10 +2,10 @@ package service
 
 import (
 	"context"
-	"errors"
+	"fmt"
+	"product-ms/db/dao"
 
 	"product-ms/internal/models"
-	"product-ms/internal/repository/dao"
 	"product-ms/internal/service/validator"
 
 	"github.com/google/uuid"
@@ -34,9 +34,9 @@ func (s *StoreServiceImpl) CreateStore(ctx context.Context, params models.Create
 	}
 
 	daoParams := ConvertCreateStoreParamsToDAO(params)
-	store, err := s.queries.CreateStore(ctx, daoParams)
+	store, err := s.queries.CreateStore(ctx, &daoParams)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to create store: %w", err)
 	}
 
 	return ConvertStoreToModel(store), nil
@@ -46,12 +46,22 @@ func (s *StoreServiceImpl) CreateStore(ctx context.Context, params models.Create
 func (s *StoreServiceImpl) GetStoreByID(ctx context.Context, id string) (*models.Store, error) {
 	storeID, err := uuid.Parse(id)
 	if err != nil {
-		return nil, errors.New("invalid store ID")
+		return nil, fmt.Errorf("invalid store ID: %w", err)
 	}
 
-	store, err := s.queries.GetStoreByID(ctx, storeID)
+	store, err := s.queries.GetStore(ctx, storeID)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to get store: %w", err)
+	}
+
+	return ConvertStoreToModel(store), nil
+}
+
+// GetStoreBySlug retrieves a store by slug
+func (s *StoreServiceImpl) GetStoreBySlug(ctx context.Context, slug string) (*models.Store, error) {
+	store, err := s.queries.GetStoreBySlug(ctx, slug)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get store by slug: %w", err)
 	}
 
 	return ConvertStoreToModel(store), nil
@@ -64,24 +74,24 @@ func (s *StoreServiceImpl) ListStores(ctx context.Context, params models.ListSto
 	}
 
 	daoParams := ConvertListStoresParamsToDAO(params)
-	stores, err := s.queries.ListStores(ctx, daoParams)
+	stores, err := s.queries.ListStores(ctx, &daoParams)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to list stores: %w", err)
 	}
 
 	totalCount, err := s.queries.CountStores(ctx)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to count stores: %w", err)
 	}
 
-	return ConvertStoreListToModel(stores, totalCount, 1, int(params.Limit)), nil
+	return ConvertStoreListToModel(stores, totalCount, int(params.Offset/params.Limit+1), int(params.Limit)), nil
 }
 
 // UpdateStore updates a store
 func (s *StoreServiceImpl) UpdateStore(ctx context.Context, id string, params models.UpdateStoreParams) (*models.Store, error) {
 	storeID, err := uuid.Parse(id)
 	if err != nil {
-		return nil, errors.New("invalid store ID")
+		return nil, fmt.Errorf("invalid store ID: %w", err)
 	}
 
 	if err := s.validator.ValidateUpdate(params); err != nil {
@@ -89,9 +99,9 @@ func (s *StoreServiceImpl) UpdateStore(ctx context.Context, id string, params mo
 	}
 
 	daoParams := ConvertUpdateStoreParamsToDAO(storeID, params)
-	store, err := s.queries.UpdateStore(ctx, daoParams)
+	store, err := s.queries.UpdateStore(ctx, &daoParams)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to update store: %w", err)
 	}
 
 	return ConvertStoreToModel(store), nil
@@ -101,8 +111,12 @@ func (s *StoreServiceImpl) UpdateStore(ctx context.Context, id string, params mo
 func (s *StoreServiceImpl) DeleteStore(ctx context.Context, id string) error {
 	storeID, err := uuid.Parse(id)
 	if err != nil {
-		return errors.New("invalid store ID")
+		return fmt.Errorf("invalid store ID: %w", err)
 	}
 
-	return s.queries.DeleteStore(ctx, storeID)
+	if err := s.queries.DeleteStore(ctx, storeID); err != nil {
+		return fmt.Errorf("failed to delete store: %w", err)
+	}
+
+	return nil
 }

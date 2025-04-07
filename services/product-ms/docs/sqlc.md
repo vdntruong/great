@@ -39,3 +39,7 @@ Configured by `sql.queries` in the configuration file.
 ```bash
 sql generate
 ```
+
+## How to treat this generated code
+
+Treat the sqlc models (models.go) as **Persistence Models not as Domain models**.

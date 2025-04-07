@@ -3,9 +3,9 @@ package service
 import (
 	"context"
 	"fmt"
+	"product-ms/db/dao"
 
 	"product-ms/internal/models"
-	"product-ms/internal/repository/dao"
 	"product-ms/internal/service/validator"
 
 	"github.com/google/uuid"
@@ -37,9 +37,6 @@ func (s *ProductServiceImpl) CreateProduct(ctx context.Context, params models.Cr
 		return nil, err
 	}
 
-	// Generate new UUID for product ID
-	daoParams.ID = uuid.New()
-
 	// Create product in database
 	product, err := s.queries.CreateProduct(ctx, daoParams)
 	if err != nil {
@@ -55,7 +52,7 @@ func (s *ProductServiceImpl) GetProductByID(ctx context.Context, id string) (*mo
 		return nil, fmt.Errorf("invalid product ID: %w", err)
 	}
 
-	product, err := s.queries.GetProductByID(ctx, productID)
+	product, err := s.queries.GetProduct(ctx, productID)
 	if err != nil {
 		return nil, err
 	}
