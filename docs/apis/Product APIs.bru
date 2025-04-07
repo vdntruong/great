@@ -1,0 +1,392 @@
+{
+  "name": "Product APIs",
+  "version": "1.0.0",
+  "description": "Product Management Service APIs",
+  "type": "collection",
+  "items": [
+    {
+      "name": "Health Check",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/healthz",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "name": "Stores",
+      "items": [
+        {
+          "name": "Create Store",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/stores",
+            "headers": {
+              "Content-Type": "application/json"
+            },
+            "body": {
+              "name": "Tech Haven",
+              "slug": "tech-haven",
+              "description": "Your one-stop shop for all things tech",
+              "logo_url": "https://example.com/tech-haven-logo.png",
+              "cover_url": "https://example.com/tech-haven-cover.png",
+              "status": "active",
+              "is_verified": true,
+              "owner_id": "550e8400-e29b-41d4-a716-446655440001",
+              "contact_email": "contact@techhaven.com",
+              "contact_phone": "+1234567890",
+              "address": "123 Tech Street, Silicon Valley",
+              "settings": {
+                "theme": "dark",
+                "currency": "USD",
+                "tax_settings": {
+                  "enabled": true,
+                  "rate": 0.08,
+                  "inclusive": false
+                },
+                "shipping": {
+                  "free_threshold": 100,
+                  "rates": [
+                    {"region": "US", "rate": 5.99},
+                    {"region": "EU", "rate": 9.99}
+                  ]
+                },
+                "payment_methods": ["credit_card", "paypal", "apple_pay", "google_pay"],
+                "notifications": {
+                  "email": true,
+                  "sms": true,
+                  "push": true
+                },
+                "social_media": {
+                  "facebook": "techhaven",
+                  "instagram": "techhaven",
+                  "twitter": "techhaven"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "List Stores",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/stores",
+            "headers": {
+              "Content-Type": "application/json"
+            }
+          }
+        },
+        {
+          "name": "Get Store",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/stores/{{store_id}}",
+            "headers": {
+              "Content-Type": "application/json"
+            }
+          }
+        },
+        {
+          "name": "Update Store",
+          "request": {
+            "method": "PUT",
+            "url": "{{baseUrl}}/stores/{{store_id}}",
+            "headers": {
+              "Content-Type": "application/json"
+            },
+            "body": {
+              "name": "Tech Haven Updated",
+              "description": "Updated description",
+              "status": "active",
+              "settings": {
+                "theme": "light",
+                "currency": "USD"
+              }
+            }
+          }
+        },
+        {
+          "name": "Delete Store",
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/stores/{{store_id}}",
+            "headers": {
+              "Content-Type": "application/json"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Products",
+      "items": [
+        {
+          "name": "Create Product",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/stores/{{store_id}}/products",
+            "headers": {
+              "Content-Type": "application/json"
+            },
+            "body": {
+              "name": "MacBook Pro M3",
+              "slug": "macbook-pro-m3",
+              "description": "The most powerful MacBook Pro ever with M3 chip",
+              "type": "simple",
+              "status": "active",
+              "price": 1999.99,
+              "compare_at_price": 2199.99,
+              "cost_price": 1500.00,
+              "sku": "MBP-M3-001",
+              "barcode": "123456789012",
+              "weight": 2.0,
+              "weight_unit": "kg",
+              "is_taxable": true,
+              "is_featured": true,
+              "is_gift_card": false,
+              "requires_shipping": true,
+              "inventory_quantity": 50,
+              "inventory_policy": "deny",
+              "inventory_tracking": true,
+              "seo_title": "MacBook Pro M3 - Tech Haven",
+              "seo_description": "Get the new MacBook Pro M3 with amazing performance"
+            }
+          }
+        },
+        {
+          "name": "List Products",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/stores/{{store_id}}/products",
+            "headers": {
+              "Content-Type": "application/json"
+            }
+          }
+        },
+        {
+          "name": "Get Product",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/stores/{{store_id}}/products/{{product_id}}",
+            "headers": {
+              "Content-Type": "application/json"
+            }
+          }
+        },
+        {
+          "name": "Update Product",
+          "request": {
+            "method": "PUT",
+            "url": "{{baseUrl}}/stores/{{store_id}}/products/{{product_id}}",
+            "headers": {
+              "Content-Type": "application/json"
+            },
+            "body": {
+              "name": "MacBook Pro M3 Updated",
+              "description": "Updated description",
+              "price": 1899.99,
+              "inventory_quantity": 45
+            }
+          }
+        },
+        {
+          "name": "Delete Product",
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/stores/{{store_id}}/products/{{product_id}}",
+            "headers": {
+              "Content-Type": "application/json"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Discounts",
+      "items": [
+        {
+          "name": "Create Discount",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/stores/{{store_id}}/discounts",
+            "headers": {
+              "Content-Type": "application/json"
+            },
+            "body": {
+              "name": "Tech Week Sale",
+              "code": "TECHWEEK20",
+              "type": "percentage",
+              "value": 20.00,
+              "scope": "store",
+              "start_date": "2024-01-01T00:00:00Z",
+              "end_date": "2024-01-07T23:59:59Z",
+              "min_purchase_amount": 100.00,
+              "max_discount_amount": 500.00,
+              "usage_limit": 1000,
+              "is_active": true
+            }
+          }
+        },
+        {
+          "name": "List Discounts",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/stores/{{store_id}}/discounts",
+            "headers": {
+              "Content-Type": "application/json"
+            }
+          }
+        },
+        {
+          "name": "Get Discount",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/stores/{{store_id}}/discounts/{{discount_id}}",
+            "headers": {
+              "Content-Type": "application/json"
+            }
+          }
+        },
+        {
+          "name": "Update Discount",
+          "request": {
+            "method": "PUT",
+            "url": "{{baseUrl}}/stores/{{store_id}}/discounts/{{discount_id}}",
+            "headers": {
+              "Content-Type": "application/json"
+            },
+            "body": {
+              "name": "Tech Week Sale Updated",
+              "value": 25.00,
+              "end_date": "2024-01-14T23:59:59Z",
+              "max_discount_amount": 600.00
+            }
+          }
+        },
+        {
+          "name": "Delete Discount",
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/stores/{{store_id}}/discounts/{{discount_id}}",
+            "headers": {
+              "Content-Type": "application/json"
+            }
+          }
+        },
+        {
+          "name": "Add Discount Product",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/stores/{{store_id}}/discounts/{{discount_id}}/products/{{product_id}}",
+            "headers": {
+              "Content-Type": "application/json"
+            }
+          }
+        },
+        {
+          "name": "Remove Discount Product",
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/stores/{{store_id}}/discounts/{{discount_id}}/products/{{product_id}}",
+            "headers": {
+              "Content-Type": "application/json"
+            }
+          }
+        },
+        {
+          "name": "Add Discount Category",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/stores/{{store_id}}/discounts/{{discount_id}}/categories/{{category_id}}",
+            "headers": {
+              "Content-Type": "application/json"
+            }
+          }
+        },
+        {
+          "name": "Remove Discount Category",
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/stores/{{store_id}}/discounts/{{discount_id}}/categories/{{category_id}}",
+            "headers": {
+              "Content-Type": "application/json"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Vouchers",
+      "items": [
+        {
+          "name": "Create Voucher",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/stores/{{store_id}}/vouchers",
+            "headers": {
+              "Content-Type": "application/json"
+            },
+            "body": {
+              "code": "WELCOME10",
+              "type": "percentage",
+              "value": 10.00,
+              "min_purchase_amount": 100.00,
+              "max_discount_amount": 100.00,
+              "start_date": "2024-01-01T00:00:00Z",
+              "end_date": "2024-12-31T23:59:59Z",
+              "usage_limit": 1000,
+              "status": "active"
+            }
+          }
+        },
+        {
+          "name": "List Vouchers",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/stores/{{store_id}}/vouchers",
+            "headers": {
+              "Content-Type": "application/json"
+            }
+          }
+        },
+        {
+          "name": "Get Voucher",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/stores/{{store_id}}/vouchers/{{voucher_id}}",
+            "headers": {
+              "Content-Type": "application/json"
+            }
+          }
+        },
+        {
+          "name": "Update Voucher",
+          "request": {
+            "method": "PUT",
+            "url": "{{baseUrl}}/stores/{{store_id}}/vouchers/{{voucher_id}}",
+            "headers": {
+              "Content-Type": "application/json"
+            },
+            "body": {
+              "value": 15.00,
+              "min_purchase_amount": 150.00,
+              "max_discount_amount": 150.00,
+              "end_date": "2024-12-31T23:59:59Z"
+            }
+          }
+        },
+        {
+          "name": "Delete Voucher",
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/stores/{{store_id}}/vouchers/{{voucher_id}}",
+            "headers": {
+              "Content-Type": "application/json"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

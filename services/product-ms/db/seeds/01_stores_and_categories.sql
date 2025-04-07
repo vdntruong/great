@@ -25,18 +25,24 @@ INSERT INTO stores (
                 {"region": "EU", "rate": 9.99}
             ]
         },
-        "payment_methods": ["credit_card", "paypal", "apple_pay"],
+        "payment_methods": ["credit_card", "paypal", "apple_pay", "google_pay"],
         "notifications": {
             "email": true,
-            "sms": false
+            "sms": true,
+            "push": true
+        },
+        "social_media": {
+            "facebook": "techhaven",
+            "instagram": "techhaven",
+            "twitter": "techhaven"
         }
      }'::jsonb,
      '2024-01-01 00:00:00+00', '2024-01-01 00:00:00+00', NULL),
 
-    -- Pending store
+    -- Active fashion store
     ('550e8400-e29b-41d4-a716-446655440002', 'Fashion Forward', 'fashion-forward',
      'Trendy fashion for the modern individual', 'https://example.com/fashion-forward-logo.png',
-     'https://example.com/fashion-forward-cover.png', 'pending', false,
+     'https://example.com/fashion-forward-cover.png', 'active', true,
      '550e8400-e29b-41d4-a716-446655440003', 'hello@fashionforward.com', '+1987654321',
      '456 Style Avenue, Fashion District',
      '{
@@ -45,14 +51,31 @@ INSERT INTO stores (
         "tax_settings": {
             "enabled": true,
             "rate": 0.06
+        },
+        "shipping": {
+            "free_threshold": 150,
+            "rates": [
+                {"region": "US", "rate": 7.99},
+                {"region": "EU", "rate": 12.99}
+            ]
+        },
+        "payment_methods": ["credit_card", "paypal", "klarna"],
+        "notifications": {
+            "email": true,
+            "sms": true,
+            "push": false
+        },
+        "social_media": {
+            "instagram": "fashionforward",
+            "tiktok": "fashionforward"
         }
      }'::jsonb,
      '2024-02-01 00:00:00+00', '2024-02-01 00:00:00+00', NULL),
 
-    -- Suspended store
+    -- Active home decor store
     ('550e8400-e29b-41d4-a716-446655440004', 'Home Decor', 'home-decor',
      'Beautiful home decor items', 'https://example.com/home-decor-logo.png',
-     'https://example.com/home-decor-cover.png', 'suspended', true,
+     'https://example.com/home-decor-cover.png', 'active', true,
      '550e8400-e29b-41d4-a716-446655440005', 'support@homedecor.com', '+1122334455',
      '789 Design Street, Art District',
      '{
@@ -61,21 +84,59 @@ INSERT INTO stores (
         "tax_settings": {
             "enabled": true,
             "rate": 0.07
+        },
+        "shipping": {
+            "free_threshold": 200,
+            "rates": [
+                {"region": "US", "rate": 9.99},
+                {"region": "EU", "rate": 19.99}
+            ]
+        },
+        "payment_methods": ["credit_card", "paypal"],
+        "notifications": {
+            "email": true,
+            "sms": false,
+            "push": false
+        },
+        "social_media": {
+            "pinterest": "homedecor",
+            "instagram": "homedecor"
         }
      }'::jsonb,
-     '2024-03-01 00:00:00+00', '2024-03-15 00:00:00+00', NULL),
+     '2024-03-01 00:00:00+00', '2024-03-01 00:00:00+00', NULL),
 
-    -- Closed store (with deleted_at)
-    ('550e8400-e29b-41d4-a716-446655440006', 'Book Nook', 'book-nook',
-     'Your favorite bookstore', 'https://example.com/book-nook-logo.png',
-     'https://example.com/book-nook-cover.png', 'closed', true,
-     '550e8400-e29b-41d4-a716-446655440007', 'info@booknook.com', '+1555666777',
-     '321 Reading Lane, Book District',
+    -- Active beauty store
+    ('550e8400-e29b-41d4-a716-446655440006', 'Beauty Haven', 'beauty-haven',
+     'Premium beauty products', 'https://example.com/beauty-haven-logo.png',
+     'https://example.com/beauty-haven-cover.png', 'active', true,
+     '550e8400-e29b-41d4-a716-446655440007', 'info@beautyhaven.com', '+1555666777',
+     '321 Beauty Lane, Cosmetics District',
      '{
-        "theme": "classic",
-        "currency": "USD"
+        "theme": "pink",
+        "currency": "USD",
+        "tax_settings": {
+            "enabled": true,
+            "rate": 0.05
+        },
+        "shipping": {
+            "free_threshold": 75,
+            "rates": [
+                {"region": "US", "rate": 4.99},
+                {"region": "EU", "rate": 8.99}
+            ]
+        },
+        "payment_methods": ["credit_card", "paypal", "afterpay"],
+        "notifications": {
+            "email": true,
+            "sms": true,
+            "push": true
+        },
+        "social_media": {
+            "instagram": "beautyhaven",
+            "youtube": "beautyhaven"
+        }
      }'::jsonb,
-     '2023-01-01 00:00:00+00', '2023-12-31 00:00:00+00', '2023-12-31 00:00:00+00');
+     '2024-04-01 00:00:00+00', '2024-04-01 00:00:00+00', NULL);
 
 -- Insert sample store categories
 INSERT INTO store_categories (
@@ -130,4 +191,17 @@ INSERT INTO store_categories (
     ('550e8400-e29b-41d4-a716-446655440018', '550e8400-e29b-41d4-a716-446655440004',
      'Living Room', 'living-room', 'Living room furniture and decor',
      '550e8400-e29b-41d4-a716-446655440016',
+     '2024-01-01 00:00:00+00', '2024-01-01 00:00:00+00'),
+
+    -- Beauty Haven categories
+    ('550e8400-e29b-41d4-a716-446655440019', '550e8400-e29b-41d4-a716-446655440006',
+     'Skincare', 'skincare', 'Facial and body skincare products', NULL,
+     '2024-01-01 00:00:00+00', '2024-01-01 00:00:00+00'),
+
+    ('550e8400-e29b-41d4-a716-446655440020', '550e8400-e29b-41d4-a716-446655440006',
+     'Makeup', 'makeup', 'Cosmetics and makeup products', NULL,
+     '2024-01-01 00:00:00+00', '2024-01-01 00:00:00+00'),
+
+    ('550e8400-e29b-41d4-a716-446655440021', '550e8400-e29b-41d4-a716-446655440006',
+     'Haircare', 'haircare', 'Hair care and styling products', NULL,
      '2024-01-01 00:00:00+00', '2024-01-01 00:00:00+00');
