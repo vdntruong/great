@@ -1,0 +1,22 @@
+meta {
+  name: Update Discount
+  type: http
+  seq: 4
+}
+
+put {
+  url: http://{{baseUrl}}/stores/{{storeId}}/discounts/{{discountId}}
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "name": "Summer Sale Updated",
+    "type": "percentage",
+    "scope": "all_products",
+    "value": 25.0,
+    "end_date": "2024-09-30T23:59:59Z",
+    "max_discount_amount": 75.0
+  }
+}

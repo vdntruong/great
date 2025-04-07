@@ -3,8 +3,8 @@ package service
 import (
 	"context"
 	"fmt"
-	dao2 "product-ms/db/dao"
 
+	"product-ms/db/dao"
 	"product-ms/internal/models"
 	"product-ms/internal/service/validator"
 
@@ -13,58 +13,17 @@ import (
 
 // DiscountServiceImpl implements DiscountService
 type DiscountServiceImpl struct {
-	dao       *dao2.Queries
+	queries   *dao.Queries
 	validator validator.DiscountValidator
 }
 
 var _ DiscountService = (*DiscountServiceImpl)(nil)
 
 // NewDiscountService creates a new DiscountService
-func NewDiscountService(dao *dao2.Queries) *DiscountServiceImpl {
+func NewDiscountService(queries *dao.Queries) *DiscountServiceImpl {
 	return &DiscountServiceImpl{
-		dao:       dao,
+		queries:   queries,
 		validator: validator.NewDiscountValidator(),
-	}
-}
-
-// ToDiscountModel converts a DAO discount to a model discount
-func ToDiscountModel(d *dao2.Discount) *models.Discount {
-	if d == nil {
-		return nil
-	}
-
-	return &models.Discount{
-		ID:                d.ID,
-		StoreID:           d.StoreID,
-		Name:              d.Name,
-		Code:              d.Code,
-		Type:              models.DiscountType(d.Type),
-		Value:             stringToFloat64(d.Value),
-		Scope:             models.DiscountScope(d.Scope),
-		StartDate:         d.StartDate,
-		EndDate:           nullTimeToTimePtr(d.EndDate),
-		MinPurchaseAmount: stringToFloat64Ptr(d.MinPurchaseAmount),
-		MaxDiscountAmount: stringToFloat64Ptr(d.MaxDiscountAmount),
-		UsageLimit:        nullInt32ToInt32Ptr(d.UsageLimit),
-		UsageCount:        nullInt32ToInt32(d.UsageCount),
-		IsActive:          d.IsActive.Bool,
-		CreatedAt:         d.CreatedAt.Time,
-		UpdatedAt:         d.UpdatedAt.Time,
-	}
-}
-
-// ToDiscountListModel converts a DAO discount list to a model discount list
-func ToDiscountListModel(discounts []*dao2.Discount, total int64) *models.DiscountList {
-	items := make([]models.Discount, len(discounts))
-	for i, d := range discounts {
-		items[i] = *ToDiscountModel(d)
-	}
-
-	return &models.DiscountList{
-		Discounts:  items,
-		TotalCount: total,
-		Page:       1,  // TODO: Calculate page based on offset and limit
-		Limit:      10, // TODO: Use actual limit
 	}
 }
 
@@ -76,7 +35,7 @@ func (s *DiscountServiceImpl) CreateDiscount(ctx context.Context, params models.
 
 	daoParams := ConvertCreateDiscountParamsToDAO(params)
 
-	discount, err := s.dao.CreateDiscount(ctx, &daoParams)
+	discount, err := s.queries.CreateDiscount(ctx, &daoParams)
 	if err != nil {
 		return nil, err
 	}
@@ -91,7 +50,7 @@ func (s *DiscountServiceImpl) GetDiscountByID(ctx context.Context, id string) (*
 		return nil, err
 	}
 
-	discount, err := s.dao.GetDiscount(ctx, discountID)
+	discount, err := s.queries.GetDiscount(ctx, discountID)
 	if err != nil {
 		return nil, err
 	}
@@ -106,12 +65,12 @@ func (s *DiscountServiceImpl) ListDiscounts(ctx context.Context, params models.L
 	}
 
 	daoParams := ConvertListDiscountsParamsToDAO(params)
-	discounts, err := s.dao.ListDiscounts(ctx, &daoParams)
+	discounts, err := s.queries.ListDiscounts(ctx, &daoParams)
 	if err != nil {
 		return nil, err
 	}
 
-	total, err := s.dao.CountDiscounts(ctx, params.StoreID)
+	total, err := s.queries.CountDiscounts(ctx, params.StoreID)
 	if err != nil {
 		return nil, err
 	}
@@ -126,7 +85,7 @@ func (s *DiscountServiceImpl) UpdateDiscount(ctx context.Context, params models.
 	}
 
 	daoParams := ConvertUpdateDiscountParamsToDAO(params)
-	discount, err := s.dao.UpdateDiscount(ctx, &daoParams)
+	discount, err := s.queries.UpdateDiscount(ctx, &daoParams)
 	if err != nil {
 		return nil, err
 	}
@@ -140,17 +99,17 @@ func (s *DiscountServiceImpl) DeleteDiscount(ctx context.Context, id string) err
 	if err != nil {
 		return err
 	}
-	return s.dao.DeleteDiscount(ctx, discountID)
+	return s.queries.DeleteDiscount(ctx, discountID)
 }
 
 // AddDiscountProduct adds a product to a discount
 func (s *DiscountServiceImpl) AddDiscountProduct(ctx context.Context, discountID, productID uuid.UUID) error {
-	params := &dao2.AddDiscountProductParams{
+	params := &dao.AddDiscountProductParams{
 		DiscountID: discountID,
 		ProductID:  productID,
 	}
 
-	if err := s.dao.AddDiscountProduct(ctx, params); err != nil {
+	if err := s.queries.AddDiscountProduct(ctx, params); err != nil {
 		return fmt.Errorf("failed to add product to discount: %w", err)
 	}
 
@@ -159,12 +118,12 @@ func (s *DiscountServiceImpl) AddDiscountProduct(ctx context.Context, discountID
 
 // RemoveDiscountProduct removes a product from a discount
 func (s *DiscountServiceImpl) RemoveDiscountProduct(ctx context.Context, discountID, productID uuid.UUID) error {
-	params := &dao2.RemoveDiscountProductParams{
+	params := &dao.RemoveDiscountProductParams{
 		DiscountID: discountID,
 		ProductID:  productID,
 	}
 
-	if err := s.dao.RemoveDiscountProduct(ctx, params); err != nil {
+	if err := s.queries.RemoveDiscountProduct(ctx, params); err != nil {
 		return fmt.Errorf("failed to remove product from discount: %w", err)
 	}
 
@@ -173,12 +132,12 @@ func (s *DiscountServiceImpl) RemoveDiscountProduct(ctx context.Context, discoun
 
 // AddDiscountCategory adds a category to a discount
 func (s *DiscountServiceImpl) AddDiscountCategory(ctx context.Context, discountID, categoryID uuid.UUID) error {
-	params := &dao2.AddDiscountCategoryParams{
+	params := &dao.AddDiscountCategoryParams{
 		DiscountID: discountID,
 		CategoryID: categoryID,
 	}
 
-	if err := s.dao.AddDiscountCategory(ctx, params); err != nil {
+	if err := s.queries.AddDiscountCategory(ctx, params); err != nil {
 		return fmt.Errorf("failed to add category to discount: %w", err)
 	}
 
@@ -187,12 +146,12 @@ func (s *DiscountServiceImpl) AddDiscountCategory(ctx context.Context, discountI
 
 // RemoveDiscountCategory removes a category from a discount
 func (s *DiscountServiceImpl) RemoveDiscountCategory(ctx context.Context, discountID, categoryID uuid.UUID) error {
-	params := &dao2.RemoveDiscountCategoryParams{
+	params := &dao.RemoveDiscountCategoryParams{
 		DiscountID: discountID,
 		CategoryID: categoryID,
 	}
 
-	if err := s.dao.RemoveDiscountCategory(ctx, params); err != nil {
+	if err := s.queries.RemoveDiscountCategory(ctx, params); err != nil {
 		return fmt.Errorf("failed to remove category from discount: %w", err)
 	}
 

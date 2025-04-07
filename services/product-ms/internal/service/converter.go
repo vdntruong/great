@@ -742,3 +742,44 @@ func ConvertListProductsParamsToDAO(params models.ListProductsParams) *dao2.List
 		Offset:  params.Offset,
 	}
 }
+
+// ToDiscountModel converts a DAO discount to a model discount
+func ToDiscountModel(d *dao2.Discount) *models.Discount {
+	if d == nil {
+		return nil
+	}
+
+	return &models.Discount{
+		ID:                d.ID,
+		StoreID:           d.StoreID,
+		Name:              d.Name,
+		Code:              d.Code,
+		Type:              models.DiscountType(d.Type),
+		Value:             stringToFloat64(d.Value),
+		Scope:             models.DiscountScope(d.Scope),
+		StartDate:         d.StartDate,
+		EndDate:           nullTimeToTimePtr(d.EndDate),
+		MinPurchaseAmount: stringToFloat64Ptr(d.MinPurchaseAmount),
+		MaxDiscountAmount: stringToFloat64Ptr(d.MaxDiscountAmount),
+		UsageLimit:        nullInt32ToInt32Ptr(d.UsageLimit),
+		UsageCount:        nullInt32ToInt32(d.UsageCount),
+		IsActive:          d.IsActive.Bool,
+		CreatedAt:         d.CreatedAt.Time,
+		UpdatedAt:         d.UpdatedAt.Time,
+	}
+}
+
+// ToDiscountListModel converts a DAO discount list to a model discount list
+func ToDiscountListModel(discounts []*dao2.Discount, total int64) *models.DiscountList {
+	items := make([]models.Discount, len(discounts))
+	for i, d := range discounts {
+		items[i] = *ToDiscountModel(d)
+	}
+
+	return &models.DiscountList{
+		Discounts:  items,
+		TotalCount: total,
+		Page:       1,  // TODO: Calculate page based on offset and limit
+		Limit:      10, // TODO: Use actual limit
+	}
+}

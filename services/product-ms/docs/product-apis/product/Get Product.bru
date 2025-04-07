@@ -1,10 +1,10 @@
 meta {
-  name: Delete Product
+  name: Get Product
   type: http
-  seq: 10
+  seq: 3
 }
 
-delete {
+get {
   url: http://{{baseUrl}}/stores/{{storeId}}/products/{{productId}}
   body: none
   auth: none

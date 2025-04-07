@@ -1,0 +1,11 @@
+meta {
+  name: Get Voucher
+  type: http
+  seq: 3
+}
+
+get {
+  url: http://{{baseUrl}}/stores/{{storeId}}/vouchers/{{voucherId}}
+  body: none
+  auth: none
+}

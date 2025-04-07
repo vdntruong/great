@@ -2,8 +2,8 @@ package service
 
 import (
 	"context"
-	dao2 "product-ms/db/dao"
 
+	"product-ms/db/dao"
 	"product-ms/internal/models"
 	"product-ms/internal/service/validator"
 
@@ -12,16 +12,16 @@ import (
 
 // VoucherServiceImpl implements VoucherService
 type VoucherServiceImpl struct {
-	dao       *dao2.Queries
+	queries   *dao.Queries
 	validator validator.VoucherValidator
 }
 
 var _ VoucherService = (*VoucherServiceImpl)(nil)
 
 // NewVoucherService creates a new VoucherService
-func NewVoucherService(dao *dao2.Queries) *VoucherServiceImpl {
+func NewVoucherService(queries *dao.Queries) *VoucherServiceImpl {
 	return &VoucherServiceImpl{
-		dao:       dao,
+		queries:   queries,
 		validator: validator.NewVoucherValidator(),
 	}
 }
@@ -33,7 +33,7 @@ func (s *VoucherServiceImpl) CreateVoucher(ctx context.Context, params models.Cr
 	}
 
 	daoParams := ConvertCreateVoucherParamsToDAO(params)
-	voucher, err := s.dao.CreateVoucher(ctx, &daoParams)
+	voucher, err := s.queries.CreateVoucher(ctx, &daoParams)
 	if err != nil {
 		return nil, err
 	}
@@ -48,7 +48,7 @@ func (s *VoucherServiceImpl) GetVoucherByID(ctx context.Context, id string) (*mo
 		return nil, err
 	}
 
-	voucher, err := s.dao.GetVoucher(ctx, uuid)
+	voucher, err := s.queries.GetVoucher(ctx, uuid)
 	if err != nil {
 		return nil, err
 	}
@@ -63,12 +63,12 @@ func (s *VoucherServiceImpl) ListVouchers(ctx context.Context, params models.Lis
 	}
 
 	daoParams := ConvertListVouchersParamsToDAO(params)
-	vouchers, err := s.dao.ListVouchers(ctx, &daoParams)
+	vouchers, err := s.queries.ListVouchers(ctx, &daoParams)
 	if err != nil {
 		return nil, err
 	}
 
-	total, err := s.dao.CountVouchers(ctx, params.StoreID)
+	total, err := s.queries.CountVouchers(ctx, params.StoreID)
 	if err != nil {
 		return nil, err
 	}
@@ -84,7 +84,7 @@ func (s *VoucherServiceImpl) UpdateVoucher(ctx context.Context, params models.Up
 	}
 
 	daoParams := ConvertUpdateVoucherParamsToDAO(params)
-	voucher, err := s.dao.UpdateVoucher(ctx, &daoParams)
+	voucher, err := s.queries.UpdateVoucher(ctx, &daoParams)
 	if err != nil {
 		return nil, err
 	}
@@ -98,41 +98,41 @@ func (s *VoucherServiceImpl) DeleteVoucher(ctx context.Context, id string) error
 	if err != nil {
 		return err
 	}
-	return s.dao.DeleteVoucher(ctx, uuid)
+	return s.queries.DeleteVoucher(ctx, uuid)
 }
 
 // AddVoucherProduct adds a product to a voucher
 func (s *VoucherServiceImpl) AddVoucherProduct(ctx context.Context, voucherID, productID uuid.UUID) error {
-	params := dao2.AddVoucherProductParams{
+	params := dao.AddVoucherProductParams{
 		VoucherID: voucherID,
 		ProductID: productID,
 	}
-	return s.dao.AddVoucherProduct(ctx, &params)
+	return s.queries.AddVoucherProduct(ctx, &params)
 }
 
 // RemoveVoucherProduct removes a product from a voucher
 func (s *VoucherServiceImpl) RemoveVoucherProduct(ctx context.Context, voucherID, productID uuid.UUID) error {
-	params := dao2.RemoveVoucherProductParams{
+	params := dao.RemoveVoucherProductParams{
 		VoucherID: voucherID,
 		ProductID: productID,
 	}
-	return s.dao.RemoveVoucherProduct(ctx, &params)
+	return s.queries.RemoveVoucherProduct(ctx, &params)
 }
 
 // AddVoucherCategory adds a category to a voucher
 func (s *VoucherServiceImpl) AddVoucherCategory(ctx context.Context, voucherID, categoryID uuid.UUID) error {
-	params := dao2.AddVoucherCategoryParams{
+	params := dao.AddVoucherCategoryParams{
 		VoucherID:  voucherID,
 		CategoryID: categoryID,
 	}
-	return s.dao.AddVoucherCategory(ctx, &params)
+	return s.queries.AddVoucherCategory(ctx, &params)
 }
 
 // RemoveVoucherCategory removes a category from a voucher
 func (s *VoucherServiceImpl) RemoveVoucherCategory(ctx context.Context, voucherID, categoryID uuid.UUID) error {
-	params := dao2.RemoveVoucherCategoryParams{
+	params := dao.RemoveVoucherCategoryParams{
 		VoucherID:  voucherID,
 		CategoryID: categoryID,
 	}
-	return s.dao.RemoveVoucherCategory(ctx, &params)
+	return s.queries.RemoveVoucherCategory(ctx, &params)
 }

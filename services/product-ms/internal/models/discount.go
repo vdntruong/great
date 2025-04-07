@@ -63,7 +63,6 @@ type ListDiscountsParams struct {
 	StoreID uuid.UUID `json:"store_id" validate:"required"`
 	Limit   int32     `json:"limit" validate:"min=1,max=100"`
 	Offset  int32     `json:"offset" validate:"min=0"`
-	Page    int       `json:"page" validate:"min=1"`
 }
 
 // DiscountList represents a list of discounts with pagination info

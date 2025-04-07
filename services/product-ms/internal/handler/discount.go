@@ -33,9 +33,9 @@ func (h *Discount) CreateDiscount(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Get store ID from context (set by middleware)
-	storeID, ok := r.Context().Value("store_id").(uuid.UUID)
-	if !ok {
+	id := chi.URLParam(r, "store_id")
+	storeID, err := uuid.Parse(id)
+	if err != nil {
 		commonjson.RespondBadRequestError(w, errors.New("store ID not found"))
 		return
 	}
@@ -125,9 +125,9 @@ func (h *Discount) GetDiscount(w http.ResponseWriter, r *http.Request) {
 
 // ListDiscounts handles retrieving a list of discounts
 func (h *Discount) ListDiscounts(w http.ResponseWriter, r *http.Request) {
-	// Get store ID from context (set by middleware)
-	storeID, ok := r.Context().Value("store_id").(uuid.UUID)
-	if !ok {
+	id := chi.URLParam(r, "store_id")
+	storeID, err := uuid.Parse(id)
+	if err != nil {
 		commonjson.RespondBadRequestError(w, errors.New("store ID not found"))
 		return
 	}

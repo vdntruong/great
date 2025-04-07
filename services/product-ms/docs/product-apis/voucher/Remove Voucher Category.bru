@@ -1,0 +1,11 @@
+meta {
+  name: Remove Voucher Category
+  type: http
+  seq: 7
+}
+
+delete {
+  url: http://{{baseUrl}}/stores/{{storeId}}/vouchers/{{voucherId}}/categories/{{categoryId}}
+  body: none
+  auth: none
+}

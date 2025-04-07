@@ -1,0 +1,11 @@
+meta {
+  name: Add Voucher Product
+  type: http
+  seq: 1
+}
+
+post {
+  url: http://{{baseUrl}}/stores/{{storeId}}/vouchers/{{voucherId}}/products/{{productId}}
+  body: none
+  auth: none
+}

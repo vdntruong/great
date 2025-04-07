@@ -87,6 +87,10 @@ func NewRouter(
 			r.Get("/", voucherHandler.GetVoucher)
 			r.Put("/", voucherHandler.UpdateVoucher)
 			r.Delete("/", voucherHandler.DeleteVoucher)
+			r.Post("/products/{product_id}", voucherHandler.AddVoucherProduct)
+			r.Delete("/products/{product_id}", voucherHandler.RemoveVoucherProduct)
+			r.Post("/categories/{category_id}", voucherHandler.AddVoucherCategory)
+			r.Delete("/categories/{category_id}", voucherHandler.RemoveVoucherCategory)
 		})
 	})
 

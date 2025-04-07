@@ -29,7 +29,7 @@ type CreateVoucherParams struct {
 	StoreID           uuid.UUID     `json:"store_id" validate:"required"`
 	Code              string        `json:"code" validate:"required,min=3,max=50"`
 	Type              VoucherType   `json:"type" validate:"required,oneof=percentage fixed_amount free_shipping"`
-	Value             *float64      `json:"value,omitempty" validate:"required_if=Type percentage,fixed_amount,omitempty,min=0"`
+	Value             *float64      `json:"value,omitempty" validate:"omitempty,min=0"`
 	MinPurchaseAmount *float64      `json:"min_purchase_amount,omitempty" validate:"omitempty,min=0"`
 	MaxDiscountAmount *float64      `json:"max_discount_amount,omitempty" validate:"omitempty,min=0"`
 	StartDate         time.Time     `json:"start_date" validate:"required"`

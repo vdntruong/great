@@ -1,0 +1,11 @@
+meta {
+  name: Delete Voucher
+  type: http
+  seq: 5
+}
+
+delete {
+  url: http://{{baseUrl}}/stores/{{storeId}}/vouchers/{{voucherId}}
+  body: none
+  auth: none
+}
