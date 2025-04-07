@@ -33,26 +33,26 @@ type CreateProductRequest struct {
 
 // UpdateProductRequest represents the request body for updating a product
 type UpdateProductRequest struct {
-	Name              *string                `json:"name,omitempty"`
-	Slug              *string                `json:"slug,omitempty"`
-	Description       *string                `json:"description,omitempty"`
-	Type              *string                `json:"type,omitempty"`
-	Status            *string                `json:"status,omitempty"`
-	Price             *float64               `json:"price,omitempty"`
-	CompareAtPrice    *float64               `json:"compare_at_price,omitempty"`
-	CostPrice         *float64               `json:"cost_price,omitempty"`
-	SKU               *string                `json:"sku,omitempty"`
-	Barcode           *string                `json:"barcode,omitempty"`
-	Weight            *float64               `json:"weight,omitempty"`
-	WeightUnit        *string                `json:"weight_unit,omitempty"`
-	IsTaxable         *bool                  `json:"is_taxable,omitempty"`
-	IsFeatured        *bool                  `json:"is_featured,omitempty"`
-	IsGiftCard        *bool                  `json:"is_gift_card,omitempty"`
-	RequiresShipping  *bool                  `json:"requires_shipping,omitempty"`
-	InventoryPolicy   *string                `json:"inventory_policy,omitempty"`
-	InventoryTracking *string                `json:"inventory_tracking,omitempty"`
-	SEOTitle          *string                `json:"seo_title,omitempty"`
-	SEODescription    *string                `json:"seo_description,omitempty"`
+	Name              *string                 `json:"name,omitempty"`
+	Slug              *string                 `json:"slug,omitempty"`
+	Description       *string                 `json:"description,omitempty"`
+	Type              *string                 `json:"type,omitempty"`
+	Status            *string                 `json:"status,omitempty"`
+	Price             *float64                `json:"price,omitempty"`
+	CompareAtPrice    *float64                `json:"compare_at_price,omitempty"`
+	CostPrice         *float64                `json:"cost_price,omitempty"`
+	SKU               *string                 `json:"sku,omitempty"`
+	Barcode           *string                 `json:"barcode,omitempty"`
+	Weight            *float64                `json:"weight,omitempty"`
+	WeightUnit        *string                 `json:"weight_unit,omitempty"`
+	IsTaxable         *bool                   `json:"is_taxable,omitempty"`
+	IsFeatured        *bool                   `json:"is_featured,omitempty"`
+	IsGiftCard        *bool                   `json:"is_gift_card,omitempty"`
+	RequiresShipping  *bool                   `json:"requires_shipping,omitempty"`
+	InventoryPolicy   *string                 `json:"inventory_policy,omitempty"`
+	InventoryTracking *string                 `json:"inventory_tracking,omitempty"`
+	SEOTitle          *string                 `json:"seo_title,omitempty"`
+	SEODescription    *string                 `json:"seo_description,omitempty"`
 	Metadata          *map[string]interface{} `json:"metadata,omitempty"`
 }
 
@@ -88,5 +88,5 @@ type ProductResponse struct {
 // ListProductsResponse represents the response for listing products
 type ListProductsResponse struct {
 	Products []ProductResponse `json:"products"`
-	Total    int64            `json:"total"`
+	Total    int64             `json:"total"`
 }

@@ -1,0 +1,24 @@
+meta {
+  name: "Create Voucher"
+  type: "http"
+  seq: 6
+}
+
+post {{baseUrl}}/vouchers
+auth: "none"
+headers {
+  Content-Type: "application/json"
+  Authorization: "Bearer {{token}}"
+}
+
+{
+  "code": "WELCOME2024",
+  "type": "percentage",
+  "value": 15.0,
+  "min_purchase_amount": 50.0,
+  "max_discount_amount": 30.0,
+  "start_date": "2024-01-01T00:00:00Z",
+  "end_date": "2024-12-31T23:59:59Z",
+  "usage_limit": 1000,
+  "status": "active"
+}

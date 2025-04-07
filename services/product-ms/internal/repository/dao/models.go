@@ -645,3 +645,15 @@ type Voucher struct {
 	CreatedAt         sql.NullTime   `db:"created_at" json:"created_at"`
 	UpdatedAt         sql.NullTime   `db:"updated_at" json:"updated_at"`
 }
+
+type VoucherCategory struct {
+	VoucherID  uuid.UUID    `db:"voucher_id" json:"voucher_id"`
+	CategoryID uuid.UUID    `db:"category_id" json:"category_id"`
+	CreatedAt  sql.NullTime `db:"created_at" json:"created_at"`
+}
+
+type VoucherProduct struct {
+	VoucherID uuid.UUID    `db:"voucher_id" json:"voucher_id"`
+	ProductID uuid.UUID    `db:"product_id" json:"product_id"`
+	CreatedAt sql.NullTime `db:"created_at" json:"created_at"`
+}

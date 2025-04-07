@@ -1,11 +1,11 @@
 meta {
   name: Update Product
   type: http
-  seq: 7
+  seq: 9
 }
 
 put {
-  url: {{baseUrl}}/stores/{{storeId}}/products/{{productId}}
+  url: http://{{baseUrl}}/stores/{{storeIdHuong}}/products/{{productId}}
   body: json
   auth: none
 }
@@ -14,6 +14,8 @@ body:json {
   {
     "name": "Gaming Laptop Pro Updated",
     "description": "Updated description for Gaming Laptop Pro",
+    "type": "simple",
+    "status": "active",
     "price": 1899.99,
     "status": "active",
     "metadata": {

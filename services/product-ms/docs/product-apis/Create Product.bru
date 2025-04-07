@@ -1,11 +1,11 @@
 meta {
   name: Create Product
   type: http
-  seq: 10
+  seq: 6
 }
 
 post {
-  url: {{baseUrl}}/stores/{{storeId}}/products
+  url: http://{{baseUrl}}/stores/{{storeIdHuong}}/products
   body: json
   auth: none
 }
@@ -29,7 +29,7 @@ body:json {
     "is_gift_card": false,
     "requires_shipping": true,
     "inventory_policy": "deny",
-    "inventory_tracking": true,
+    "inventory_tracking": "disabled",
     "seo_title": "Gaming Laptop Pro - Ultimate Gaming Experience",
     "seo_description": "Experience gaming like never before with our Pro gaming laptop",
     "metadata": {

@@ -1,0 +1,11 @@
+meta {
+  name: "Get Voucher"
+  type: "http"
+  seq: 7
+}
+
+get {{baseUrl}}/vouchers/{{voucher_id}}
+auth: "none"
+headers {
+  Authorization: "Bearer {{token}}"
+}

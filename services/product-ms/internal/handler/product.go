@@ -14,18 +14,18 @@ import (
 	"github.com/google/uuid"
 )
 
-type ProductHandler struct {
+type Product struct {
 	productService service.ProductService
 }
 
-func NewProductHandler(productService service.ProductService) *ProductHandler {
-	return &ProductHandler{
+func NewProduct(productService service.ProductService) *Product {
+	return &Product{
 		productService: productService,
 	}
 }
 
 // RegisterRoutes registers all product routes
-func (h *ProductHandler) RegisterRoutes(r chi.Router) {
+func (h *Product) RegisterRoutes(r chi.Router) {
 	r.Route("/stores/{store_id}/products", func(r chi.Router) {
 		r.Post("/", h.HandleCreate)
 		r.Get("/", h.HandleList)
@@ -38,7 +38,7 @@ func (h *ProductHandler) RegisterRoutes(r chi.Router) {
 }
 
 // HandleCreate handles the creation of a new product
-func (h *ProductHandler) HandleCreate(w http.ResponseWriter, r *http.Request) {
+func (h *Product) HandleCreate(w http.ResponseWriter, r *http.Request) {
 	storeID, err := uuid.Parse(chi.URLParam(r, "store_id"))
 	if err != nil {
 		commonjson.RespondBadRequestError(w, err)
@@ -64,7 +64,7 @@ func (h *ProductHandler) HandleCreate(w http.ResponseWriter, r *http.Request) {
 }
 
 // HandleGet handles retrieving a product by ID
-func (h *ProductHandler) HandleGet(w http.ResponseWriter, r *http.Request) {
+func (h *Product) HandleGet(w http.ResponseWriter, r *http.Request) {
 	productID, err := uuid.Parse(chi.URLParam(r, "id"))
 	if err != nil {
 		commonjson.RespondBadRequestError(w, err)
@@ -81,7 +81,7 @@ func (h *ProductHandler) HandleGet(w http.ResponseWriter, r *http.Request) {
 }
 
 // HandleList handles retrieving a list of products
-func (h *ProductHandler) HandleList(w http.ResponseWriter, r *http.Request) {
+func (h *Product) HandleList(w http.ResponseWriter, r *http.Request) {
 	storeID, err := uuid.Parse(chi.URLParam(r, "store_id"))
 	if err != nil {
 		commonjson.RespondBadRequestError(w, err)
@@ -117,7 +117,7 @@ func (h *ProductHandler) HandleList(w http.ResponseWriter, r *http.Request) {
 }
 
 // HandleUpdate handles updating a product
-func (h *ProductHandler) HandleUpdate(w http.ResponseWriter, r *http.Request) {
+func (h *Product) HandleUpdate(w http.ResponseWriter, r *http.Request) {
 	productID, err := uuid.Parse(chi.URLParam(r, "id"))
 	if err != nil {
 		commonjson.RespondBadRequestError(w, err)
@@ -143,7 +143,7 @@ func (h *ProductHandler) HandleUpdate(w http.ResponseWriter, r *http.Request) {
 }
 
 // HandleDelete handles deleting a product
-func (h *ProductHandler) HandleDelete(w http.ResponseWriter, r *http.Request) {
+func (h *Product) HandleDelete(w http.ResponseWriter, r *http.Request) {
 	productID, err := uuid.Parse(chi.URLParam(r, "id"))
 	if err != nil {
 		commonjson.RespondBadRequestError(w, err)

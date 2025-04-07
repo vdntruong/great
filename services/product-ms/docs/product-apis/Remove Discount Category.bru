@@ -1,0 +1,11 @@
+meta {
+  name: "Remove Discount Category"
+  type: "http"
+  seq: 15
+}
+
+delete {{baseUrl}}/discounts/{{discount_id}}/categories/{{category_id}}
+auth: "none"
+headers {
+  Authorization: "Bearer {{token}}"
+}

@@ -1,19 +1,18 @@
 meta {
   name: Update Store
   type: http
-  seq: 3
+  seq: 4
 }
 
 put {
-  url: {{baseUrl}}/stores/{{storeId}}
+  url: http://{{baseUrl}}/stores/{{storeIdHuong}}
   body: json
   auth: none
 }
 
 body:json {
   {
-    "name": "Tech Haven Updated",
-    "description": "Updated description for Tech Haven",
+    "name": "Huong Project Updated",
     "status": "active",
     "settings": {
       "theme": "light",

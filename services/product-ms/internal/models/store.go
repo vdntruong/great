@@ -43,17 +43,16 @@ type CreateStoreParams struct {
 
 // UpdateStoreParams represents the parameters for updating a store
 type UpdateStoreParams struct {
-	ID           uuid.UUID              `json:"id" validate:"required"`
-	Name         *string                `json:"name,omitempty" validate:"omitempty,min=3,max=100"`
-	Slug         *string                `json:"slug,omitempty" validate:"omitempty,min=3,max=100,slug"`
-	Description  *string                `json:"description,omitempty" validate:"omitempty,max=500"`
-	LogoURL      *string                `json:"logo_url,omitempty" validate:"omitempty,url"`
-	CoverURL     *string                `json:"cover_url,omitempty" validate:"omitempty,url"`
-	Status       *string                `json:"status,omitempty" validate:"omitempty,oneof=active inactive"`
-	IsVerified   *bool                  `json:"is_verified,omitempty"`
-	ContactEmail *string                `json:"contact_email,omitempty" validate:"omitempty,email"`
-	ContactPhone *string                `json:"contact_phone,omitempty" validate:"omitempty,e164"`
-	Address      *string                `json:"address,omitempty" validate:"omitempty,max=200"`
+	Name         *string                 `json:"name,omitempty" validate:"omitempty,min=3,max=100"`
+	Slug         *string                 `json:"slug,omitempty" validate:"omitempty,min=3,max=100,slug"`
+	Description  *string                 `json:"description,omitempty" validate:"omitempty,max=500"`
+	LogoURL      *string                 `json:"logo_url,omitempty" validate:"omitempty,url"`
+	CoverURL     *string                 `json:"cover_url,omitempty" validate:"omitempty,url"`
+	Status       *string                 `json:"status,omitempty" validate:"omitempty,oneof=active inactive"`
+	IsVerified   *bool                   `json:"is_verified,omitempty"`
+	ContactEmail *string                 `json:"contact_email,omitempty" validate:"omitempty,email"`
+	ContactPhone *string                 `json:"contact_phone,omitempty" validate:"omitempty,e164"`
+	Address      *string                 `json:"address,omitempty" validate:"omitempty,max=200"`
 	Settings     *map[string]interface{} `json:"settings,omitempty"`
 }
 

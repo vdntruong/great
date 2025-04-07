@@ -1,0 +1,11 @@
+meta {
+  name: "Delete Voucher"
+  type: "http"
+  seq: 10
+}
+
+delete {{baseUrl}}/vouchers/{{voucher_id}}
+auth: "none"
+headers {
+  Authorization: "Bearer {{token}}"
+}

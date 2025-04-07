@@ -6,6 +6,7 @@ sql:
       - "db/queries/store/*.sql"
       - "db/queries/product/*.sql"
       - "db/queries/discount/*.sql"
+      - "db/queries/voucher/*.sql"
     gen:
       go:
         package: "dao"

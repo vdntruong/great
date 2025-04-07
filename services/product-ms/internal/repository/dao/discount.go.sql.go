@@ -41,6 +41,17 @@ func (q *Queries) AddDiscountProduct(ctx context.Context, arg *AddDiscountProduc
 	return err
 }
 
+const CountDiscounts = `-- name: CountDiscounts :one
+SELECT COUNT(*) FROM discounts WHERE store_id = $1
+`
+
+func (q *Queries) CountDiscounts(ctx context.Context, storeID uuid.UUID) (int64, error) {
+	row := q.queryRow(ctx, q.countDiscountsStmt, CountDiscounts, storeID)
+	var count int64
+	err := row.Scan(&count)
+	return count, err
+}
+
 const CreateDiscount = `-- name: CreateDiscount :one
 INSERT INTO discounts (
     id, store_id, name, code, type, value,
@@ -106,79 +117,12 @@ func (q *Queries) CreateDiscount(ctx context.Context, arg *CreateDiscountParams)
 	return &i, err
 }
 
-const CreateVoucher = `-- name: CreateVoucher :one
-INSERT INTO vouchers (
-    id, store_id, code, type, value, min_purchase_amount,
-    max_discount_amount, start_date, end_date, usage_limit,
-    status
-) VALUES (
-    $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11
-) RETURNING id, store_id, code, type, value, min_purchase_amount, max_discount_amount, start_date, end_date, usage_limit, usage_count, status, created_at, updated_at
-`
-
-type CreateVoucherParams struct {
-	ID                uuid.UUID      `db:"id" json:"id"`
-	StoreID           uuid.UUID      `db:"store_id" json:"store_id"`
-	Code              string         `db:"code" json:"code"`
-	Type              VoucherType    `db:"type" json:"type"`
-	Value             sql.NullString `db:"value" json:"value"`
-	MinPurchaseAmount sql.NullString `db:"min_purchase_amount" json:"min_purchase_amount"`
-	MaxDiscountAmount sql.NullString `db:"max_discount_amount" json:"max_discount_amount"`
-	StartDate         time.Time      `db:"start_date" json:"start_date"`
-	EndDate           sql.NullTime   `db:"end_date" json:"end_date"`
-	UsageLimit        sql.NullInt32  `db:"usage_limit" json:"usage_limit"`
-	Status            VoucherStatus  `db:"status" json:"status"`
-}
-
-func (q *Queries) CreateVoucher(ctx context.Context, arg *CreateVoucherParams) (*Voucher, error) {
-	row := q.queryRow(ctx, q.createVoucherStmt, CreateVoucher,
-		arg.ID,
-		arg.StoreID,
-		arg.Code,
-		arg.Type,
-		arg.Value,
-		arg.MinPurchaseAmount,
-		arg.MaxDiscountAmount,
-		arg.StartDate,
-		arg.EndDate,
-		arg.UsageLimit,
-		arg.Status,
-	)
-	var i Voucher
-	err := row.Scan(
-		&i.ID,
-		&i.StoreID,
-		&i.Code,
-		&i.Type,
-		&i.Value,
-		&i.MinPurchaseAmount,
-		&i.MaxDiscountAmount,
-		&i.StartDate,
-		&i.EndDate,
-		&i.UsageLimit,
-		&i.UsageCount,
-		&i.Status,
-		&i.CreatedAt,
-		&i.UpdatedAt,
-	)
-	return &i, err
-}
-
 const DeleteDiscount = `-- name: DeleteDiscount :exec
 DELETE FROM discounts WHERE id = $1
 `
 
 func (q *Queries) DeleteDiscount(ctx context.Context, id uuid.UUID) error {
 	_, err := q.exec(ctx, q.deleteDiscountStmt, DeleteDiscount, id)
-	return err
-}
-
-const DeleteVoucher = `-- name: DeleteVoucher :exec
-DELETE FROM vouchers WHERE id = $1
-`
-
-func (q *Queries) DeleteVoucher(ctx context.Context, id uuid.UUID) error {
-	_, err := q.exec(ctx, q.deleteVoucherStmt, DeleteVoucher, id)
 	return err
 }
 
@@ -339,81 +283,6 @@ func (q *Queries) GetDiscountProducts(ctx context.Context, discountID uuid.UUID)
 	return items, nil
 }
 
-const GetVoucherByCode = `-- name: GetVoucherByCode :one
-SELECT id, store_id, code, type, value, min_purchase_amount, max_discount_amount, start_date, end_date, usage_limit, usage_count, status, created_at, updated_at FROM vouchers WHERE store_id = $1 AND code = $2
-`
-
-type GetVoucherByCodeParams struct {
-	StoreID uuid.UUID `db:"store_id" json:"store_id"`
-	Code    string    `db:"code" json:"code"`
-}
-
-func (q *Queries) GetVoucherByCode(ctx context.Context, arg *GetVoucherByCodeParams) (*Voucher, error) {
-	row := q.queryRow(ctx, q.getVoucherByCodeStmt, GetVoucherByCode, arg.StoreID, arg.Code)
-	var i Voucher
-	err := row.Scan(
-		&i.ID,
-		&i.StoreID,
-		&i.Code,
-		&i.Type,
-		&i.Value,
-		&i.MinPurchaseAmount,
-		&i.MaxDiscountAmount,
-		&i.StartDate,
-		&i.EndDate,
-		&i.UsageLimit,
-		&i.UsageCount,
-		&i.Status,
-		&i.CreatedAt,
-		&i.UpdatedAt,
-	)
-	return &i, err
-}
-
-const GetVoucherByID = `-- name: GetVoucherByID :one
-SELECT id, store_id, code, type, value, min_purchase_amount, max_discount_amount, start_date, end_date, usage_limit, usage_count, status, created_at, updated_at FROM vouchers WHERE id = $1
-`
-
-func (q *Queries) GetVoucherByID(ctx context.Context, id uuid.UUID) (*Voucher, error) {
-	row := q.queryRow(ctx, q.getVoucherByIDStmt, GetVoucherByID, id)
-	var i Voucher
-	err := row.Scan(
-		&i.ID,
-		&i.StoreID,
-		&i.Code,
-		&i.Type,
-		&i.Value,
-		&i.MinPurchaseAmount,
-		&i.MaxDiscountAmount,
-		&i.StartDate,
-		&i.EndDate,
-		&i.UsageLimit,
-		&i.UsageCount,
-		&i.Status,
-		&i.CreatedAt,
-		&i.UpdatedAt,
-	)
-	return &i, err
-}
-
-const IncrementDiscountUsage = `-- name: IncrementDiscountUsage :exec
-UPDATE discounts SET usage_count = usage_count + 1 WHERE id = $1
-`
-
-func (q *Queries) IncrementDiscountUsage(ctx context.Context, id uuid.UUID) error {
-	_, err := q.exec(ctx, q.incrementDiscountUsageStmt, IncrementDiscountUsage, id)
-	return err
-}
-
-const IncrementVoucherUsage = `-- name: IncrementVoucherUsage :exec
-UPDATE vouchers SET usage_count = usage_count + 1 WHERE id = $1
-`
-
-func (q *Queries) IncrementVoucherUsage(ctx context.Context, id uuid.UUID) error {
-	_, err := q.exec(ctx, q.incrementVoucherUsageStmt, IncrementVoucherUsage, id)
-	return err
-}
-
 const ListDiscounts = `-- name: ListDiscounts :many
 SELECT id, store_id, name, code, type, value, scope, start_date, end_date, min_purchase_amount, max_discount_amount, usage_limit, usage_count, is_active, created_at, updated_at FROM discounts WHERE store_id = $1 ORDER BY created_at DESC LIMIT $2 OFFSET $3
 `
@@ -464,54 +333,6 @@ func (q *Queries) ListDiscounts(ctx context.Context, arg *ListDiscountsParams) (
 	return items, nil
 }
 
-const ListVouchers = `-- name: ListVouchers :many
-SELECT id, store_id, code, type, value, min_purchase_amount, max_discount_amount, start_date, end_date, usage_limit, usage_count, status, created_at, updated_at FROM vouchers WHERE store_id = $1 ORDER BY created_at DESC LIMIT $2 OFFSET $3
-`
-
-type ListVouchersParams struct {
-	StoreID uuid.UUID `db:"store_id" json:"store_id"`
-	Limit   int32     `db:"limit" json:"limit"`
-	Offset  int32     `db:"offset" json:"offset"`
-}
-
-func (q *Queries) ListVouchers(ctx context.Context, arg *ListVouchersParams) ([]*Voucher, error) {
-	rows, err := q.query(ctx, q.listVouchersStmt, ListVouchers, arg.StoreID, arg.Limit, arg.Offset)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	items := []*Voucher{}
-	for rows.Next() {
-		var i Voucher
-		if err := rows.Scan(
-			&i.ID,
-			&i.StoreID,
-			&i.Code,
-			&i.Type,
-			&i.Value,
-			&i.MinPurchaseAmount,
-			&i.MaxDiscountAmount,
-			&i.StartDate,
-			&i.EndDate,
-			&i.UsageLimit,
-			&i.UsageCount,
-			&i.Status,
-			&i.CreatedAt,
-			&i.UpdatedAt,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, &i)
-	}
-	if err := rows.Close(); err != nil {
-		return nil, err
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
-}
-
 const RemoveDiscountCategory = `-- name: RemoveDiscountCategory :exec
 DELETE FROM discount_categories WHERE discount_id = $1 AND category_id = $2
 `
@@ -542,15 +363,15 @@ func (q *Queries) RemoveDiscountProduct(ctx context.Context, arg *RemoveDiscount
 
 const UpdateDiscount = `-- name: UpdateDiscount :one
 UPDATE discounts SET
-    name = COALESCE($2, name),
-    code = COALESCE($3, code),
-    type = COALESCE($4, type),
-    value = COALESCE($5, value),
-    scope = COALESCE($6, scope),
+    name = COALESCE(NULLIF($2, ''), name),
+    code = COALESCE(NULLIF($3, ''), code),
+    type = COALESCE(NULLIF($4, '')::discount_type, type),
+    value = COALESCE(NULLIF($5, ''), value),
+    scope = COALESCE(NULLIF($6, '')::discount_scope, scope),
     start_date = COALESCE($7, start_date),
     end_date = COALESCE($8, end_date),
-    min_purchase_amount = COALESCE($9, min_purchase_amount),
-    max_discount_amount = COALESCE($10, max_discount_amount),
+    min_purchase_amount = COALESCE(NULLIF($9, ''), min_purchase_amount),
+    max_discount_amount = COALESCE(NULLIF($10, ''), max_discount_amount),
     usage_limit = COALESCE($11, usage_limit),
     is_active = COALESCE($12, is_active),
     updated_at = NOW()
@@ -559,32 +380,32 @@ RETURNING id, store_id, name, code, type, value, scope, start_date, end_date, mi
 `
 
 type UpdateDiscountParams struct {
-	ID                uuid.UUID      `db:"id" json:"id"`
-	Name              string         `db:"name" json:"name"`
-	Code              string         `db:"code" json:"code"`
-	Type              DiscountType   `db:"type" json:"type"`
-	Value             string         `db:"value" json:"value"`
-	Scope             DiscountScope  `db:"scope" json:"scope"`
-	StartDate         time.Time      `db:"start_date" json:"start_date"`
-	EndDate           sql.NullTime   `db:"end_date" json:"end_date"`
-	MinPurchaseAmount sql.NullString `db:"min_purchase_amount" json:"min_purchase_amount"`
-	MaxDiscountAmount sql.NullString `db:"max_discount_amount" json:"max_discount_amount"`
-	UsageLimit        sql.NullInt32  `db:"usage_limit" json:"usage_limit"`
-	IsActive          sql.NullBool   `db:"is_active" json:"is_active"`
+	ID         uuid.UUID     `db:"id" json:"id"`
+	Column2    interface{}   `db:"column_2" json:"column_2"`
+	Column3    interface{}   `db:"column_3" json:"column_3"`
+	Column4    interface{}   `db:"column_4" json:"column_4"`
+	Column5    interface{}   `db:"column_5" json:"column_5"`
+	Column6    interface{}   `db:"column_6" json:"column_6"`
+	StartDate  time.Time     `db:"start_date" json:"start_date"`
+	EndDate    sql.NullTime  `db:"end_date" json:"end_date"`
+	Column9    interface{}   `db:"column_9" json:"column_9"`
+	Column10   interface{}   `db:"column_10" json:"column_10"`
+	UsageLimit sql.NullInt32 `db:"usage_limit" json:"usage_limit"`
+	IsActive   sql.NullBool  `db:"is_active" json:"is_active"`
 }
 
 func (q *Queries) UpdateDiscount(ctx context.Context, arg *UpdateDiscountParams) (*Discount, error) {
 	row := q.queryRow(ctx, q.updateDiscountStmt, UpdateDiscount,
 		arg.ID,
-		arg.Name,
-		arg.Code,
-		arg.Type,
-		arg.Value,
-		arg.Scope,
+		arg.Column2,
+		arg.Column3,
+		arg.Column4,
+		arg.Column5,
+		arg.Column6,
 		arg.StartDate,
 		arg.EndDate,
-		arg.MinPurchaseAmount,
-		arg.MaxDiscountAmount,
+		arg.Column9,
+		arg.Column10,
 		arg.UsageLimit,
 		arg.IsActive,
 	)
@@ -604,68 +425,6 @@ func (q *Queries) UpdateDiscount(ctx context.Context, arg *UpdateDiscountParams)
 		&i.UsageLimit,
 		&i.UsageCount,
 		&i.IsActive,
-		&i.CreatedAt,
-		&i.UpdatedAt,
-	)
-	return &i, err
-}
-
-const UpdateVoucher = `-- name: UpdateVoucher :one
-UPDATE vouchers SET
-    code = COALESCE($2, code),
-    type = COALESCE($3, type),
-    value = COALESCE($4, value),
-    min_purchase_amount = COALESCE($5, min_purchase_amount),
-    max_discount_amount = COALESCE($6, max_discount_amount),
-    start_date = COALESCE($7, start_date),
-    end_date = COALESCE($8, end_date),
-    usage_limit = COALESCE($9, usage_limit),
-    status = COALESCE($10, status),
-    updated_at = NOW()
-WHERE id = $1
-RETURNING id, store_id, code, type, value, min_purchase_amount, max_discount_amount, start_date, end_date, usage_limit, usage_count, status, created_at, updated_at
-`
-
-type UpdateVoucherParams struct {
-	ID                uuid.UUID      `db:"id" json:"id"`
-	Code              string         `db:"code" json:"code"`
-	Type              VoucherType    `db:"type" json:"type"`
-	Value             sql.NullString `db:"value" json:"value"`
-	MinPurchaseAmount sql.NullString `db:"min_purchase_amount" json:"min_purchase_amount"`
-	MaxDiscountAmount sql.NullString `db:"max_discount_amount" json:"max_discount_amount"`
-	StartDate         time.Time      `db:"start_date" json:"start_date"`
-	EndDate           sql.NullTime   `db:"end_date" json:"end_date"`
-	UsageLimit        sql.NullInt32  `db:"usage_limit" json:"usage_limit"`
-	Status            VoucherStatus  `db:"status" json:"status"`
-}
-
-func (q *Queries) UpdateVoucher(ctx context.Context, arg *UpdateVoucherParams) (*Voucher, error) {
-	row := q.queryRow(ctx, q.updateVoucherStmt, UpdateVoucher,
-		arg.ID,
-		arg.Code,
-		arg.Type,
-		arg.Value,
-		arg.MinPurchaseAmount,
-		arg.MaxDiscountAmount,
-		arg.StartDate,
-		arg.EndDate,
-		arg.UsageLimit,
-		arg.Status,
-	)
-	var i Voucher
-	err := row.Scan(
-		&i.ID,
-		&i.StoreID,
-		&i.Code,
-		&i.Type,
-		&i.Value,
-		&i.MinPurchaseAmount,
-		&i.MaxDiscountAmount,
-		&i.StartDate,
-		&i.EndDate,
-		&i.UsageLimit,
-		&i.UsageCount,
-		&i.Status,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)

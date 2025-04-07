@@ -14,18 +14,18 @@ import (
 	"github.com/google/uuid"
 )
 
-type StoreHandler struct {
+type Store struct {
 	storeService service.StoreService
 }
 
-func NewStoreHandler(storeService service.StoreService) *StoreHandler {
-	return &StoreHandler{
+func NewStore(storeService service.StoreService) *Store {
+	return &Store{
 		storeService: storeService,
 	}
 }
 
 // RegisterRoutes registers all store routes
-func (h *StoreHandler) RegisterRoutes(r chi.Router) {
+func (h *Store) RegisterRoutes(r chi.Router) {
 	r.Route("/stores", func(r chi.Router) {
 		r.Post("/", h.HandleCreate)
 		r.Get("/", h.HandleList)
@@ -38,7 +38,7 @@ func (h *StoreHandler) RegisterRoutes(r chi.Router) {
 }
 
 // HandleCreate handles the creation of a new store
-func (h *StoreHandler) HandleCreate(w http.ResponseWriter, r *http.Request) {
+func (h *Store) HandleCreate(w http.ResponseWriter, r *http.Request) {
 	var req dto.CreateStoreRequest
 	if err := commonjson.DecodeRequest(r, &req); err != nil {
 		commonjson.RespondBadRequestError(w, err)
@@ -56,7 +56,7 @@ func (h *StoreHandler) HandleCreate(w http.ResponseWriter, r *http.Request) {
 }
 
 // HandleGet handles retrieving a store by ID
-func (h *StoreHandler) HandleGet(w http.ResponseWriter, r *http.Request) {
+func (h *Store) HandleGet(w http.ResponseWriter, r *http.Request) {
 	storeID, err := uuid.Parse(chi.URLParam(r, "id"))
 	if err != nil {
 		commonjson.RespondBadRequestError(w, err)
@@ -73,7 +73,7 @@ func (h *StoreHandler) HandleGet(w http.ResponseWriter, r *http.Request) {
 }
 
 // HandleList handles retrieving a list of stores
-func (h *StoreHandler) HandleList(w http.ResponseWriter, r *http.Request) {
+func (h *Store) HandleList(w http.ResponseWriter, r *http.Request) {
 	page, _ := strconv.Atoi(r.URL.Query().Get("page"))
 	if page == 0 {
 		page = 1
@@ -109,7 +109,7 @@ func (h *StoreHandler) HandleList(w http.ResponseWriter, r *http.Request) {
 }
 
 // HandleUpdate handles updating a store
-func (h *StoreHandler) HandleUpdate(w http.ResponseWriter, r *http.Request) {
+func (h *Store) HandleUpdate(w http.ResponseWriter, r *http.Request) {
 	storeID, err := uuid.Parse(chi.URLParam(r, "id"))
 	if err != nil {
 		commonjson.RespondBadRequestError(w, err)
@@ -133,7 +133,7 @@ func (h *StoreHandler) HandleUpdate(w http.ResponseWriter, r *http.Request) {
 }
 
 // HandleDelete handles deleting a store
-func (h *StoreHandler) HandleDelete(w http.ResponseWriter, r *http.Request) {
+func (h *Store) HandleDelete(w http.ResponseWriter, r *http.Request) {
 	storeID, err := uuid.Parse(chi.URLParam(r, "id"))
 	if err != nil {
 		commonjson.RespondBadRequestError(w, err)

@@ -8,12 +8,12 @@ import (
 )
 
 type ProductRouter struct {
-	productHandler *handler.ProductHandler
+	productHandler *handler.Product
 }
 
 func NewProductRouter(productService service.ProductService) *ProductRouter {
 	return &ProductRouter{
-		productHandler: handler.NewProductHandler(productService),
+		productHandler: handler.NewProduct(productService),
 	}
 }
 

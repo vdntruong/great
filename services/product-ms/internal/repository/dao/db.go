@@ -30,6 +30,15 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.addDiscountProductStmt, err = db.PrepareContext(ctx, AddDiscountProduct); err != nil {
 		return nil, fmt.Errorf("error preparing query AddDiscountProduct: %w", err)
 	}
+	if q.addVoucherCategoryStmt, err = db.PrepareContext(ctx, AddVoucherCategory); err != nil {
+		return nil, fmt.Errorf("error preparing query AddVoucherCategory: %w", err)
+	}
+	if q.addVoucherProductStmt, err = db.PrepareContext(ctx, AddVoucherProduct); err != nil {
+		return nil, fmt.Errorf("error preparing query AddVoucherProduct: %w", err)
+	}
+	if q.countDiscountsStmt, err = db.PrepareContext(ctx, CountDiscounts); err != nil {
+		return nil, fmt.Errorf("error preparing query CountDiscounts: %w", err)
+	}
 	if q.countStoresStmt, err = db.PrepareContext(ctx, CountStores); err != nil {
 		return nil, fmt.Errorf("error preparing query CountStores: %w", err)
 	}
@@ -126,9 +135,6 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.getVoucherByIDStmt, err = db.PrepareContext(ctx, GetVoucherByID); err != nil {
 		return nil, fmt.Errorf("error preparing query GetVoucherByID: %w", err)
 	}
-	if q.incrementDiscountUsageStmt, err = db.PrepareContext(ctx, IncrementDiscountUsage); err != nil {
-		return nil, fmt.Errorf("error preparing query IncrementDiscountUsage: %w", err)
-	}
 	if q.incrementVoucherUsageStmt, err = db.PrepareContext(ctx, IncrementVoucherUsage); err != nil {
 		return nil, fmt.Errorf("error preparing query IncrementVoucherUsage: %w", err)
 	}
@@ -153,6 +159,12 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.removeDiscountProductStmt, err = db.PrepareContext(ctx, RemoveDiscountProduct); err != nil {
 		return nil, fmt.Errorf("error preparing query RemoveDiscountProduct: %w", err)
 	}
+	if q.removeVoucherCategoryStmt, err = db.PrepareContext(ctx, RemoveVoucherCategory); err != nil {
+		return nil, fmt.Errorf("error preparing query RemoveVoucherCategory: %w", err)
+	}
+	if q.removeVoucherProductStmt, err = db.PrepareContext(ctx, RemoveVoucherProduct); err != nil {
+		return nil, fmt.Errorf("error preparing query RemoveVoucherProduct: %w", err)
+	}
 	if q.updateDiscountStmt, err = db.PrepareContext(ctx, UpdateDiscount); err != nil {
 		return nil, fmt.Errorf("error preparing query UpdateDiscount: %w", err)
 	}
@@ -174,6 +186,9 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.updateVoucherStmt, err = db.PrepareContext(ctx, UpdateVoucher); err != nil {
 		return nil, fmt.Errorf("error preparing query UpdateVoucher: %w", err)
 	}
+	if q.updateVoucherStatusStmt, err = db.PrepareContext(ctx, UpdateVoucherStatus); err != nil {
+		return nil, fmt.Errorf("error preparing query UpdateVoucherStatus: %w", err)
+	}
 	return &q, nil
 }
 
@@ -187,6 +202,21 @@ func (q *Queries) Close() error {
 	if q.addDiscountProductStmt != nil {
 		if cerr := q.addDiscountProductStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing addDiscountProductStmt: %w", cerr)
+		}
+	}
+	if q.addVoucherCategoryStmt != nil {
+		if cerr := q.addVoucherCategoryStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing addVoucherCategoryStmt: %w", cerr)
+		}
+	}
+	if q.addVoucherProductStmt != nil {
+		if cerr := q.addVoucherProductStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing addVoucherProductStmt: %w", cerr)
+		}
+	}
+	if q.countDiscountsStmt != nil {
+		if cerr := q.countDiscountsStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing countDiscountsStmt: %w", cerr)
 		}
 	}
 	if q.countStoresStmt != nil {
@@ -349,11 +379,6 @@ func (q *Queries) Close() error {
 			err = fmt.Errorf("error closing getVoucherByIDStmt: %w", cerr)
 		}
 	}
-	if q.incrementDiscountUsageStmt != nil {
-		if cerr := q.incrementDiscountUsageStmt.Close(); cerr != nil {
-			err = fmt.Errorf("error closing incrementDiscountUsageStmt: %w", cerr)
-		}
-	}
 	if q.incrementVoucherUsageStmt != nil {
 		if cerr := q.incrementVoucherUsageStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing incrementVoucherUsageStmt: %w", cerr)
@@ -394,6 +419,16 @@ func (q *Queries) Close() error {
 			err = fmt.Errorf("error closing removeDiscountProductStmt: %w", cerr)
 		}
 	}
+	if q.removeVoucherCategoryStmt != nil {
+		if cerr := q.removeVoucherCategoryStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing removeVoucherCategoryStmt: %w", cerr)
+		}
+	}
+	if q.removeVoucherProductStmt != nil {
+		if cerr := q.removeVoucherProductStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing removeVoucherProductStmt: %w", cerr)
+		}
+	}
 	if q.updateDiscountStmt != nil {
 		if cerr := q.updateDiscountStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing updateDiscountStmt: %w", cerr)
@@ -427,6 +462,11 @@ func (q *Queries) Close() error {
 	if q.updateVoucherStmt != nil {
 		if cerr := q.updateVoucherStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing updateVoucherStmt: %w", cerr)
+		}
+	}
+	if q.updateVoucherStatusStmt != nil {
+		if cerr := q.updateVoucherStatusStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing updateVoucherStatusStmt: %w", cerr)
 		}
 	}
 	return err
@@ -470,6 +510,9 @@ type Queries struct {
 	tx                         *sql.Tx
 	addDiscountCategoryStmt    *sql.Stmt
 	addDiscountProductStmt     *sql.Stmt
+	addVoucherCategoryStmt     *sql.Stmt
+	addVoucherProductStmt      *sql.Stmt
+	countDiscountsStmt         *sql.Stmt
 	countStoresStmt            *sql.Stmt
 	createDiscountStmt         *sql.Stmt
 	createProductStmt          *sql.Stmt
@@ -502,7 +545,6 @@ type Queries struct {
 	getStoreCategoryBySlugStmt *sql.Stmt
 	getVoucherByCodeStmt       *sql.Stmt
 	getVoucherByIDStmt         *sql.Stmt
-	incrementDiscountUsageStmt *sql.Stmt
 	incrementVoucherUsageStmt  *sql.Stmt
 	listDiscountsStmt          *sql.Stmt
 	listProductsStmt           *sql.Stmt
@@ -511,6 +553,8 @@ type Queries struct {
 	listVouchersStmt           *sql.Stmt
 	removeDiscountCategoryStmt *sql.Stmt
 	removeDiscountProductStmt  *sql.Stmt
+	removeVoucherCategoryStmt  *sql.Stmt
+	removeVoucherProductStmt   *sql.Stmt
 	updateDiscountStmt         *sql.Stmt
 	updateProductStmt          *sql.Stmt
 	updateProductImageStmt     *sql.Stmt
@@ -518,6 +562,7 @@ type Queries struct {
 	updateStoreStmt            *sql.Stmt
 	updateStoreCategoryStmt    *sql.Stmt
 	updateVoucherStmt          *sql.Stmt
+	updateVoucherStatusStmt    *sql.Stmt
 }
 
 func (q *Queries) WithTx(tx *sql.Tx) *Queries {
@@ -526,6 +571,9 @@ func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 		tx:                         tx,
 		addDiscountCategoryStmt:    q.addDiscountCategoryStmt,
 		addDiscountProductStmt:     q.addDiscountProductStmt,
+		addVoucherCategoryStmt:     q.addVoucherCategoryStmt,
+		addVoucherProductStmt:      q.addVoucherProductStmt,
+		countDiscountsStmt:         q.countDiscountsStmt,
 		countStoresStmt:            q.countStoresStmt,
 		createDiscountStmt:         q.createDiscountStmt,
 		createProductStmt:          q.createProductStmt,
@@ -558,7 +606,6 @@ func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 		getStoreCategoryBySlugStmt: q.getStoreCategoryBySlugStmt,
 		getVoucherByCodeStmt:       q.getVoucherByCodeStmt,
 		getVoucherByIDStmt:         q.getVoucherByIDStmt,
-		incrementDiscountUsageStmt: q.incrementDiscountUsageStmt,
 		incrementVoucherUsageStmt:  q.incrementVoucherUsageStmt,
 		listDiscountsStmt:          q.listDiscountsStmt,
 		listProductsStmt:           q.listProductsStmt,
@@ -567,6 +614,8 @@ func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 		listVouchersStmt:           q.listVouchersStmt,
 		removeDiscountCategoryStmt: q.removeDiscountCategoryStmt,
 		removeDiscountProductStmt:  q.removeDiscountProductStmt,
+		removeVoucherCategoryStmt:  q.removeVoucherCategoryStmt,
+		removeVoucherProductStmt:   q.removeVoucherProductStmt,
 		updateDiscountStmt:         q.updateDiscountStmt,
 		updateProductStmt:          q.updateProductStmt,
 		updateProductImageStmt:     q.updateProductImageStmt,
@@ -574,5 +623,6 @@ func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 		updateStoreStmt:            q.updateStoreStmt,
 		updateStoreCategoryStmt:    q.updateStoreCategoryStmt,
 		updateVoucherStmt:          q.updateVoucherStmt,
+		updateVoucherStatusStmt:    q.updateVoucherStatusStmt,
 	}
 }

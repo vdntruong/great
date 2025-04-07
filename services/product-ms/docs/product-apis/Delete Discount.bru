@@ -1,0 +1,11 @@
+meta {
+  name: "Delete Discount"
+  type: "http"
+  seq: 5
+}
+
+delete {{baseUrl}}/discounts/{{discount_id}}
+auth: "none"
+headers {
+  Authorization: "Bearer {{token}}"
+}

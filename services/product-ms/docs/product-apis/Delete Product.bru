@@ -1,11 +1,11 @@
 meta {
   name: Delete Product
   type: http
-  seq: 8
+  seq: 10
 }
 
 delete {
-  url: {{baseUrl}}/stores/{{storeId}}/products/{{productId}}
+  url: http://{{baseUrl}}/stores/{{storeId}}/products/{{productId}}
   body: none
   auth: none
 }

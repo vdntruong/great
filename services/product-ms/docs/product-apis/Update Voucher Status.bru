@@ -1,0 +1,16 @@
+meta {
+  name: "Update Voucher Status"
+  type: "http"
+  seq: 11
+}
+
+put {{baseUrl}}/vouchers/{{voucher_id}}/status
+auth: "none"
+headers {
+  Content-Type: "application/json"
+  Authorization: "Bearer {{token}}"
+}
+
+{
+  "status": "inactive"
+}

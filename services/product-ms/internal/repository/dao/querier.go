@@ -13,6 +13,9 @@ import (
 type Querier interface {
 	AddDiscountCategory(ctx context.Context, arg *AddDiscountCategoryParams) error
 	AddDiscountProduct(ctx context.Context, arg *AddDiscountProductParams) error
+	AddVoucherCategory(ctx context.Context, arg *AddVoucherCategoryParams) error
+	AddVoucherProduct(ctx context.Context, arg *AddVoucherProductParams) error
+	CountDiscounts(ctx context.Context, storeID uuid.UUID) (int64, error)
 	CountStores(ctx context.Context) (int64, error)
 	CreateDiscount(ctx context.Context, arg *CreateDiscountParams) (*Discount, error)
 	CreateProduct(ctx context.Context, arg *CreateProductParams) (*Product, error)
@@ -45,7 +48,6 @@ type Querier interface {
 	GetStoreCategoryBySlug(ctx context.Context, arg *GetStoreCategoryBySlugParams) (*StoreCategory, error)
 	GetVoucherByCode(ctx context.Context, arg *GetVoucherByCodeParams) (*Voucher, error)
 	GetVoucherByID(ctx context.Context, id uuid.UUID) (*Voucher, error)
-	IncrementDiscountUsage(ctx context.Context, id uuid.UUID) error
 	IncrementVoucherUsage(ctx context.Context, id uuid.UUID) error
 	ListDiscounts(ctx context.Context, arg *ListDiscountsParams) ([]*Discount, error)
 	ListProducts(ctx context.Context, arg *ListProductsParams) ([]*Product, error)
@@ -54,6 +56,8 @@ type Querier interface {
 	ListVouchers(ctx context.Context, arg *ListVouchersParams) ([]*Voucher, error)
 	RemoveDiscountCategory(ctx context.Context, arg *RemoveDiscountCategoryParams) error
 	RemoveDiscountProduct(ctx context.Context, arg *RemoveDiscountProductParams) error
+	RemoveVoucherCategory(ctx context.Context, arg *RemoveVoucherCategoryParams) error
+	RemoveVoucherProduct(ctx context.Context, arg *RemoveVoucherProductParams) error
 	UpdateDiscount(ctx context.Context, arg *UpdateDiscountParams) (*Discount, error)
 	UpdateProduct(ctx context.Context, arg *UpdateProductParams) (*Product, error)
 	UpdateProductImage(ctx context.Context, arg *UpdateProductImageParams) (*ProductImage, error)
@@ -61,6 +65,7 @@ type Querier interface {
 	UpdateStore(ctx context.Context, arg *UpdateStoreParams) (*Store, error)
 	UpdateStoreCategory(ctx context.Context, arg *UpdateStoreCategoryParams) (*StoreCategory, error)
 	UpdateVoucher(ctx context.Context, arg *UpdateVoucherParams) (*Voucher, error)
+	UpdateVoucherStatus(ctx context.Context, arg *UpdateVoucherStatusParams) error
 }
 
 var _ Querier = (*Queries)(nil)

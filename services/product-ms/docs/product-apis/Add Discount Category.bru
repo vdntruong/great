@@ -1,0 +1,11 @@
+meta {
+  name: "Add Discount Category"
+  type: "http"
+  seq: 14
+}
+
+post {{baseUrl}}/discounts/{{discount_id}}/categories/{{category_id}}
+auth: "none"
+headers {
+  Authorization: "Bearer {{token}}"
+}

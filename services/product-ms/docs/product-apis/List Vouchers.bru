@@ -1,0 +1,15 @@
+meta {
+  name: "List Vouchers"
+  type: "http"
+  seq: 8
+}
+
+get {{baseUrl}}/vouchers
+auth: "none"
+headers {
+  Authorization: "Bearer {{token}}"
+}
+query {
+  page: 1
+  limit: 10
+}
