@@ -42,6 +42,21 @@ setup-tmp:
 	rsync -av --progress ../order-ms $(TEMPORARY_DIR) --exclude order-ms/deployments
 	cp ../go.work.sum $(TEMPORARY_DIR)/
 
+.PHONY: clean-tmp
+clean-tmp:
+	rm -rf $(TEMPORARY_DIR)
+
+.PHONY: docker-image
+docker-image:
+	docker build -t $(DOCKER_IMAGE_NAME) -f deployments/Dockerfile $(TEMPORARY_DIR)/
+
+.PHONY: build
+build: clean-tmp setup-tmp docker-image clean-tmp
+
+.PHONY: start-container
+start-container:
+	docker run -it --rm -p 8084:8080 --name $(CONTAINER_NAME) $(DOCKER_IMAGE_NAME)
+
 .PHONY: create-migration
 create-migration:
 	migrate create -ext sql -dir db/migrations -seq $(NEW_FILE)

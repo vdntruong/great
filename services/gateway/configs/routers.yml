@@ -47,6 +47,14 @@ http:
       rule: "Host(`product.theg.localhost`)"
       service: product-ms
 
+    # Product routers
+    order-router:
+      entryPoints:
+        - web
+        - websecure
+      rule: "Host(`order.theg.localhost`)"
+      service: order-ms
+
     user-protected-router:
       entryPoints:
         - web

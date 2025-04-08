@@ -18,9 +18,13 @@ build-user:
 build-product:
 	make -C $(ROOT_DIR)/services/product-ms build
 
+.PHONY: build-order
+build-order:
+	make -C $(ROOT_DIR)/services/order-ms build
+
 .PHONY: build-services
 build-services:
-	@make build-auth & make build-user & make build-product & wait
+	@make build-auth & make build-user & make build-product & make build-order & wait
 
 # build service images and start docker compose
 

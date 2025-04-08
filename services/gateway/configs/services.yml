@@ -31,3 +31,12 @@ http:
           path: "/healthz"
           interval: 10s
           timeout: 2s
+
+    order-ms:
+      loadBalancer:
+        servers:
+          - url: "http://order-ms:8080"
+        healthCheck:
+          path: "/healthz"
+          interval: 10s
+          timeout: 2s

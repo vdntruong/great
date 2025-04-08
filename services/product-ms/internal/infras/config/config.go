@@ -11,17 +11,21 @@ import (
 	"github.com/joho/godotenv"
 )
 
-type Config struct {
+type AppConfig struct {
 	AppID      string `env:"APP_ID" envDefault:""`
 	AppName    string `env:"APP_NAME" envDefault:"product-service"`
 	AppVersion string `env:"APP_VERSION" envDefault:"1.0.0"`
+}
 
+type HTTPConfig struct {
 	HTTPPort        string        `env:"HTTP_PORT" envDefault:"8080"`
 	IdleTimeout     time.Duration `env:"IDLE_TIMEOUT" envDefault:"5s"`
 	ReadTimeout     time.Duration `env:"READ_TIMEOUT" envDefault:"5s"`
 	WriteTimeout    time.Duration `env:"WRITE_TIMEOUT" envDefault:"5s"`
 	ShutdownTimeout time.Duration `env:"SHUTDOWN_TIMEOUT" envDefault:"10s"`
+}
 
+type DatabaseConfig struct {
 	DBDriver             string `env:"DB_DRIVER" envDefault:"postgres"`
 	DBHost               string `env:"DB_HOST" envDefault:"localhost"`
 	DBPort               string `env:"DB_PORT" envDefault:"5432"`
@@ -30,6 +34,12 @@ type Config struct {
 	DBName               string `env:"DB_NAME" envDefault:"product-db"`
 	DBMaxConnections     int    `env:"DB_MAX_CONNS" envDefault:"10"`
 	DBMaxIdleConnections int    `env:"DB_MAX_IDLE" envDefault:"10"`
+}
+
+type Config struct {
+	AppConfig
+	HTTPConfig
+	DatabaseConfig
 
 	// OTLPEndpoint for instrument
 	OTLPEndpoint string `env:"OTLP_ENDPOINT" envDefault:"localhost:4317"`
