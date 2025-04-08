@@ -123,7 +123,7 @@ Response ← API Layer ← Service Layer ← Repository Layer ← Database
    ```
 3. Set up the database:
    ```bash
-   psql -U postgres -f migrations/000001_init_schema.up.sql
+   psql -U postgres -f migrations/000002_create_orders_table.up.sql
    ```
 4. Generate SQLC code:
    ```bash

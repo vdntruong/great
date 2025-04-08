@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"syscall"
 
 	"commons/otel"
 
@@ -39,11 +40,13 @@ func main() {
 
 	queries := dao.New(infra.DB)
 
+	// Initialize services
 	productService := service.NewProductService(queries)
 	storeService := service.NewStoreService(queries)
 	discountService := service.NewDiscountService(queries)
 	voucherService := service.NewVoucherService(queries)
 
+	// Initialize handlers
 	storeHandler := handler.NewStore(storeService)
 	productHandler := handler.NewProduct(productService)
 	discountHandler := handler.NewDiscount(discountService)
@@ -66,15 +69,16 @@ func main() {
 		}
 	}()
 
-	stop := make(chan os.Signal, 1)
-	signal.Notify(stop, os.Interrupt)
-	<-stop
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
+	<-quit
+	println("Shutting down server...")
 
 	ctx, cancel := context.WithTimeout(context.Background(), cfg.ShutdownTimeout)
 	defer cancel()
 
-	println("Server is shutting down")
 	if err := server.Shutdown(ctx); err != nil {
-		println("Failed to gracefully shutdown " + err.Error())
+		println("Server forced to shutdown " + err.Error())
 	}
+	println("Server exiting")
 }
