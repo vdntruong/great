@@ -16,8 +16,8 @@ import (
 	"auth-ms/internal/handlers"
 	"auth-ms/internal/pkg/config"
 	"auth-ms/internal/pkg/constants"
-	"auth-ms/internal/repository"
 	"auth-ms/internal/services"
+	"auth-ms/internal/services/adapter"
 )
 
 func StartRESTServer(cfg *config.Config) error {
@@ -50,7 +50,7 @@ func routes(cfg *config.Config) *http.ServeMux {
 		log.Fatal(fmt.Errorf("token generator initialization failed: %w", err))
 	}
 
-	userProvider := repository.NewUserProviderImpl(cfg)
+	userProvider := adapter.NewUserAdapter(cfg)
 	authService := services.NewAuthServiceImpl(cfg, tokenAdapter, userProvider)
 	authHandler := handlers.NewAuthHandler(otel.GetTracer(), authService)
 

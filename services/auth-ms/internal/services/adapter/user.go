@@ -1,4 +1,4 @@
-package repository
+package adapter
 
 import (
 	"context"
@@ -18,11 +18,11 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-type UserProviderImpl struct {
+type UserMSAdapter struct {
 	client userpb.UserServiceClient
 }
 
-func NewUserProviderImpl(cfg *config.Config) *UserProviderImpl {
+func NewUserAdapter(cfg *config.Config) *UserMSAdapter {
 	sd, err := discovery.NewServiceDiscovery("user-ms", "grpc")
 	if err != nil {
 		panic(err.Error())
@@ -41,12 +41,12 @@ func NewUserProviderImpl(cfg *config.Config) *UserProviderImpl {
 	}
 
 	client := userpb.NewUserServiceClient(conn)
-	return &UserProviderImpl{
+	return &UserMSAdapter{
 		client: client,
 	}
 }
 
-func (u *UserProviderImpl) VerifyUser(ctx context.Context, email string, password string) (models.Credential, error) {
+func (u *UserMSAdapter) VerifyUser(ctx context.Context, email string, password string) (models.Credential, error) {
 	user, err := u.client.BasicAccessAuth(ctx, &userpb.BasicAuthRequest{Email: email, Password: password})
 	if err != nil {
 		statusErr, ok := status.FromError(err)

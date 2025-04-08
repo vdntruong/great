@@ -15,3 +15,13 @@ source ~/.bashrc
 
 echo 'export PATH="$PATH:$(go env GOPATH)/bin"' >> ~/.zshrc
 source ~/.zshrc
+
+# Install air for live-reload
+# binary will be $(go env GOPATH)/bin/air
+curl -sSfL https://raw.githubusercontent.com/air-verse/air/master/install.sh | sh -s -- -b $(go env GOPATH)/bin
+
+# Install direnv for mock env
+curl -sfL https://direnv.net/install.sh | bash
+chmod +x direnv
+echo 'eval "$(direnv hook bash)"' >> ~/.bashrc
+echo 'eval "$(direnv hook zsh)"' >> ~/.zshrc

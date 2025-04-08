@@ -1,0 +1,14 @@
+meta {
+  name: List Products
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{baseUrl}}/stores/{{storeId}}/products
+  query: {
+    limit: 10
+    offset: 0
+  }
+  auth: none
+}

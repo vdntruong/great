@@ -1,0 +1,11 @@
+meta {
+  name: Delete Discount
+  type: http
+  seq: 5
+}
+
+delete {
+  url: http://{{baseUrl}}/stores/{{storeId}}/discounts/{{discountId}}
+  body: none
+  auth: none
+}

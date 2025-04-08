@@ -1,0 +1,44 @@
+run:
+  timeout: 5m
+  tests: true
+  modules-download-mode: readonly
+  skip-dirs:
+    - vendor
+    - go/pkg/mod
+    - internal/db/dao  # Explicitly skip sqlc-generated files
+    - /opt/homebrew/Cellar/go # ?? why it read these files
+linters:
+  fast: true
+  disable-all: true
+  enable:
+    - gci
+    - gofmt
+    - gosec
+    - errcheck
+    - stylecheck
+    - staticcheck
+    - govet
+    - ineffassign
+    - gosimple
+
+linters-settings:
+  staticcheck:
+    checks: [ "all" ]
+  gci:
+    custom-order: true
+    sections:
+      - standard
+      - blank
+      - dot
+      - prefix(commons)
+      - prefix(product-ms)
+      - default
+    skip-generated: true
+
+issues:
+  fix: true # Set to false in CI if needed
+  exclude:
+    - '.*\.pb\.go$'
+    - '.*_test\.go$'
+    - '.*_mock\.go$'
+    - '.*dao/.*\.go$' # Exclude sqlc-generated files

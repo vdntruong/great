@@ -1,0 +1,11 @@
+meta {
+  name: Health Check
+  type: http
+  seq: 1
+}
+
+get {
+  url: http://{{orderBaseUrl}}/healthz
+  body: none
+  auth: none
+}

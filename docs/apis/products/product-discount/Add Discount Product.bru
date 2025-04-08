@@ -1,0 +1,11 @@
+meta {
+  name: Add Discount Product
+  type: http
+  seq: 1
+}
+
+post {
+  url: http://{{baseUrl}}/stores/{{storeId}}/discounts/{{discountId}}/products/{{productId}}
+  body: none
+  auth: none
+}

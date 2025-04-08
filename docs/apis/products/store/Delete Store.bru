@@ -1,0 +1,11 @@
+meta {
+  name: Delete Store
+  type: http
+  seq: 5
+}
+
+delete {
+  url: http://{{baseUrl}}/stores/{{storeId}}
+  body: none
+  auth: none
+}

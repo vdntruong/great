@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"errors"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -22,7 +23,7 @@ func main() {
 		log.Fatalf("load config failed: %s", err.Error())
 	}
 
-	log.Printf("otel endpoint config: %+v", cfg.OTLPEndpoint)
+	fmt.Printf("configuration: %+v\n", cfg)
 
 	cleanup, err := otel.SetupOpenTelemetry(cfg.AppName, cfg.AppVersion)
 	if err != nil {

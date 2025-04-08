@@ -9,14 +9,14 @@ import (
 
 type AuthServiceImpl struct {
 	cfg          *config.Config
-	tokenAdaptor TokenAdaptor
-	userProvider IUserProvider
+	tokenAdaptor TokenAdapter
+	userProvider UserAdapter
 }
 
 func NewAuthServiceImpl(
 	cfg *config.Config,
-	tokenAdaptor TokenAdaptor,
-	userProvider IUserProvider,
+	tokenAdaptor TokenAdapter,
+	userProvider UserAdapter,
 ) *AuthServiceImpl {
 	return &AuthServiceImpl{
 		cfg:          cfg,

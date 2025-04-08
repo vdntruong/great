@@ -1,0 +1,26 @@
+meta {
+  name: Update Store
+  type: http
+  seq: 4
+}
+
+put {
+  url: http://{{baseUrl}}/stores/{{storeId}}
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "name": "Huong Project Updated",
+    "status": "active",
+    "settings": {
+      "theme": "light",
+      "currency": "USD",
+      "tax_settings": {
+        "enabled": true,
+        "rate": 0.09
+      }
+    }
+  }
+}

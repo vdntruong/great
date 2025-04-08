@@ -53,6 +53,38 @@ services:
       - postgres
       - consul
 
+  product-ms:
+    build:
+      context: .
+      dockerfile: ../../services/product-ms/deployments/Dockerfile
+    ports:
+      - "8083:8080"
+    environment:
+      - OTLP_ENDPOINT=otel-collector:4317
+      - HTTP_PORT=8080
+      - DB_HOST=postgres
+    networks:
+      - backend
+    depends_on:
+      - postgres
+      - consul
+
+  order-ms:
+    build:
+      context: .
+      dockerfile: ../../services/order-ms/deployments/Dockerfile
+    ports:
+      - "8084:8080"
+    environment:
+      - OTLP_ENDPOINT=otel-collector:4317
+      - HTTP_PORT=8080
+      - DB_HOST=postgres
+    networks:
+      - backend
+    depends_on:
+      - postgres
+      - consul
+
   reverse-proxy:
     image: traefik:v3.2.1
     command:
@@ -69,6 +101,8 @@ services:
     depends_on:
       - user-ms
       - auth-ms
+      - product-ms
+      - order-ms
     networks:
       - backend
       - frontend

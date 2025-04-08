@@ -14,13 +14,25 @@ build-auth:
 build-user:
 	make -C $(ROOT_DIR)/services/user-ms build
 
+.PHONY: build-product
+build-product:
+	make -C $(ROOT_DIR)/services/product-ms build
+
+.PHONY: build-order
+build-order:
+	make -C $(ROOT_DIR)/services/order-ms build
+
 .PHONY: build-services
 build-services:
-	@make build-auth & make build-user & wait
+	@make build-auth & make build-user & make build-product & make build-order & wait
+
+# build service images and start docker compose
 
 .PHONY: build-up
 build-up: build-services
 	docker compose -f $(COMPOSE_FILE) -p $(PROJECT_NAME) up -d
+
+# just start docker compose
 
 .PHONY: up
 up:

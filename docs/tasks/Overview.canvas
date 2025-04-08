@@ -1,0 +1,18 @@
+{
+	"nodes":[
+		{"id":"931d736c3f52f509","type":"text","text":"API Gateway (Traefik)","x":-200,"y":-280,"width":250,"height":50},
+		{"id":"c71dd23a9109a0a7","type":"text","text":"Client","x":-325,"y":-440,"width":250,"height":50},
+		{"id":"1f142cd13e11d0ec","type":"text","text":"Client","x":-75,"y":-390,"width":250,"height":50},
+		{"id":"7c7165abd93480d6","type":"text","text":"Authen Service","x":-420,"y":-160,"width":220,"height":50},
+		{"id":"efda6a2fbb620557","type":"text","text":"User Service","x":-420,"y":-85,"width":220,"height":50},
+		{"id":"87385a1474c1b12e","type":"text","text":"Author Service","x":-420,"y":-5,"width":220,"height":50},
+		{"id":"e122db622921e63f","type":"text","text":"Post Service","x":-160,"y":-5,"width":220,"height":50},
+		{"id":"2369fdfb0cb613bf","type":"text","text":"Store Service","x":140,"y":-5,"width":220,"height":50},
+		{"id":"90197217642b9755","type":"text","text":"Payment Service","x":420,"y":-85,"width":220,"height":50},
+		{"id":"3676b248f7fa2bb2","type":"text","text":"Order Service","x":420,"y":-5,"width":220,"height":50}
+	],
+	"edges":[
+		{"id":"c914b1c911a0c490","fromNode":"c71dd23a9109a0a7","fromSide":"bottom","toNode":"931d736c3f52f509","toSide":"top"},
+		{"id":"ba69c95983ed0069","fromNode":"1f142cd13e11d0ec","fromSide":"bottom","toNode":"931d736c3f52f509","toSide":"top"}
+	]
+}

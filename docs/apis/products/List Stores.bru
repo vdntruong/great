@@ -1,0 +1,17 @@
+meta {
+  name: List Stores
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseUrl}}/stores
+  query: {
+    page: 1
+    limit: 10
+    sort_by: name
+    sort_order: asc
+    status: active
+  }
+  auth: none
+}

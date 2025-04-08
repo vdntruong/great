@@ -8,6 +8,7 @@ import (
 )
 
 type Config struct {
+	Driver       string `env:"DB_DRIVER" envDefault:"postgres"`
 	Host         string `env:"DB_HOST" envDefault:"localhost"`
 	Port         string `env:"DB_PORT" envDefault:"5432"`
 	Username     string `env:"DB_USER" envDefault:"postgres"`

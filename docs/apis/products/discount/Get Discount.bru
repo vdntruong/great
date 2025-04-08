@@ -1,0 +1,11 @@
+meta {
+  name: Get Discount
+  type: http
+  seq: 3
+}
+
+get {
+  url: http://{{baseUrl}}/stores/{{storeId}}/discounts/{{discountId}}
+  body: none
+  auth: none
+}

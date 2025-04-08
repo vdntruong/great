@@ -1,0 +1,29 @@
+meta {
+  name: Create Store
+  type: http
+  seq: 1
+}
+
+post {
+  url: http://{{baseUrl}}/stores
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "name": "Huong Project Store",
+    "slug": "huong-len",
+    "description": "A new len store for testing",
+    "owner_id": "550e8400-e29b-41d4-a716-446655440001",
+    "status": "active",
+    "settings": {
+      "theme": "dark",
+      "currency": "USD",
+      "tax_settings": {
+        "enabled": true,
+        "rate": 0.08
+      }
+    }
+  }
+}
