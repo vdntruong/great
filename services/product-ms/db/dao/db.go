@@ -25,19 +25,19 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	q := Queries{db: db}
 	var err error
 	if q.addDiscountCategoryStmt, err = db.PrepareContext(ctx, AddDiscountCategory); err != nil {
-		return nil, fmt.Errorf("error preparing query AddDiscountCategory: %w", err)
+		return nil, fmt.Errorf("error preparing query HandleAddDiscountCategory: %w", err)
 	}
 	if q.addDiscountProductStmt, err = db.PrepareContext(ctx, AddDiscountProduct); err != nil {
-		return nil, fmt.Errorf("error preparing query AddDiscountProduct: %w", err)
+		return nil, fmt.Errorf("error preparing query HandleAddDiscountProduct: %w", err)
 	}
 	if q.addProductCategoryStmt, err = db.PrepareContext(ctx, AddProductCategory); err != nil {
 		return nil, fmt.Errorf("error preparing query AddProductCategory: %w", err)
 	}
 	if q.addVoucherCategoryStmt, err = db.PrepareContext(ctx, AddVoucherCategory); err != nil {
-		return nil, fmt.Errorf("error preparing query AddVoucherCategory: %w", err)
+		return nil, fmt.Errorf("error preparing query HandleAddVoucherCategory: %w", err)
 	}
 	if q.addVoucherProductStmt, err = db.PrepareContext(ctx, AddVoucherProduct); err != nil {
-		return nil, fmt.Errorf("error preparing query AddVoucherProduct: %w", err)
+		return nil, fmt.Errorf("error preparing query HandleAddVoucherProduct: %w", err)
 	}
 	if q.countActiveDiscountsStmt, err = db.PrepareContext(ctx, CountActiveDiscounts); err != nil {
 		return nil, fmt.Errorf("error preparing query CountActiveDiscounts: %w", err)
@@ -76,7 +76,7 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 		return nil, fmt.Errorf("error preparing query CountVouchers: %w", err)
 	}
 	if q.createDiscountStmt, err = db.PrepareContext(ctx, CreateDiscount); err != nil {
-		return nil, fmt.Errorf("error preparing query CreateDiscount: %w", err)
+		return nil, fmt.Errorf("error preparing query HandleCreate: %w", err)
 	}
 	if q.createProductStmt, err = db.PrepareContext(ctx, CreateProduct); err != nil {
 		return nil, fmt.Errorf("error preparing query CreateProduct: %w", err)
@@ -94,10 +94,10 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 		return nil, fmt.Errorf("error preparing query CreateStoreCategory: %w", err)
 	}
 	if q.createVoucherStmt, err = db.PrepareContext(ctx, CreateVoucher); err != nil {
-		return nil, fmt.Errorf("error preparing query CreateVoucher: %w", err)
+		return nil, fmt.Errorf("error preparing query HandleCreate: %w", err)
 	}
 	if q.deleteDiscountStmt, err = db.PrepareContext(ctx, DeleteDiscount); err != nil {
-		return nil, fmt.Errorf("error preparing query DeleteDiscount: %w", err)
+		return nil, fmt.Errorf("error preparing query HandleDelete: %w", err)
 	}
 	if q.deleteProductStmt, err = db.PrepareContext(ctx, DeleteProduct); err != nil {
 		return nil, fmt.Errorf("error preparing query DeleteProduct: %w", err)
@@ -124,13 +124,13 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 		return nil, fmt.Errorf("error preparing query DeleteVariantImages: %w", err)
 	}
 	if q.deleteVoucherStmt, err = db.PrepareContext(ctx, DeleteVoucher); err != nil {
-		return nil, fmt.Errorf("error preparing query DeleteVoucher: %w", err)
+		return nil, fmt.Errorf("error preparing query HandleDelete: %w", err)
 	}
 	if q.getCategoryProductsStmt, err = db.PrepareContext(ctx, GetCategoryProducts); err != nil {
 		return nil, fmt.Errorf("error preparing query GetCategoryProducts: %w", err)
 	}
 	if q.getDiscountStmt, err = db.PrepareContext(ctx, GetDiscount); err != nil {
-		return nil, fmt.Errorf("error preparing query GetDiscount: %w", err)
+		return nil, fmt.Errorf("error preparing query HandleGet: %w", err)
 	}
 	if q.getDiscountByCodeStmt, err = db.PrepareContext(ctx, GetDiscountByCode); err != nil {
 		return nil, fmt.Errorf("error preparing query GetDiscountByCode: %w", err)
@@ -184,7 +184,7 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 		return nil, fmt.Errorf("error preparing query GetVariantBySKU: %w", err)
 	}
 	if q.getVoucherStmt, err = db.PrepareContext(ctx, GetVoucher); err != nil {
-		return nil, fmt.Errorf("error preparing query GetVoucher: %w", err)
+		return nil, fmt.Errorf("error preparing query HandleGet: %w", err)
 	}
 	if q.getVoucherByCodeStmt, err = db.PrepareContext(ctx, GetVoucherByCode); err != nil {
 		return nil, fmt.Errorf("error preparing query GetVoucherByCode: %w", err)
@@ -208,7 +208,7 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 		return nil, fmt.Errorf("error preparing query ListActiveVouchers: %w", err)
 	}
 	if q.listDiscountsStmt, err = db.PrepareContext(ctx, ListDiscounts); err != nil {
-		return nil, fmt.Errorf("error preparing query ListDiscounts: %w", err)
+		return nil, fmt.Errorf("error preparing query HandleList: %w", err)
 	}
 	if q.listFeaturedProductsStmt, err = db.PrepareContext(ctx, ListFeaturedProducts); err != nil {
 		return nil, fmt.Errorf("error preparing query ListFeaturedProducts: %w", err)
@@ -244,28 +244,28 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 		return nil, fmt.Errorf("error preparing query ListVariantImages: %w", err)
 	}
 	if q.listVouchersStmt, err = db.PrepareContext(ctx, ListVouchers); err != nil {
-		return nil, fmt.Errorf("error preparing query ListVouchers: %w", err)
+		return nil, fmt.Errorf("error preparing query HandleList: %w", err)
 	}
 	if q.removeAllProductCategoriesStmt, err = db.PrepareContext(ctx, RemoveAllProductCategories); err != nil {
 		return nil, fmt.Errorf("error preparing query RemoveAllProductCategories: %w", err)
 	}
 	if q.removeDiscountCategoryStmt, err = db.PrepareContext(ctx, RemoveDiscountCategory); err != nil {
-		return nil, fmt.Errorf("error preparing query RemoveDiscountCategory: %w", err)
+		return nil, fmt.Errorf("error preparing query HandleRemoveDiscountCategory: %w", err)
 	}
 	if q.removeDiscountProductStmt, err = db.PrepareContext(ctx, RemoveDiscountProduct); err != nil {
-		return nil, fmt.Errorf("error preparing query RemoveDiscountProduct: %w", err)
+		return nil, fmt.Errorf("error preparing query HandleRemoveDiscountProduct: %w", err)
 	}
 	if q.removeProductCategoryStmt, err = db.PrepareContext(ctx, RemoveProductCategory); err != nil {
 		return nil, fmt.Errorf("error preparing query RemoveProductCategory: %w", err)
 	}
 	if q.removeVoucherCategoryStmt, err = db.PrepareContext(ctx, RemoveVoucherCategory); err != nil {
-		return nil, fmt.Errorf("error preparing query RemoveVoucherCategory: %w", err)
+		return nil, fmt.Errorf("error preparing query HandleRemoveVoucherCategory: %w", err)
 	}
 	if q.removeVoucherProductStmt, err = db.PrepareContext(ctx, RemoveVoucherProduct); err != nil {
-		return nil, fmt.Errorf("error preparing query RemoveVoucherProduct: %w", err)
+		return nil, fmt.Errorf("error preparing query HandleRemoveVoucherProduct: %w", err)
 	}
 	if q.updateDiscountStmt, err = db.PrepareContext(ctx, UpdateDiscount); err != nil {
-		return nil, fmt.Errorf("error preparing query UpdateDiscount: %w", err)
+		return nil, fmt.Errorf("error preparing query HandleUpdate: %w", err)
 	}
 	if q.updateImageSortOrderStmt, err = db.PrepareContext(ctx, UpdateImageSortOrder); err != nil {
 		return nil, fmt.Errorf("error preparing query UpdateImageSortOrder: %w", err)
@@ -295,7 +295,7 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 		return nil, fmt.Errorf("error preparing query UpdateVariantInventory: %w", err)
 	}
 	if q.updateVoucherStmt, err = db.PrepareContext(ctx, UpdateVoucher); err != nil {
-		return nil, fmt.Errorf("error preparing query UpdateVoucher: %w", err)
+		return nil, fmt.Errorf("error preparing query HandleUpdate: %w", err)
 	}
 	return &q, nil
 }

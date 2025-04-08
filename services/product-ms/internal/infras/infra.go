@@ -1,9 +1,9 @@
-package infrastructure
+package infras
 
 import (
 	"commons/otel/db"
 	"database/sql"
-	"product-ms/internal/infrastructure/config"
+	"product-ms/internal/infras/config"
 )
 
 type Infra struct {

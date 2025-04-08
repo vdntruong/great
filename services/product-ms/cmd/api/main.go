@@ -1,17 +1,19 @@
 package main
 
 import (
-	"commons/otel"
 	"context"
 	"errors"
 	"fmt"
 	"net/http"
 	"os"
 	"os/signal"
+
+	"commons/otel"
+
 	"product-ms/db/dao"
 	"product-ms/internal/handler"
-	"product-ms/internal/infrastructure"
-	"product-ms/internal/infrastructure/config"
+	"product-ms/internal/infras"
+	"product-ms/internal/infras/config"
 	"product-ms/internal/router"
 	"product-ms/internal/service"
 )
@@ -30,7 +32,7 @@ func main() {
 	}
 	defer cleanup()
 
-	infra, err := infrastructure.Load(cfg)
+	infra, err := infras.Load(cfg)
 	if err != nil {
 		panic("Could not load infrastructure due to " + err.Error())
 	}

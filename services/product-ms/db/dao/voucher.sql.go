@@ -13,7 +13,7 @@ import (
 	"github.com/google/uuid"
 )
 
-const AddVoucherCategory = `-- name: AddVoucherCategory :exec
+const AddVoucherCategory = `-- name: HandleAddVoucherCategory :exec
 INSERT INTO voucher_categories (voucher_id, category_id)
 VALUES ($1, $2)
 `
@@ -28,7 +28,7 @@ func (q *Queries) AddVoucherCategory(ctx context.Context, arg *AddVoucherCategor
 	return err
 }
 
-const AddVoucherProduct = `-- name: AddVoucherProduct :exec
+const AddVoucherProduct = `-- name: HandleAddVoucherProduct :exec
 INSERT INTO voucher_products (voucher_id, product_id)
 VALUES ($1, $2)
 `
@@ -69,7 +69,7 @@ func (q *Queries) CountVouchers(ctx context.Context, storeID uuid.UUID) (int64, 
 	return count, err
 }
 
-const CreateVoucher = `-- name: CreateVoucher :one
+const CreateVoucher = `-- name: HandleCreate :one
 INSERT INTO vouchers (
     store_id,
     code,
@@ -132,7 +132,7 @@ func (q *Queries) CreateVoucher(ctx context.Context, arg *CreateVoucherParams) (
 	return &i, err
 }
 
-const DeleteVoucher = `-- name: DeleteVoucher :exec
+const DeleteVoucher = `-- name: HandleDelete :exec
 DELETE FROM vouchers
 WHERE id = $1
 `
@@ -142,7 +142,7 @@ func (q *Queries) DeleteVoucher(ctx context.Context, id uuid.UUID) error {
 	return err
 }
 
-const GetVoucher = `-- name: GetVoucher :one
+const GetVoucher = `-- name: HandleGet :one
 SELECT id, store_id, code, type, value, min_purchase_amount, max_discount_amount, start_date, end_date, usage_limit, usage_count, status, created_at, updated_at FROM vouchers
 WHERE id = $1
 `
@@ -379,7 +379,7 @@ func (q *Queries) ListActiveVouchers(ctx context.Context, arg *ListActiveVoucher
 	return items, nil
 }
 
-const ListVouchers = `-- name: ListVouchers :many
+const ListVouchers = `-- name: HandleList :many
 SELECT id, store_id, code, type, value, min_purchase_amount, max_discount_amount, start_date, end_date, usage_limit, usage_count, status, created_at, updated_at FROM vouchers
 WHERE store_id = $1
 ORDER BY created_at DESC
@@ -430,7 +430,7 @@ func (q *Queries) ListVouchers(ctx context.Context, arg *ListVouchersParams) ([]
 	return items, nil
 }
 
-const RemoveVoucherCategory = `-- name: RemoveVoucherCategory :exec
+const RemoveVoucherCategory = `-- name: HandleRemoveVoucherCategory :exec
 DELETE FROM voucher_categories
 WHERE voucher_id = $1 AND category_id = $2
 `
@@ -445,7 +445,7 @@ func (q *Queries) RemoveVoucherCategory(ctx context.Context, arg *RemoveVoucherC
 	return err
 }
 
-const RemoveVoucherProduct = `-- name: RemoveVoucherProduct :exec
+const RemoveVoucherProduct = `-- name: HandleRemoveVoucherProduct :exec
 DELETE FROM voucher_products
 WHERE voucher_id = $1 AND product_id = $2
 `
@@ -460,7 +460,7 @@ func (q *Queries) RemoveVoucherProduct(ctx context.Context, arg *RemoveVoucherPr
 	return err
 }
 
-const UpdateVoucher = `-- name: UpdateVoucher :one
+const UpdateVoucher = `-- name: HandleUpdate :one
 UPDATE vouchers
 SET
     code = COALESCE($2, code),

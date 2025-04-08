@@ -13,7 +13,7 @@ import (
 	"github.com/google/uuid"
 )
 
-const AddDiscountCategory = `-- name: AddDiscountCategory :exec
+const AddDiscountCategory = `-- name: HandleAddDiscountCategory :exec
 INSERT INTO discount_categories (discount_id, category_id)
 VALUES ($1, $2)
 `
@@ -28,7 +28,7 @@ func (q *Queries) AddDiscountCategory(ctx context.Context, arg *AddDiscountCateg
 	return err
 }
 
-const AddDiscountProduct = `-- name: AddDiscountProduct :exec
+const AddDiscountProduct = `-- name: HandleAddDiscountProduct :exec
 INSERT INTO discount_products (discount_id, product_id)
 VALUES ($1, $2)
 `
@@ -69,7 +69,7 @@ func (q *Queries) CountDiscounts(ctx context.Context, storeID uuid.UUID) (int64,
 	return count, err
 }
 
-const CreateDiscount = `-- name: CreateDiscount :one
+const CreateDiscount = `-- name: HandleCreate :one
 INSERT INTO discounts (
     store_id,
     name,
@@ -140,7 +140,7 @@ func (q *Queries) CreateDiscount(ctx context.Context, arg *CreateDiscountParams)
 	return &i, err
 }
 
-const DeleteDiscount = `-- name: DeleteDiscount :exec
+const DeleteDiscount = `-- name: HandleDelete :exec
 DELETE FROM discounts
 WHERE id = $1
 `
@@ -150,7 +150,7 @@ func (q *Queries) DeleteDiscount(ctx context.Context, id uuid.UUID) error {
 	return err
 }
 
-const GetDiscount = `-- name: GetDiscount :one
+const GetDiscount = `-- name: HandleGet :one
 SELECT id, store_id, name, code, type, value, scope, start_date, end_date, min_purchase_amount, max_discount_amount, usage_limit, usage_count, is_active, created_at, updated_at FROM discounts
 WHERE id = $1
 `
@@ -395,7 +395,7 @@ func (q *Queries) ListActiveDiscounts(ctx context.Context, arg *ListActiveDiscou
 	return items, nil
 }
 
-const ListDiscounts = `-- name: ListDiscounts :many
+const ListDiscounts = `-- name: HandleList :many
 SELECT id, store_id, name, code, type, value, scope, start_date, end_date, min_purchase_amount, max_discount_amount, usage_limit, usage_count, is_active, created_at, updated_at FROM discounts
 WHERE store_id = $1
 ORDER BY created_at DESC
@@ -448,7 +448,7 @@ func (q *Queries) ListDiscounts(ctx context.Context, arg *ListDiscountsParams) (
 	return items, nil
 }
 
-const RemoveDiscountCategory = `-- name: RemoveDiscountCategory :exec
+const RemoveDiscountCategory = `-- name: HandleRemoveDiscountCategory :exec
 DELETE FROM discount_categories
 WHERE discount_id = $1 AND category_id = $2
 `
@@ -463,7 +463,7 @@ func (q *Queries) RemoveDiscountCategory(ctx context.Context, arg *RemoveDiscoun
 	return err
 }
 
-const RemoveDiscountProduct = `-- name: RemoveDiscountProduct :exec
+const RemoveDiscountProduct = `-- name: HandleRemoveDiscountProduct :exec
 DELETE FROM discount_products
 WHERE discount_id = $1 AND product_id = $2
 `
@@ -478,7 +478,7 @@ func (q *Queries) RemoveDiscountProduct(ctx context.Context, arg *RemoveDiscount
 	return err
 }
 
-const UpdateDiscount = `-- name: UpdateDiscount :one
+const UpdateDiscount = `-- name: HandleUpdate :one
 UPDATE discounts
 SET
     name = COALESCE($2, name),

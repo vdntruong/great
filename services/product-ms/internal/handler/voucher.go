@@ -25,8 +25,8 @@ func NewVoucher(service service.VoucherService) *Voucher {
 	}
 }
 
-// CreateVoucher handles the creation of a new voucher
-func (h *Voucher) CreateVoucher(w http.ResponseWriter, r *http.Request) {
+// HandleCreate handles the creation of a new voucher
+func (h *Voucher) HandleCreate(w http.ResponseWriter, r *http.Request) {
 	var req dto.CreateVoucherRequest
 	if err := commonjson.DecodeRequest(r, &req); err != nil {
 		commonjson.RespondBadRequestError(w, err)
@@ -81,8 +81,8 @@ func (h *Voucher) CreateVoucher(w http.ResponseWriter, r *http.Request) {
 	commonjson.RespondCreated(w, response)
 }
 
-// GetVoucher handles retrieving a voucher by ID
-func (h *Voucher) GetVoucher(w http.ResponseWriter, r *http.Request) {
+// HandleGet handles retrieving a voucher by ID
+func (h *Voucher) HandleGet(w http.ResponseWriter, r *http.Request) {
 	id, err := uuid.Parse(chi.URLParam(r, "id"))
 	if err != nil {
 		commonjson.RespondBadRequestError(w, errors.New("invalid voucher ID"))
@@ -116,8 +116,8 @@ func (h *Voucher) GetVoucher(w http.ResponseWriter, r *http.Request) {
 	commonjson.RespondOK(w, response)
 }
 
-// ListVouchers handles retrieving a list of vouchers
-func (h *Voucher) ListVouchers(w http.ResponseWriter, r *http.Request) {
+// HandleList handles retrieving a list of vouchers
+func (h *Voucher) HandleList(w http.ResponseWriter, r *http.Request) {
 	storeID, err := uuid.Parse(chi.URLParam(r, "store_id"))
 	if err != nil {
 		commonjson.RespondBadRequestError(w, errors.New("store ID not found"))
@@ -178,8 +178,8 @@ func (h *Voucher) ListVouchers(w http.ResponseWriter, r *http.Request) {
 	commonjson.RespondOK(w, response)
 }
 
-// UpdateVoucher handles updating a voucher
-func (h *Voucher) UpdateVoucher(w http.ResponseWriter, r *http.Request) {
+// HandleUpdate handles updating a voucher
+func (h *Voucher) HandleUpdate(w http.ResponseWriter, r *http.Request) {
 	id, err := uuid.Parse(chi.URLParam(r, "id"))
 	if err != nil {
 		commonjson.RespondBadRequestError(w, errors.New("invalid voucher ID"))
@@ -234,8 +234,8 @@ func (h *Voucher) UpdateVoucher(w http.ResponseWriter, r *http.Request) {
 	commonjson.RespondOK(w, response)
 }
 
-// DeleteVoucher handles deleting a voucher
-func (h *Voucher) DeleteVoucher(w http.ResponseWriter, r *http.Request) {
+// HandleDelete handles deleting a voucher
+func (h *Voucher) HandleDelete(w http.ResponseWriter, r *http.Request) {
 	id, err := uuid.Parse(chi.URLParam(r, "id"))
 	if err != nil {
 		commonjson.RespondBadRequestError(w, errors.New("invalid voucher ID"))
@@ -250,8 +250,8 @@ func (h *Voucher) DeleteVoucher(w http.ResponseWriter, r *http.Request) {
 	commonjson.RespondNoContent(w)
 }
 
-// AddVoucherProduct handles adding a product to a voucher
-func (h *Voucher) AddVoucherProduct(w http.ResponseWriter, r *http.Request) {
+// HandleAddVoucherProduct handles adding a product to a voucher
+func (h *Voucher) HandleAddVoucherProduct(w http.ResponseWriter, r *http.Request) {
 	voucherID, err := uuid.Parse(chi.URLParam(r, "id"))
 	if err != nil {
 		commonjson.RespondBadRequestError(w, errors.New("invalid discount ID"))
@@ -272,8 +272,8 @@ func (h *Voucher) AddVoucherProduct(w http.ResponseWriter, r *http.Request) {
 	commonjson.RespondNoContent(w)
 }
 
-// RemoveVoucherProduct handles removing a product from a voucher
-func (h *Voucher) RemoveVoucherProduct(w http.ResponseWriter, r *http.Request) {
+// HandleRemoveVoucherProduct handles removing a product from a voucher
+func (h *Voucher) HandleRemoveVoucherProduct(w http.ResponseWriter, r *http.Request) {
 	voucherID, err := uuid.Parse(chi.URLParam(r, "id"))
 	if err != nil {
 		commonjson.RespondBadRequestError(w, errors.New("invalid discount ID"))
@@ -294,8 +294,8 @@ func (h *Voucher) RemoveVoucherProduct(w http.ResponseWriter, r *http.Request) {
 	commonjson.RespondNoContent(w)
 }
 
-// AddVoucherCategory handles adding a category to a voucher
-func (h *Voucher) AddVoucherCategory(w http.ResponseWriter, r *http.Request) {
+// HandleAddVoucherCategory handles adding a category to a voucher
+func (h *Voucher) HandleAddVoucherCategory(w http.ResponseWriter, r *http.Request) {
 	voucherID, err := uuid.Parse(chi.URLParam(r, "id"))
 	if err != nil {
 		commonjson.RespondBadRequestError(w, errors.New("invalid discount ID"))
@@ -316,8 +316,8 @@ func (h *Voucher) AddVoucherCategory(w http.ResponseWriter, r *http.Request) {
 	commonjson.RespondNoContent(w)
 }
 
-// RemoveVoucherCategory handles removing a category from a voucher
-func (h *Voucher) RemoveVoucherCategory(w http.ResponseWriter, r *http.Request) {
+// HandleRemoveVoucherCategory handles removing a category from a voucher
+func (h *Voucher) HandleRemoveVoucherCategory(w http.ResponseWriter, r *http.Request) {
 	voucherID, err := uuid.Parse(chi.URLParam(r, "id"))
 	if err != nil {
 		commonjson.RespondBadRequestError(w, errors.New("invalid discount ID"))

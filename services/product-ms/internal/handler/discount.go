@@ -25,8 +25,8 @@ func NewDiscount(service service.DiscountService) *Discount {
 	}
 }
 
-// CreateDiscount handles the creation of a new discount
-func (h *Discount) CreateDiscount(w http.ResponseWriter, r *http.Request) {
+// HandleCreate handles the creation of a new discount
+func (h *Discount) HandleCreate(w http.ResponseWriter, r *http.Request) {
 	var req dto.CreateDiscountRequest
 	if err := commonjson.DecodeRequest(r, &req); err != nil {
 		commonjson.RespondBadRequestError(w, err)
@@ -86,8 +86,8 @@ func (h *Discount) CreateDiscount(w http.ResponseWriter, r *http.Request) {
 	commonjson.RespondCreated(w, response)
 }
 
-// GetDiscount handles retrieving a discount by ID
-func (h *Discount) GetDiscount(w http.ResponseWriter, r *http.Request) {
+// HandleGet handles retrieving a discount by ID
+func (h *Discount) HandleGet(w http.ResponseWriter, r *http.Request) {
 	id, err := uuid.Parse(chi.URLParam(r, "id"))
 	if err != nil {
 		commonjson.RespondBadRequestError(w, errors.New("invalid discount ID"))
@@ -123,8 +123,8 @@ func (h *Discount) GetDiscount(w http.ResponseWriter, r *http.Request) {
 	commonjson.RespondOK(w, response)
 }
 
-// ListDiscounts handles retrieving a list of discounts
-func (h *Discount) ListDiscounts(w http.ResponseWriter, r *http.Request) {
+// HandleList handles retrieving a list of discounts
+func (h *Discount) HandleList(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "store_id")
 	storeID, err := uuid.Parse(id)
 	if err != nil {
@@ -188,8 +188,8 @@ func (h *Discount) ListDiscounts(w http.ResponseWriter, r *http.Request) {
 	commonjson.RespondOK(w, response)
 }
 
-// UpdateDiscount handles updating a discount
-func (h *Discount) UpdateDiscount(w http.ResponseWriter, r *http.Request) {
+// HandleUpdate handles updating a discount
+func (h *Discount) HandleUpdate(w http.ResponseWriter, r *http.Request) {
 	id, err := uuid.Parse(chi.URLParam(r, "id"))
 	if err != nil {
 		commonjson.RespondBadRequestError(w, errors.New("invalid discount ID"))
@@ -248,8 +248,8 @@ func (h *Discount) UpdateDiscount(w http.ResponseWriter, r *http.Request) {
 	commonjson.RespondOK(w, response)
 }
 
-// DeleteDiscount handles deleting a discount
-func (h *Discount) DeleteDiscount(w http.ResponseWriter, r *http.Request) {
+// HandleDelete handles deleting a discount
+func (h *Discount) HandleDelete(w http.ResponseWriter, r *http.Request) {
 	id, err := uuid.Parse(chi.URLParam(r, "id"))
 	if err != nil {
 		commonjson.RespondBadRequestError(w, errors.New("invalid discount ID"))
@@ -264,8 +264,8 @@ func (h *Discount) DeleteDiscount(w http.ResponseWriter, r *http.Request) {
 	commonjson.RespondNoContent(w)
 }
 
-// AddDiscountProduct handles adding a product to a discount
-func (h *Discount) AddDiscountProduct(w http.ResponseWriter, r *http.Request) {
+// HandleAddDiscountProduct handles adding a product to a discount
+func (h *Discount) HandleAddDiscountProduct(w http.ResponseWriter, r *http.Request) {
 	discountID, err := uuid.Parse(chi.URLParam(r, "id"))
 	if err != nil {
 		commonjson.RespondBadRequestError(w, errors.New("invalid discount ID"))
@@ -286,8 +286,8 @@ func (h *Discount) AddDiscountProduct(w http.ResponseWriter, r *http.Request) {
 	commonjson.RespondNoContent(w)
 }
 
-// RemoveDiscountProduct handles removing a product from a discount
-func (h *Discount) RemoveDiscountProduct(w http.ResponseWriter, r *http.Request) {
+// HandleRemoveDiscountProduct handles removing a product from a discount
+func (h *Discount) HandleRemoveDiscountProduct(w http.ResponseWriter, r *http.Request) {
 	discountID, err := uuid.Parse(chi.URLParam(r, "id"))
 	if err != nil {
 		commonjson.RespondBadRequestError(w, errors.New("invalid discount ID"))
@@ -308,8 +308,8 @@ func (h *Discount) RemoveDiscountProduct(w http.ResponseWriter, r *http.Request)
 	commonjson.RespondNoContent(w)
 }
 
-// AddDiscountCategory handles adding a category to a discount
-func (h *Discount) AddDiscountCategory(w http.ResponseWriter, r *http.Request) {
+// HandleAddDiscountCategory handles adding a category to a discount
+func (h *Discount) HandleAddDiscountCategory(w http.ResponseWriter, r *http.Request) {
 	discountID, err := uuid.Parse(chi.URLParam(r, "id"))
 	if err != nil {
 		commonjson.RespondBadRequestError(w, errors.New("invalid discount ID"))
@@ -330,8 +330,8 @@ func (h *Discount) AddDiscountCategory(w http.ResponseWriter, r *http.Request) {
 	commonjson.RespondNoContent(w)
 }
 
-// RemoveDiscountCategory handles removing a category from a discount
-func (h *Discount) RemoveDiscountCategory(w http.ResponseWriter, r *http.Request) {
+// HandleRemoveDiscountCategory handles removing a category from a discount
+func (h *Discount) HandleRemoveDiscountCategory(w http.ResponseWriter, r *http.Request) {
 	discountID, err := uuid.Parse(chi.URLParam(r, "id"))
 	if err != nil {
 		commonjson.RespondBadRequestError(w, errors.New("invalid discount ID"))

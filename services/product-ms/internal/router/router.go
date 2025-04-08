@@ -8,7 +8,7 @@ import (
 	otelmiddleware "commons/otel/middleware"
 
 	"product-ms/internal/handler"
-	"product-ms/internal/infrastructure/config"
+	"product-ms/internal/infras/config"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -66,31 +66,31 @@ func NewRouter(
 
 	// Discount routes
 	r.Route("/stores/{store_id}/discounts", func(r chi.Router) {
-		r.Post("/", discountHandler.CreateDiscount)
-		r.Get("/", discountHandler.ListDiscounts)
+		r.Post("/", discountHandler.HandleCreate)
+		r.Get("/", discountHandler.HandleList)
 		r.Route("/{id}", func(r chi.Router) {
-			r.Get("/", discountHandler.GetDiscount)
-			r.Put("/", discountHandler.UpdateDiscount)
-			r.Delete("/", discountHandler.DeleteDiscount)
-			r.Post("/products/{product_id}", discountHandler.AddDiscountProduct)
-			r.Delete("/products/{product_id}", discountHandler.RemoveDiscountProduct)
-			r.Post("/categories/{category_id}", discountHandler.AddDiscountCategory)
-			r.Delete("/categories/{category_id}", discountHandler.RemoveDiscountCategory)
+			r.Get("/", discountHandler.HandleGet)
+			r.Put("/", discountHandler.HandleUpdate)
+			r.Delete("/", discountHandler.HandleDelete)
+			r.Post("/products/{product_id}", discountHandler.HandleAddDiscountProduct)
+			r.Delete("/products/{product_id}", discountHandler.HandleRemoveDiscountProduct)
+			r.Post("/categories/{category_id}", discountHandler.HandleAddDiscountCategory)
+			r.Delete("/categories/{category_id}", discountHandler.HandleRemoveDiscountCategory)
 		})
 	})
 
 	// Voucher routes
 	r.Route("/stores/{store_id}/vouchers", func(r chi.Router) {
-		r.Post("/", voucherHandler.CreateVoucher)
-		r.Get("/", voucherHandler.ListVouchers)
+		r.Post("/", voucherHandler.HandleCreate)
+		r.Get("/", voucherHandler.HandleList)
 		r.Route("/{id}", func(r chi.Router) {
-			r.Get("/", voucherHandler.GetVoucher)
-			r.Put("/", voucherHandler.UpdateVoucher)
-			r.Delete("/", voucherHandler.DeleteVoucher)
-			r.Post("/products/{product_id}", voucherHandler.AddVoucherProduct)
-			r.Delete("/products/{product_id}", voucherHandler.RemoveVoucherProduct)
-			r.Post("/categories/{category_id}", voucherHandler.AddVoucherCategory)
-			r.Delete("/categories/{category_id}", voucherHandler.RemoveVoucherCategory)
+			r.Get("/", voucherHandler.HandleGet)
+			r.Put("/", voucherHandler.HandleUpdate)
+			r.Delete("/", voucherHandler.HandleDelete)
+			r.Post("/products/{product_id}", voucherHandler.HandleAddVoucherProduct)
+			r.Delete("/products/{product_id}", voucherHandler.HandleRemoveVoucherProduct)
+			r.Post("/categories/{category_id}", voucherHandler.HandleAddVoucherCategory)
+			r.Delete("/categories/{category_id}", voucherHandler.HandleRemoveVoucherCategory)
 		})
 	})
 
