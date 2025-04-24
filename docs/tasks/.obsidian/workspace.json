@@ -4,24 +4,17 @@
     "type": "split",
     "children": [
       {
-        "id": "cbefa518b7a9ae63",
+        "id": "69e12b3f254a4613",
         "type": "tabs",
         "children": [
           {
-            "id": "04681760eaa60171",
+            "id": "9c01baddca4f1268",
             "type": "leaf",
             "state": {
-              "type": "canvas",
-              "state": {
-                "file": "ProductService.canvas",
-                "viewState": {
-                  "x": -57,
-                  "y": -10,
-                  "zoom": -0.6474389790630674
-                }
-              },
-              "icon": "lucide-layout-dashboard",
-              "title": "ProductService"
+              "type": "empty",
+              "state": {},
+              "icon": "lucide-file",
+              "title": "New tab"
             }
           }
         ]
@@ -167,10 +160,10 @@
       "obsidian-kanban:Create new board": false
     }
   },
-  "active": "04681760eaa60171",
+  "active": "9c01baddca4f1268",
   "lastOpenFiles": [
-    "Overview.canvas",
     "ProductService.canvas",
+    "Overview.canvas",
     "ProductService.md",
     "Integrate Casbin.md",
     "Untitled.md",
